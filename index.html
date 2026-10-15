@@ -12,7 +12,7 @@
     <div class="live"><span id="statusDot" class="dot"></span><strong id="status">Cargando datos</strong><span id="stamp">Binance Spot</span></div>
   </header>
   <section class="intro">
-    <div><div class="eyebrow">ESTRATEGIA CARTER · TEMPORALIDAD FIJA 4H</div><h1>De la señal al <em>plan de operación.</em></h1><p>Carter, ADX y perfil de volumen, con hasta tres entradas condicionadas, stop de invalidación y salida en resistencias reales del gráfico.</p></div>
+    <div><div class="eyebrow">ESTRATEGIA CARTER · TEMPORALIDAD FIJA 4H</div><h1>Proyectá la <em>próxima operación 4H.</em></h1><p>Carter, ADX y perfil de volumen para anticipar escenarios: dónde esperar, qué debería confirmarse, cómo escalonar y dónde salir.</p></div>
     <div class="mode"><span class="bullet"></span> MODO ANÁLISIS <small>Sin órdenes automáticas</small></div>
   </section>
   <section class="toolbar">
@@ -26,8 +26,8 @@
   <p class="timeframe-explainer"><strong>OPERACIONES SOLO EN 4H.</strong> Velas, Squeeze, momentum, ADX, E1/E2/E3, SL y TP se calculan sobre 4 horas. El detalle 1H es opcional y sirve únicamente para estimar el perfil de volumen; nunca genera señales.</p>
   <div id="error" class="error" role="alert"></div>
   <section class="decision" id="decisionCard" aria-live="polite">
-    <div><div class="overline">DECISIÓN AHORA</div><div class="decision-title" id="decisionTitle">ANALIZANDO…</div><div id="decisionTime" class="muted">Cierre de vela 4H · UTC</div></div>
-    <div class="decision-detail"><strong id="decisionReason">Consultando Binance</strong><p id="decisionNote">Las entradas se habilitan únicamente con condiciones confirmadas y datos recientes.</p></div>
+    <div><div class="overline">PLAN PROSPECTIVO · PRÓXIMA OPERACIÓN</div><div class="decision-title" id="decisionTitle">ANALIZANDO…</div><div id="decisionTime" class="muted">Cierre de vela 4H · UTC</div></div>
+    <div class="decision-detail"><strong id="decisionReason">Consultando Binance</strong><p id="decisionNote">Primero se calcula el escenario futuro; luego se indica qué condición 4H debe cumplirse para habilitar una entrada.</p></div>
     <div class="count"><div class="overline">SIGUIENTE CIERRE 4H</div><strong id="nextBar">—</strong><small id="signalTime">Horarios Argentina</small></div>
   </section>
   <section class="kpis">
@@ -37,28 +37,53 @@
     <article><span>MOMENTUM CARTER</span><strong id="momentum">—</strong><small id="momDetail">Regresión 20</small></article>
     <article><span>ADX / +DI / −DI</span><strong id="adx">—</strong><small id="adxDetail">Wilder 14</small></article>
   </section>
+  
+  <section class="scenario-strip" aria-label="Proyecciones prospectivas en 4H">
+    <article class="scenario-item pullback">
+      <div class="scenario-head"><span>01</span><strong>ESCENARIO PRINCIPAL · RETROCESO</strong></div>
+      <div class="scenario-value" id="forecastPullback">—</div>
+      <p id="forecastPullbackRule">Proyectando la zona E1 y su confirmación 4H…</p>
+    </article>
+    <article class="scenario-item continuation">
+      <div class="scenario-head"><span>02</span><strong>CONTINUACIÓN SIN RETROCESO</strong></div>
+      <div class="scenario-value" id="forecastContinuation">—</div>
+      <p id="forecastContinuationRule">Evaluando resistencia y posibilidad de una señal Carter nueva…</p>
+    </article>
+    <article class="scenario-item invalidation">
+      <div class="scenario-head"><span>03</span><strong>ESCENARIO ADVERSO · INVALIDACIÓN</strong></div>
+      <div class="scenario-value" id="forecastFailure">—</div>
+      <p id="forecastFailureRule">Determinando dónde cancelar el plan.</p>
+    </article>
+  </section>
   <div class="content">
     <section class="panel chart-panel">
       <div class="panel-header"><div><h2 id="chartTitle">SOLUSDT · 4H</h2><small id="chartData">Cargando histórico</small></div><div class="toggles"><label><input type="checkbox" id="emaVisible" checked> EMAs</label><label><input type="checkbox" id="bandsVisible"> BB/KC</label><label><input type="checkbox" id="vpVisible" checked> Perfil</label><label><input type="checkbox" id="planVisible" checked> Operación</label></div></div>
+      <div class="projection-label"><span>PROYECCIÓN CONDICIONAL 4H</span> Las líneas punteadas se dibujan a la derecha de la última vela. Representan rutas posibles, <strong>sin fechas de llegada ni probabilidades estimadas.</strong></div>
       <div class="legend"><span><i style="background:#f1c069"></i>EMA10</span><span><i style="background:#b19afa"></i>EMA55</span><span><i style="background:#6fbaff"></i>EMA200</span><span><i style="background:#66dfac"></i>Entradas 1/2/3</span><span><i style="background:#e0ae63"></i>TP</span><span><i style="background:#fa758c"></i>SL</span><span><i style="background:#b7a3ff"></i>POC / VA</span></div>
       <div class="canvas-wrap"><canvas id="chart" aria-label="Gráfico de velas, perfil de volumen, entradas, TP, stop, momentum y ADX"></canvas><div class="crosshair" id="crosshair"></div></div>
-      <div class="chart-footer">Rueda = zoom · arrastrar = historial · doble clic = presente. Las velas de entrada se evalúan al cierre; el perfil representa el mercado actual.</div>
+      <div class="chart-footer">Rueda = zoom · arrastrar = historial · doble clic = presente. Derecha sombreada: <strong>escenarios futuros ilustrativos</strong>, no velas pronosticadas ni plazo estimado. Solo 4H para generar entradas.</div>
     </section>
     <aside class="panel side">
-      <div class="panel-header"><h2>Plan LONG · escalonado</h2><span class="mini-tag">SPOT · SIN APALANCAMIENTO</span></div>
+      <div class="panel-header"><h2>Operación futura · hasta 3 compras</h2><span class="mini-tag">SPOT · SIN APALANCAMIENTO</span></div>
       <div class="side-body">
-        <p class="sidebar-description" id="planSummary">Buscando soportes, resistencias y confirmación de Carter…</p>
+        <p class="sidebar-description" id="planSummary">Proyectando próxima zona, activación en 4H, invalidez y salida técnica…</p>
         <div class="entry-list">
-          <div class="entry"><div class="step">1</div><div><strong>Primera entrada</strong><small id="e1Label">Disparo Carter o soporte confirmado</small></div><div class="right"><b id="e1">—</b><small>40% unidades</small></div></div>
-          <div class="entry"><div class="step">2</div><div><strong>Segunda entrada</strong><small id="e2Label">Solo tras nueva confirmación</small></div><div class="right"><b id="e2">—</b><small>35% unidades</small></div></div>
-          <div class="entry"><div class="step">3</div><div><strong>Tercera entrada</strong><small id="e3Label">Solo tras nueva confirmación</small></div><div class="right"><b id="e3">—</b><small>25% unidades</small></div></div>
+          <div class="entry"><div class="step">1</div><div><strong>Primera entrada</strong><small id="e1Label">Zona futura y gatillo 4H</small></div><div class="right"><b id="e1">—</b><small>40% unidades</small></div></div>
+          <div class="entry"><div class="step">2</div><div><strong>Segunda entrada</strong><small id="e2Label">Revalidación 4H, no compra por caída</small></div><div class="right"><b id="e2">—</b><small>35% unidades</small></div></div>
+          <div class="entry"><div class="step">3</div><div><strong>Tercera entrada</strong><small id="e3Label">Revalidación 4H, no compra por caída</small></div><div class="right"><b id="e3">—</b><small>25% unidades</small></div></div>
+        </div>
+        
+        <div class="activation">
+          <div class="activation-head">CONDICIONES PARA ACTIVAR E1</div>
+          <p id="entryChecklist">Esperar que el precio llegue al soporte proyectado y luego confirmar un cierre de 4H con impulso alcista.</p>
+          <div class="activation-foot"><span id="forecastStatus">PREPARANDO ESCENARIO</span><span>Sin órdenes automáticas</span></div>
         </div>
         <div class="targets">
-          <div><span>PRECIO PROMEDIO · 3 NIVELES</span><strong id="average">—</strong></div>
-          <div><span>TAKE PROFIT · RESISTENCIA</span><strong id="takeProfit" class="gold">—</strong></div>
+          <div><span>PRECIO PROMEDIO · NIVELES DISPONIBLES</span><strong id="average">—</strong></div>
+          <div><span>SALIDA PROYECTADA · PRIMERA RESISTENCIA</span><strong id="takeProfit" class="gold">—</strong></div>
           <div><span>STOP · INVALIDACIÓN</span><strong id="stop" class="red">—</strong></div>
           <div><span>R/R · SOLO ENTRADA 1</span><strong id="rrFirst">—</strong></div>
-          <div><span>R/R · PROMEDIO PROYECTADO</span><strong id="rrFull">—</strong></div>
+          <div><span>R/R · 3 ENTRADAS (HIPOTÉTICAS)</span><strong id="rrFull">—</strong></div>
         </div>
         <div id="warning" class="warning">No se deben ejecutar entradas pendientes sin una nueva validación de tendencia y estructura. Promediar una pérdida no garantiza recuperación.</div>
         <h3>Riesgo y tamaño máximo</h3>
@@ -87,7 +112,7 @@
       <p class="disclaimer">El disparador conserva Carter 4H. El perfil, las entradas escalonadas y el objetivo estructural son una <strong>extensión exploratoria</strong> y todavía no tienen un backtest validado con datos fuera de muestra.</p>
     </section>
   </div>
-  <footer>Analizer Carter 4H · v0.3.1 · Binance Spot · Datos de mercado públicos · Sin órdenes, sin custodia, sin garantías de rentabilidad.</footer>
+  <footer>Analizer Carter 4H · v0.4 · Binance Spot · Datos de mercado públicos · Sin órdenes, sin custodia, sin garantías de rentabilidad.</footer>
 </main>
 <script src="engine.js"></script>
 <script src="app.js"></script>
