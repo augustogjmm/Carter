@@ -35,6 +35,16 @@ jobs:
           const vp=e.volumeProfile(candles.slice(-180));
           assert(vp && Number.isFinite(vp.poc) && vp.val < vp.vah);
           assert(vp.poc >= vp.low && vp.poc <= vp.high);
+          const disabledTrend={...s,trend:s.trend.slice(),momentumOK:s.momentumOK.slice()};
+          disabledTrend.trend[last]=false;
+          disabledTrend.momentumOK[last]=false;
+          const blocked=e.tradePlan(candles,disabledTrend,vp,candles[last].c,false,1000,1,true);
+          assert.equal(blocked.blocked,true);
+          assert.equal(blocked.entries.length,0);
+          const blockedForecast=e.projectScenarios(candles,disabledTrend,vp,blocked,candles[last].c);
+          assert(blockedForecast.marketMode!=='bullish');
+          assert.equal(blockedForecast.entries.length,0);
+          assert(Array.isArray(blockedForecast.supportSteps));
           const p=e.tradePlan(candles,s,vp,candles[last].c,false,1000,1);
           assert(p===null || Array.isArray(p.entries));
           assert(typeof e.empiricalProjection === 'function');
