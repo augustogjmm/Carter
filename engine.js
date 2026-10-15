@@ -53,7 +53,19 @@ let riskBudget=Math.max(0,capital)*Math.max(0,Math.min(5,riskPct))/100;
 let unitRisk=avg-stop+avg*.002,units=unitRisk>0?Math.min(riskBudget/unitRisk,Math.max(0,capital)/avg):0;
 let exposure=units*avg,reason=!target?'Primera resistencia demasiado cercana para justificar R/R ≥ 1,5 desde E1; no saltear esa resistencia para prometer un TP mayor.':entries.length<3?'Solo '+entries.length+' soporte(s) independiente(s) disponible(s). No completar artificialmente las tres compras.':'Tres zonas escalonadas apoyadas en niveles observables.';
 let ready=!!entries[0].live&&!!target&&!!s.trend[i]&&units>0;
-return{entries,avg,stop,target,nearest,rrFirst,rrAvg,riskBudget,units,exposure,ready,reason,vp,atr:at,quote:price,signal:s.signal[i],trend:s.trend[i]};
+// Pagos condicionales: solo las entradas que hipotéticamente fueron ejecutadas.
+let investedUnits=0,cost=0;
+let stages=entries.map((e,j)=>{
+ const stageUnits=units*weights[j]/weightSum;
+ investedUnits+=stageUnits; cost+=stageUnits*e.price;
+ const entryAverage=investedUnits>0?cost/investedUnits:null;
+ const exitFeeRate=.002; // compra+venta aproximadas sobre el nocional
+ const profit=target?(investedUnits*(target.price-entryAverage)-cost*exitFeeRate):null;
+ const loss=investedUnits*(entryAverage-stop)+cost*exitFeeRate;
+ return {fills:j+1,average:entryAverage,units:investedUnits,invested:cost,profit,loss,
+ rr:profit!==null&&loss>0?profit/loss:null};
+});
+return{entries,avg,stop,target,nearest,rrFirst,rrAvg,riskBudget,units,exposure,ready,reason,vp,atr:at,quote:price,signal:s.signal[i],trend:s.trend[i],stages};
 }
 
 /**
