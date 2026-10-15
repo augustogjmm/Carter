@@ -4,7 +4,7 @@ const $=id=>document.getElementById(id);
 const CE=window.CarterEngine;
 const API=['https://data-api.binance.vision','https://api.binance.com','https://api1.binance.com','https://api2.binance.com'];
 const BAR=14400000,MAX_4H=2000;
-const S={pair:'SOLUSDT',quoteAsset:'USDT',baseAsset:'SOL',precision:4,c:[],forming:null,s:null,profile:null,profileSource:'',plan:null,forecast:null,quoteAt:0,source:'',loadId:0,controller:null,ws:null,poller:null,lastProfile:0,offset:0,view:140,drag:null,hover:-1,busy:false};
+const S={pair:'SOLUSDT',quoteAsset:'USDT',baseAsset:'SOL',precision:4,c:[],forming:null,s:null,profile:null,profileSource:'',plan:null,forecast:null,empirical:null,quoteAt:0,source:'',loadId:0,controller:null,ws:null,poller:null,lastProfile:0,offset:0,view:140,drag:null,hover:-1,busy:false};
 const fmt=(p,n=S.precision)=>Number.isFinite(p)?Number(p).toLocaleString('en-US',{minimumFractionDigits:Math.min(n,8),maximumFractionDigits:Math.min(n,8)}):'—';
 const f2=p=>Number.isFinite(p)?p.toFixed(2):'—';
 const date=t=>new Intl.DateTimeFormat('es-AR',{timeZone:'America/Argentina/Buenos_Aires',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date(t));
@@ -47,7 +47,7 @@ function closeFeeds(){if(S.controller){S.controller.abort();S.controller=null;}i
 function applyLatest(rows){let map=new Map(S.c.map(x=>[x.t,x]));for(let b of rows){if(b.closed)map.set(b.t,b);else S.forming=b;}let oldLast=S.c.at(-1)?.t;S.c=Array.from(map.values()).sort((a,b)=>a.t-b.t).slice(-MAX_4H);return oldLast!==S.c.at(-1)?.t;}
 async function load(pair){
 pair=norm(pair);if(!pair){error('Ingresá un par de Binance Spot, por ejemplo BTCUSDT.');return;}
-const id=++S.loadId;closeFeeds();S.busy=true;S.c=[];S.s=null;S.forming=null;S.profile=null;S.plan=null;S.forecast=null;S.pair=pair;S.offset=0;S.view=140;S.quoteAt=0;S.source='';$('symbol').value=pair;$('analyze').disabled=true;error('');status('Validando '+pair,'');redraw();
+const id=++S.loadId;closeFeeds();S.busy=true;S.c=[];S.s=null;S.forming=null;S.profile=null;S.plan=null;S.forecast=null;S.empirical=null;S.pair=pair;S.offset=0;S.view=140;S.quoteAt=0;S.source='';$('symbol').value=pair;$('analyze').disabled=true;error('');status('Validando '+pair,'');redraw();
 const controller=new AbortController();S.controller=controller;
 try{
 const info=await api('/api/v3/exchangeInfo?symbol='+encodeURIComponent(pair),controller.signal);
@@ -71,6 +71,7 @@ function current(){return S.forming?.c??S.c.at(-1)?.c??null;}
 function executable(){if(!S.s||!S.c.length)return false;let i=S.c.length-1,last=S.c[i],forming=S.forming,age=Date.now()-(last.t+BAR),at=S.s.at[i];return !!S.s.signal[i]&&forming?.t===last.t+BAR&&age>=0&&age<=10*60000&&Number.isFinite(at)&&Math.abs(forming.c-forming.o)<=.25*at&&Date.now()-S.quoteAt<=120000;}
 function refresh(){if(!S.s||!S.c.length)return;let i=S.c.length-1,b=S.c[i],c=S.s,px=current();S.plan=CE.tradePlan(S.c,c,S.profile,px,executable(),Number($('capital').value)||0,Number($('riskPct').value)||0);
 S.forecast=CE.projectScenarios(S.c,c,S.profile,S.plan,px);
+S.empirical=CE.empiricalProjection(S.c,c,S.forecast);
 label('chartTitle',S.pair+' · Binance Spot · 4H');
 label('chartData',S.c.length.toLocaleString('es-AR')+' velas cerradas · '+date(S.c[0].t)+' — '+date(b.t+BAR));
 label('lastPrice',fmt(px));label('priceState',(S.forming?'4H en formación':'Última 4H cerrada')+' · '+S.source);
@@ -83,7 +84,7 @@ let cond=[['EMA10 > EMA55 > EMA200 y cierre > EMA10',c.trend[i]],['Squeeze ON �
 $('conditions').innerHTML=cond.map(x=>'<div class="condition"><span>'+x[0]+'</span><em class="'+(x[1]?'ok':'no')+'">'+(x[1]?'CONFIRMADO':'NO')+'</em></div>').join('');
 if(S.profile){label('poc',fmt(S.profile.poc));label('vah',fmt(S.profile.vah));label('val',fmt(S.profile.val));label('vpWindow',profileDays()+' días · '+S.profile.candles+' velas');label('vpStatus',S.profileSource);}
 else{for(let k of ['poc','vah','val','vpWindow'])label(k,'—');label('vpStatus','CARGANDO');}
-showPlan();showForecast();showDecision();redraw();
+showPlan();showForecast();showEmpirical();showDecision();redraw();
 }
 function showPlan(){
 let p=S.plan,entries=p?.entries||[];
@@ -165,6 +166,33 @@ if(f.invalidation){
  label('forecastFailure','SIN STOP');
  label('forecastFailureRule','El soporte inferior no permite construir una invalidación coherente. No activar entradas.');
 }
+}
+function showEmpirical(){
+const e=S.empirical;
+if(!e?.valid){
+ for(const key of ['emp24','emp48','emp96'])label(key,'—');
+ for(const key of ['emp24range','emp48range','emp96range'])label(key,'Histórico comparable insuficiente');
+ label('empEvents','—');label('empEventsDetail','No se calculan frecuencias con menos de 30 observaciones');
+ label('analogueCount',e?.reason||'Sin cálculo disponible');
+ label('analogueNote','No se encontró una muestra histórica comparable suficientemente grande en 4H. No se generan precios ni probabilidades artificiales.');
+ return;
+}
+label('analogueCount',e.sampleSize+' observaciones 4H con régimen similar · '+e.matching.join(' + '));
+for(const [bars,id,rangeId] of [[6,'emp24','emp24range'],[12,'emp48','emp48range'],[24,'emp96','emp96range']]){
+ const a=e.horizons.find(v=>v.bars===bars);
+ if(!a){label(id,'—');label(rangeId,'sin datos');continue;}
+ label(id,fmt(a.priceMid)+' ('+(a.p50Change>=0?'+':'')+f2(a.p50Change)+'%)');
+ label(rangeId,'P10–P90: '+fmt(a.priceLow)+' — '+fmt(a.priceHigh));
+}
+const o=e.outcomes;
+if(o){
+ label('empEvents','Resist. '+f2(100*o.upFirst/o.total)+'% / Stop '+f2(100*o.downFirst/o.total)+'%');
+ label('empEventsDetail',o.upFirst+' / '+o.downFirst+' primero · '+o.none+' sin tocar · '+o.ambiguous+' ambiguos. Plazo 96h.');
+}else{
+ label('empEvents','Sin comparación');
+ label('empEventsDetail','Faltan un objetivo y una invalidación a ambos lados del precio.');
+}
+label('analogueNote','Rangos basados en cuantiles de cierres 4H posteriores (P10/P50/P90) en '+e.sampleSize+' casos semejantes. Las frecuencias de resistencia/stop se miden desde el precio ACTUAL, no desde E1. Muestras históricas solapadas: NO son probabilidades calibradas, previsiones temporales ni backtest fuera de muestra del plan de 3 compras.');
 }
 function showDecision(){
 if(!S.c.length||!S.s)return;let i=S.c.length-1,c=S.s,b=S.c[i],p=S.plan,now=Date.now(),next=b.t+2*BAR;if(next<=now)next=Math.ceil((now+1)/BAR)*BAR;
