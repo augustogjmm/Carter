@@ -69,7 +69,7 @@ finally{if(id===S.loadId){S.busy=false;$('analyze').disabled=false;S.controller=
 function compute(){if(S.c.length<220)return;S.s=CE.indicators(S.c,Number($('adxMin').value),$('adxEnabled').checked);refresh();}
 function current(){return S.forming?.c??S.c.at(-1)?.c??null;}
 function executable(){if(!S.s||!S.c.length)return false;let i=S.c.length-1,last=S.c[i],forming=S.forming,age=Date.now()-(last.t+BAR),at=S.s.at[i];return !!S.s.signal[i]&&forming?.t===last.t+BAR&&age>=0&&age<=10*60000&&Number.isFinite(at)&&Math.abs(forming.c-forming.o)<=.25*at&&Date.now()-S.quoteAt<=120000;}
-function refresh(){if(!S.s||!S.c.length)return;let i=S.c.length-1,b=S.c[i],c=S.s,px=current();S.plan=CE.tradePlan(S.c,c,S.profile,px,executable(),Number($('capital').value)||0,Number($('riskPct').value)||0);
+function refresh(){if(!S.s||!S.c.length)return;let i=S.c.length-1,b=S.c[i],c=S.s,px=current();S.plan=CE.tradePlan(S.c,c,S.profile,px,executable(),Number($('capital').value)||0,Number($('riskPct').value)||0,$('adxEnabled').checked);
 S.forecast=CE.projectScenarios(S.c,c,S.profile,S.plan,px);
 S.empirical=CE.empiricalProjection(S.c,c,S.forecast);
 label('chartTitle',S.pair+' · Binance Spot · 4H');
@@ -96,10 +96,11 @@ label('e'+(j+1)+'Label',e?(e.source+(j?' · reconfirmar rebote 4H':' · esperar 
 label('average',Number.isFinite(p?.avg)?fmt(p.avg):'—');label('stop',Number.isFinite(p?.stop)?fmt(p.stop):'—');
 label('takeProfit',p?.target?fmt(p.target.price):'SIN TP VÁLIDO');
 label('rrFirst',Number.isFinite(p?.rrFirst)?f2(p.rrFirst)+' : 1':'—');label('rrFull',Number.isFinite(p?.rrAvg)?f2(p.rrAvg)+' : 1':'—');
-label('riskAmount',Number.isFinite(p?.riskBudget)?fmt(p.riskBudget,2)+' '+S.quoteAsset:'—');
+label('riskAmount',(Number.isFinite(p?.riskBudget)?fmt(p.riskBudget,2):fmt((Number($('capital').value)||0)*(Number($('riskPct').value)||0)/100,2))+' '+S.quoteAsset);
 label('exposure',Number.isFinite(p?.exposure)?fmt(p.exposure,2)+' '+S.quoteAsset:'—');
 label('units',Number.isFinite(p?.units)?fmt(p.units,6)+' '+S.baseAsset:'—');
 let text=p?.reason||'El perfil de volumen todavía no está disponible.';
+if(p?.blocked)text+=' Las referencias de soporte se mantienen en el escenario BAJISTA, pero NO son entradas E1/E2/E3.';
 if(p?.target)text+=' Objetivo estructural: '+p.target.source+'.';
 else if(p?.nearest)text+=' Primera resistencia observada: '+fmt(p.nearest.price)+' ('+p.nearest.source+'); no alcanza el R/R mínimo.';
 label('planSummary',text);
@@ -109,7 +110,7 @@ renderStages();
 function renderStages(){
 const p=S.plan,tbody=$('stageRows');
 if(!p?.stages?.length){
-tbody.innerHTML='<tr><td colspan="6">Sin estructura completa para simular entradas y salida.</td></tr>';return;
+tbody.innerHTML='<tr><td colspan="6">'+(p?.blocked?'Long bloqueado por condiciones 4H; no se calculan ganancias hipotéticas de compras.':'Sin estructura completa para simular entradas y salida.')+'</td></tr>';return;
 }
 tbody.innerHTML=p.stages.map(x=>{
  const filled='E1'+(x.fills>=2?' + E2':'')+(x.fills>=3?' + E3':'');
@@ -138,12 +139,23 @@ if(!f){
  label('forecastStatus','PLAN NO DISPONIBLE');
  return;
 }
+if(p?.blocked){
+ label('forecastPullback',f.downside?fmt(f.downside.price):'SIN SOPORTE');
+ label('forecastPullbackRule',f.downside?'Primer soporte observable: '+f.downside.source+'. Zona para evaluar la reacción del precio, NO una compra E1.':'No hay un soporte cercano sólido; no inventar una entrada.');
+ label('forecastContinuation',f.barrier?fmt(f.barrier.price):'SIN RESISTENCIA');
+ label('forecastContinuationRule',f.barrier?'Resistencia para observar un cambio de estructura: '+f.barrier.source+'. Superarla NO basta: exigir Carter 4H completo.':'No hay resistencia validada para activar un nuevo Long.');
+ label('forecastFailure',f.supportSteps?.[1]?fmt(f.supportSteps[1].price):'SIN SEGUNDO SOPORTE');
+ label('forecastFailureRule','Si pierde el soporte cercano, observar el siguiente. No promediar ni comprar en caída.');
+ label('entryChecklist','NO LONG: esperar EMA10 > EMA55 > EMA200, cierre sobre EMA10, dirección DI favorable si ADX está activado, momentum positivo y creciente y nueva liberación del Squeeze al cierre 4H. Luego recalcular E1, E2, E3, TP y SL.');
+ label('forecastStatus','COMPRAS BLOQUEADAS · CONTEXTO 4H');
+ return;
+}
 let entry=f.entries[0],current=f.price;
 if(entry){
  const pct=(entry.price/current-1)*100;
  label('forecastPullback',fmt(entry.zoneMin)+' — '+fmt(entry.zoneMax));
  label('forecastPullbackRule','Zona E1 '+fmt(entry.price)+' ('+(pct>=0?'+':'')+f2(pct)+'% desde precio). '+entry.source+'. Contactar la zona NO activa compra; esperar confirmación 4H.');
- label('entryChecklist','Si el precio alcanza E1 ('+fmt(entry.zoneMin)+'–'+fmt(entry.zoneMax)+'), esperar una vela 4H cerrada recuperando '+fmt(entry.price)+', momentum girando al alza y estructura vigente'+($('adxEnabled').checked?', con ADX y +DI validando':'')+'. E2 y E3 requieren esa validación nuevamente. No activar por simple toque.');
+ label('entryChecklist','Si el precio alcanza E1 ('+fmt(entry.zoneMin)+'–'+fmt(entry.zoneMax)+'), esperar una NUEVA señal completa Carter 4H tras recuperar '+fmt(entry.price)+': liberación Squeeze, EMA10/55/200 alcistas, momentum positivo y creciente y estructura vigente'+($('adxEnabled').checked?', con ADX y +DI validando':'')+'. E2 y E3 requieren esa validación nuevamente. No activar por simple toque.');
  label('forecastStatus',p?.ready?'E1 HABILITADA AHORA':'E1 FUTURA · ESPERAR CONFIRMACIÓN');
 }else{
  label('forecastPullback','SIN SOPORTE');
@@ -186,13 +198,13 @@ for(const [bars,id,rangeId] of [[6,'emp24','emp24range'],[12,'emp48','emp48range
 }
 const o=e.outcomes;
 if(o){
- label('empEvents','Resist. '+f2(100*o.upFirst/o.total)+'% / Stop '+f2(100*o.downFirst/o.total)+'%');
+ label('empEvents','Resist. '+f2(100*o.upFirst/o.total)+'% / '+(o.lowerType==='support'?'Soporte ':'Stop ')+f2(100*o.downFirst/o.total)+'%');
  label('empEventsDetail',o.upFirst+' / '+o.downFirst+' primero · '+o.none+' sin tocar · '+o.ambiguous+' ambiguos. Plazo 96h.');
 }else{
  label('empEvents','Sin comparación');
  label('empEventsDetail','Faltan un objetivo y una invalidación a ambos lados del precio.');
 }
-label('analogueNote','Rangos basados en cuantiles de cierres 4H posteriores (P10/P50/P90) en '+e.sampleSize+' casos semejantes. Las frecuencias de resistencia/stop se miden desde el precio ACTUAL, no desde E1. Muestras históricas solapadas: NO son probabilidades calibradas, previsiones temporales ni backtest fuera de muestra del plan de 3 compras.');
+label('analogueNote','Rangos basados en cuantiles de cierres 4H posteriores (P10/P50/P90) en '+e.sampleSize+' casos semejantes. Las frecuencias son de resistencia/soporte en mercado bajista o resistencia/stop en plan alcista; se miden desde el precio ACTUAL, no desde E1. Muestras históricas solapadas: NO son probabilidades calibradas, previsiones temporales ni backtest fuera de muestra del plan de 3 compras.');
 }
 function showDecision(){
 if(!S.c.length||!S.s)return;let i=S.c.length-1,c=S.s,b=S.c[i],p=S.plan,now=Date.now(),next=b.t+2*BAR;if(next<=now)next=Math.ceil((now+1)/BAR)*BAR;
@@ -201,7 +213,11 @@ label('nextBar',String(hh).padStart(2,'0')+'h '+String(mm).padStart(2,'0')+'m');
 label('decisionTime','Último cierre: '+date(b.t+BAR)+' · AR');
 let title='SIN ENTRADA',reason='Carter 4H no habilita una compra inmediata.',note='La proyección estructura escenarios futuros con activaciones pendientes.',cls='bad';
 const f=S.forecast,first=f?.entries?.[0];
-if(p?.ready){
+if(p?.blocked){
+ title='NO COMPRAR';
+ reason='Contexto 4H incompatible con Long: tendencia, momentum y/o ADX/DI no acompañan.';
+ note='El gráfico muestra soportes y resistencias para anticipar escenarios, NO entradas E1/E2/E3. Esperar señal Carter alcista 4H antes de preparar compras.';cls='bad';
+}else if(p?.ready){
 title='E1 HABILITADA';
 reason='Carter 4H confirmado y oportunidad vigente. TP en la primera resistencia, con R/R adecuado.';
 note='E1 '+fmt(p.entries[0].price)+' · TP '+fmt(p.target.price)+' · invalidación '+fmt(p.stop)+'. Revalidar antes de operar.';cls='good';
@@ -249,7 +265,7 @@ let futureWidth=projectionOn?Math.min(235,Math.max(96,plot*.31)):0;
 let historyEnd=x1-futureWidth,dx=(historyEnd-x0)/count;
 let yt=17,yb=h*.61,volTop=h*.645,volBot=h*.738,momTop=h*.762,momBot=h*.872,adxTop=h*.897,adxBot=h*.963;
 let shown=c.slice(start,end),lo=Math.min(...shown.map(x=>x.l)),hi=Math.max(...shown.map(x=>x.h)),plan=S.plan;
-if(S.offset===0&&plan&&$('planVisible').checked){for(let v of [plan.stop,plan.target?.price,...(plan.entries||[]).map(x=>x.price)]){if(Number.isFinite(v)&&v>0){lo=Math.min(lo,v);hi=Math.max(hi,v);}}}
+if(S.offset===0&&plan&&!plan.blocked&&$('planVisible').checked){for(let v of [plan.stop,plan.target?.price,...(plan.entries||[]).map(x=>x.price)]){if(Number.isFinite(v)&&v>0){lo=Math.min(lo,v);hi=Math.max(hi,v);}}}
 let margin=(hi-lo)*.07||hi*.01||1;lo-=margin;hi+=margin;let X=i=>x0+(i-start+.5)*dx,Y=v=>yt+(hi-v)/(hi-lo)*(yb-yt);
 geom={x0,x1,historyEnd,dx,start,end,yt,yb,lo,hi,volTop,volBot,momTop,momBot,adxTop,adxBot};
 if(projectionOn){
@@ -277,7 +293,7 @@ if(s.signal[i]){ctx.fillStyle='#65efbe';ctx.beginPath();let y=Y(b.l)+12;ctx.move
 function line(values,color,dash=[]){ctx.save();ctx.strokeStyle=color;ctx.lineWidth=1.55;ctx.setLineDash(dash);ctx.beginPath();let init=false;for(let i=start;i<end;i++){if(!Number.isFinite(values[i])){init=false;continue;}let x=X(i),y=Y(values[i]);if(!init){ctx.moveTo(x,y);init=true;}else ctx.lineTo(x,y);}ctx.stroke();ctx.restore();}
 if($('emaVisible').checked){line(s.ema10,'#f1c069');line(s.ema55,'#b19afa');line(s.ema200,'#6fbaff');}
 if($('bandsVisible').checked){line(s.bbU,'#899fc8',[4,3]);line(s.bbL,'#899fc8',[4,3]);line(s.kcU,'#496cab',[3,3]);line(s.kcL,'#496cab',[3,3]);}
-if(S.offset===0&&plan&&$('planVisible').checked){let levels=(plan.entries||[]).map((e,i)=>[e.price,'E'+(i+1),['#6df3c0','#52cbae','#409d95'][i]]);if(plan.entries?.length>1)levels.push([plan.avg,'PROM','#a6e3dd']);if(Number.isFinite(plan.stop))levels.push([plan.stop,'SL','#ff7a8e']);if(plan.target)levels.push([plan.target.price,'TP','#f4c27d']);
+if(S.offset===0&&plan&&!plan.blocked&&$('planVisible').checked){let levels=(plan.entries||[]).map((e,i)=>[e.price,'E'+(i+1),['#6df3c0','#52cbae','#409d95'][i]]);if(plan.entries?.length>1)levels.push([plan.avg,'PROM','#a6e3dd']);if(Number.isFinite(plan.stop))levels.push([plan.stop,'SL','#ff7a8e']);if(plan.target)levels.push([plan.target.price,'TP','#f4c27d']);
 for(let t of levels){let y=Y(t[0]);if(y<yt||y>yb)continue;ctx.strokeStyle=t[2];ctx.lineWidth=t[1]==='TP'||t[1]==='SL'?1.8:1.2;ctx.setLineDash(t[1]==='PROM'?[3,4]:t[1].startsWith('E')?[6,4]:[]);ctx.beginPath();ctx.moveTo(x0,y);ctx.lineTo(x1,y);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=t[2];ctx.font='bold 10px ui-monospace,monospace';ctx.fillText(t[1]+' '+fmt(t[0]),x1+6,y-4);}}
 if(projectionOn&&S.forecast){
  const f=S.forecast;
