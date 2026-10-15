@@ -46,13 +46,66 @@ let nearbyLows=piv.lows.filter(x=>x.price<last&&x.price>last-1.7*at).sort((x,y)=
 if(stop<=0)return{entries,reason:'No hay stop de invalidación positivo y coherente.',ready:false,vp};
 let resistance=[{price:vp.vah,source:'VAH · borde superior de valor'},{price:vp.poc,source:'POC · nodo de volumen'},...vp.hvns.map(x=>({price:x.price,source:'HVN · nodo de volumen'})),...piv.highs,{price:s.bbU[i],source:'Bollinger superior'},{price:Math.max(...c.slice(-20).map(x=>x.h)),source:'Máximo 20 velas'},{price:Math.max(...c.slice(-60).map(x=>x.h)),source:'Máximo 60 velas'},{price:Math.max(...c.slice(-160).map(x=>x.h)),source:'Máximo 160 velas'}].filter(x=>finite(x.price)&&x.price>price+.15*at).sort((a,b)=>a.price-b.price);
 let minTP=Math.max(price+.15*at,first+1.5*(first-stop),avg+1.5*(avg-stop));
-let nearest=resistance[0]||null,target=resistance.find(x=>x.price>=minTP)||null;
+// La salida razonable es la PRIMERA resistencia, no una resistencia distante saltando obstáculos.
+let nearest=resistance[0]||null,target=nearest&&nearest.price>=minTP?nearest:null;
 let rrFirst=target?(target.price-first)/(first-stop):null,rrAvg=target?(target.price-avg)/(avg-stop):null;
 let riskBudget=Math.max(0,capital)*Math.max(0,Math.min(5,riskPct))/100;
 let unitRisk=avg-stop+avg*.002,units=unitRisk>0?Math.min(riskBudget/unitRisk,Math.max(0,capital)/avg):0;
-let exposure=units*avg,reason=!target?'Sin resistencia superior con R/R ≥ 1,5 desde E1; no habilitar entrada.':entries.length<3?'Solo '+entries.length+' soporte(s) independiente(s) disponible(s). No completar artificialmente las tres compras.':'Tres zonas escalonadas apoyadas en niveles observables.';
+let exposure=units*avg,reason=!target?'Primera resistencia demasiado cercana para justificar R/R ≥ 1,5 desde E1; no saltear esa resistencia para prometer un TP mayor.':entries.length<3?'Solo '+entries.length+' soporte(s) independiente(s) disponible(s). No completar artificialmente las tres compras.':'Tres zonas escalonadas apoyadas en niveles observables.';
 let ready=!!entries[0].live&&!!target&&!!s.trend[i]&&units>0;
 return{entries,avg,stop,target,nearest,rrFirst,rrAvg,riskBudget,units,exposure,ready,reason,vp,atr:at,quote:price,signal:s.signal[i],trend:s.trend[i]};
 }
-window.CarterEngine={indicators,volumeProfile,tradePlan,pivotLevels,atr,adx};
+
+/**
+ * Proyección estructural SIN probabilidades ni estimación temporal.
+ * Devuelve únicamente niveles justificados por las velas cerradas y el perfil.
+ * Los pasos corresponden a una secuencia condicional, no a velas futuras pronosticadas.
+ */
+function projectScenarios(c,s,vp,plan,quote){
+if(!c.length || !s || !vp)return null;
+const i=c.length-1, at=s.at[i], price=finite(quote)?quote:c[i].c;
+if(!finite(price)||!finite(at)||at<=0)return null;
+const piv=pivotLevels(c);
+const resistance=[
+  {price:vp.vah,source:'VAH · perfil'},
+  {price:vp.poc,source:'POC · perfil'},
+  ...vp.hvns.map(x=>({price:x.price,source:'Nodo de volumen'})),
+  ...piv.highs,
+  {price:s.bbU[i],source:'Banda superior'},
+  {price:Math.max(...c.slice(-20).map(x=>x.h)),source:'Máximo 20 velas'}
+].filter(x=>finite(x.price)&&x.price>price+.12*at).sort((a,b)=>a.price-b.price);
+const barrier=resistance[0]||null;
+const entries=plan?.entries||[];
+const first=entries[0]||null;
+const invalidation=finite(plan?.stop)&&plan.stop>0?plan.stop:null;
+const target=plan?.target||null;
+const zone=first?{min:Math.max(0,first.price-.2*at),max:first.price+.2*at}:null;
+const upside=target||barrier;
+const downPath=[{step:0,price,label:'Ahora'}];
+if(first)downPath.push({step:1,price:first.price,label:'E1'});
+for(let j=1;j<entries.length;j++)downPath.push({step:j+1,price:entries[j].price,label:'E'+(j+1)});
+if(invalidation)downPath.push({step:Math.max(3,entries.length+1),price:invalidation,label:'Invalidación'});
+const recoveryPath=first&&upside?[
+ {step:0,price,label:'Ahora'},
+ {step:1,price:first.price,label:'E1 · condicional'},
+ {step:2,price:first.price,label:'Confirmar rebote 4H'},
+ {step:4,price:upside.price,label:target?'TP técnico':'Primera resistencia'}
+]:[];
+const breakoutPath=upside?[
+ {step:0,price,label:'Ahora'},
+ {step:4,price:upside.price,label:target?'TP técnico':'Primera resistencia'}
+]:[];
+return{
+ price,at,barrier,upside,zone,target,invalidation,
+ recoveryPath,downPath,breakoutPath,
+ entries:entries.map((e,j)=>({...e,index:j+1,zoneMin:Math.max(0,e.price-.2*at),zoneMax:e.price+.2*at})),
+ trendAligned:!!s.trend[i],adxOK:!!s.adxOK[i],momentumOK:!!s.momentumOK[i],
+ isCarterConfirmed:!!s.signal[i],
+ triggerPullback:'Esperar que el precio alcance E1 y cierre una vela 4H nuevamente sobre la zona, con momentum girando al alza, estructura vigente y filtro ADX si está activado. Un simple toque NO habilita compra.',
+ triggerContinuation:'Si no vuelve a E1: NO perseguir precio. Esperar una nueva señal Carter 4H y comprobar que el primer obstáculo permita R/R suficiente.',
+ triggerFailure:invalidation?'Si cierra 4H debajo del nivel de invalidación, cancelar todas las entradas no ejecutadas y reevaluar; E2/E3 no son órdenes automáticas.':'Sin stop estructural identificado: no planificar promedios.',
+ disclaimer:'Rutas condicionales: los puntos y la separación horizontal son diagramáticos; NO representan probabilidades, precios inventados, ni horarios estimados.'
+};
+}
+window.CarterEngine={indicators,volumeProfile,tradePlan,projectScenarios,pivotLevels,atr,adx};
 })();
