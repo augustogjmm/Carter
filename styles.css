@@ -59,3 +59,21 @@
 .analogue-cell.result strong{color:#b6e4c9}
 @media(max-width:1050px){.analogue-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.analogue-cell:nth-child(2){border-right:0}.analogue-cell:nth-child(-n+2){border-bottom:1px solid #293a51}}
 @media(max-width:550px){.analogue-grid{grid-template-columns:1fr}.analogue-cell{border-right:0!important;border-bottom:1px solid #293a51}.analogue-cell:last-child{border-bottom:0}}
+
+/* v0.6 · Evidence before forecasts */
+.audit-panel{margin-bottom:14px;border-color:#3a4f6a}
+.audit-verdict{padding:16px;display:grid;grid-template-columns:245px 1fr;gap:20px;align-items:center;border-bottom:1px solid #304059;background:linear-gradient(100deg,#1b3048,#121e2d)}
+.audit-verdict strong{display:block;font-size:22px;margin-top:5px;letter-spacing:-.45px;color:#f6cc83}
+.audit-verdict strong.good{color:#7ae5b6}
+.audit-verdict strong.bad{color:#ff9fae}
+.audit-verdict p{margin:0;color:#aec0d4;font-size:12px;line-height:1.6}
+.audit-scroll{padding:0 14px;overflow-x:auto}
+.audit-table{width:100%;min-width:860px;border-collapse:collapse;line-height:1.45}
+.audit-table th{text-align:left;font-size:10px;color:#95abc7;padding:12px 9px;border-bottom:1px solid #38506e;letter-spacing:.055em}
+.audit-table td{color:#dbe5f1;font-size:11px;padding:13px 9px;border-bottom:1px solid #2b405a;white-space:nowrap;font-variant-numeric:tabular-nums}
+.audit-table td small{display:block;font-size:9px;margin-top:3px;color:#9eafc4;white-space:normal;max-width:200px}
+.audit-table tr:last-child td{border-bottom:0}
+.audit-table .negative{color:#ff99aa;font-weight:800}
+.audit-table .positive{color:#75e3b6;font-weight:800}
+.audit-table .uncertain{color:#efc179}
+@media(max-width:780px){.audit-verdict{grid-template-columns:1fr;gap:7px}.audit-verdict strong{font-size:19px}.audit-verdict p{font-size:11px}}
