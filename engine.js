@@ -119,5 +119,70 @@ return{
  disclaimer:'Rutas condicionales: los puntos y la separación horizontal son diagramáticos; NO representan probabilidades, precios inventados, ni horarios estimados.'
 };
 }
-window.CarterEngine={indicators,volumeProfile,tradePlan,projectScenarios,pivotLevels,atr,adx};
+/**
+ * Analogías descriptivas con velas 4H terminadas ANTES del presente.
+ * Muestras solapadas: NO es backtest OOS ni probabilidades calibradas.
+ * Para evitar valores inventados se exige al menos 30 casos similares.
+ */
+function empiricalProjection(c,s,forecast,horizons=[6,12,24]){
+ if(!c?.length||!s||c.length<260)return{valid:false,reason:'Histórico 4H insuficiente'};
+ const last=c.length-1,current=c[last].c,at=s.at[last],maxH=Math.max(...horizons);
+ if(!finite(at)||at<=0)return{valid:false,reason:'ATR 4H no disponible'};
+ const regime=i=>({
+    trend:!!s.trend[i],
+    bullishDI:finite(s.plusDI[i])&&finite(s.minusDI[i])&&s.plusDI[i]>s.minusDI[i],
+    posMomentum:finite(s.mom[i])&&s.mom[i]>0,
+    strongADX:finite(s.adx[i])&&s.adx[i]>=25
+ });
+ const today=regime(last);
+ function pool(keys){
+  const r=[];
+  for(let i=230;i+maxH<c.length;i++){
+   if(!finite(s.at[i])||s.at[i]<=0||!finite(s.adx[i])||!finite(s.mom[i]))continue;
+   const old=regime(i);
+   if(keys.every(k=>old[k]===today[k]))r.push(i);
+  }
+  return r;
+ }
+ let keys=['trend','bullishDI','posMomentum','strongADX'],samples=pool(keys);
+ if(samples.length<30){keys=['trend','posMomentum','bullishDI'];samples=pool(keys);}
+ if(samples.length<30){keys=['trend','posMomentum'];samples=pool(keys);}
+ if(samples.length<30)return{valid:false,sampleSize:samples.length,reason:'Menos de 30 comparables históricos 4H'};
+ const quant=(values,p)=>{
+  values=values.slice().sort((a,b)=>a-b);
+  const idx=(values.length-1)*p,lo=Math.floor(idx),hi=Math.ceil(idx);
+  return values[lo]+(values[hi]-values[lo])*(idx-lo);
+ };
+ const periods=horizons.map(h=>{
+  const future=samples.map(i=>c[i+h].c/c[i].c);
+  return {bars:h,priceLow:current*quant(future,.1),priceMid:current*quant(future,.5),
+    priceHigh:current*quant(future,.9),
+    p10Change:100*(quant(future,.1)-1),p50Change:100*(quant(future,.5)-1),
+    p90Change:100*(quant(future,.9)-1)};
+ });
+ // Frecuencia de PRIMER evento, desde precio actual. No incluye ejecución de E1.
+ let outcomes=null;
+ if(forecast?.upside?.price>current&&forecast?.invalidation>0&&forecast.invalidation<current){
+  const upATR=(forecast.upside.price-current)/at,downATR=(forecast.invalidation-current)/at;
+  let upFirst=0,downFirst=0,ambiguous=0,none=0;
+  for(const i of samples){
+   let outcome='none',base=c[i].c,localAtr=s.at[i];
+   for(let j=i+1;j<=i+maxH;j++){
+    const up=(c[j].h-base)/localAtr>=upATR;
+    const down=(c[j].l-base)/localAtr<=downATR;
+    if(up&&down){outcome='ambiguous';break;}
+    if(up){outcome='up';break;}
+    if(down){outcome='down';break;}
+   }
+   if(outcome==='up')upFirst++;
+   else if(outcome==='down')downFirst++;
+   else if(outcome==='ambiguous')ambiguous++;
+   else none++;
+  }
+  outcomes={upFirst,downFirst,ambiguous,none,total:samples.length,barrier:forecast.upside.price,stop:forecast.invalidation,horizon:maxH};
+ }
+ return{valid:true,sampleSize:samples.length,matching:keys,horizons:periods,outcomes,
+  explanation:'Cuantiles históricos 10/50/90 de cierres futuros; condiciones similares: '+keys.join(', ')+'. Muestras solapadas, no calibradas ni independientes.'};
+}
+window.CarterEngine={indicators,volumeProfile,tradePlan,projectScenarios,empiricalProjection,pivotLevels,atr,adx};
 })();
