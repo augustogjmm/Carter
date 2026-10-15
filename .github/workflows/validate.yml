@@ -1,0 +1,48 @@
+name: Validate Carter 4H
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: JavaScript syntax
+        run: |
+          node --check engine.js
+          node --check app.js
+      - name: Indicator and volume-profile smoke test
+        run: |
+          node <<'JS'
+          const assert = require('node:assert/strict');
+          const vm = require('node:vm');
+          const fs = require('node:fs');
+          const context={window:{}};
+          vm.runInNewContext(fs.readFileSync('engine.js','utf8'),context);
+          const e=context.window.CarterEngine;
+          assert(e && e.indicators && e.volumeProfile && e.tradePlan);
+          const candles=Array.from({length:500},(_,i)=>{
+            const mid=100+i*.13+Math.sin(i/6)*1.5;
+            return {t:i*14400000,o:mid-.14,h:mid+.7,l:mid-.65,c:mid+.14,v:100+i%18};
+          });
+          const s=e.indicators(candles,25,true);
+          const last=candles.length-1;
+          assert(Number.isFinite(s.adx[last]));
+          assert(Number.isFinite(s.mom[last]));
+          const vp=e.volumeProfile(candles.slice(-180));
+          assert(vp && Number.isFinite(vp.poc) && vp.val < vp.vah);
+          assert(vp.poc >= vp.low && vp.poc <= vp.high);
+          const p=e.tradePlan(candles,s,vp,candles[last].c,false,1000,1);
+          assert(p===null || Array.isArray(p.entries));
+          const html=fs.readFileSync('index.html','utf8');
+          const app=fs.readFileSync('app.js','utf8');
+          assert(html.includes('<script src="engine.js"></script>'));
+          assert(html.includes('<script src="app.js"></script>'));
+          for (const m of app.matchAll(/\$\('([^']+)'\)/g)) {
+            assert(html.includes('id="'+m[1]+'"'),'Missing HTML ID '+m[1]);
+          }
+          console.log('Carter 4H smoke tests: OK');
+          JS
