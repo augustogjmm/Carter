@@ -37,6 +37,17 @@ jobs:
           assert(vp.poc >= vp.low && vp.poc <= vp.high);
           const p=e.tradePlan(candles,s,vp,candles[last].c,false,1000,1);
           assert(p===null || Array.isArray(p.entries));
+          assert(typeof e.empiricalProjection === 'function');
+          const empirical=e.empiricalProjection(candles,s,null);
+          assert(empirical && typeof empirical.valid==='boolean');
+          if(empirical.valid){
+            assert(empirical.sampleSize>=30);
+            assert.equal(empirical.horizons.length,3);
+            for(const period of empirical.horizons){
+              assert(Number.isFinite(period.priceMid));
+              assert(period.priceLow<=period.priceMid && period.priceMid<=period.priceHigh);
+            }
+          }
           assert(typeof e.projectScenarios === 'function');
           const forecast=e.projectScenarios(candles,s,vp,p,candles[last].c);
           assert(forecast && Array.isArray(forecast.recoveryPath));
@@ -65,7 +76,7 @@ jobs:
           const app=fs.readFileSync('app.js','utf8');
           assert(html.includes('<script src="engine.js"></script>'));
           assert(html.includes('<script src="app.js"></script>'));
-          for(const id of ['forecastPullback','forecastContinuation','forecastFailure','stageRows','entryChecklist','forecastStatus']) {
+          for(const id of ['forecastPullback','forecastContinuation','forecastFailure','stageRows','entryChecklist','forecastStatus','emp24','emp48','emp96','empEvents','analogueCount','analogueNote']) {
             assert(html.includes('id="'+id+'"'), 'Missing prospective UI: '+id);
           }
           for (const m of app.matchAll(/\$\('([^']+)'\)/g)) {
