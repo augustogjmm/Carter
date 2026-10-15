@@ -38,6 +38,23 @@
     <article><span>ADX / +DI / −DI</span><strong id="adx">—</strong><small id="adxDetail">Wilder 14</small></article>
   </section>
   
+  <section class="panel audit-panel" aria-label="Validación histórica reproducible">
+    <div class="panel-header">
+      <div><h2>¿Tiene ventaja estadística esta estrategia?</h2><small id="auditRange">Auditoría sobre velas reales Binance 4H · cargando histórico</small></div>
+      <span class="mini-tag">70% HISTÓRICO · 30% PRUEBA POSTERIOR</span>
+    </div>
+    <div class="audit-verdict">
+      <div><span class="overline">VEREDICTO FUERA DE MUESTRA</span><strong id="auditVerdict">ANALIZANDO…</strong></div>
+      <p id="auditMessage">Comparando tres reglas fijas de Carter 4H, con comisiones y operaciones ejecutadas en la apertura de la vela siguiente.</p>
+    </div>
+    <div class="audit-scroll">
+      <table class="audit-table" aria-label="Comparación de Carter básico, filtrado y escalonado">
+        <thead><tr><th>MODELO</th><th>TRAIN: OPS / PF / R</th><th>TEST: OPS</th><th>TEST: ACIERTO</th><th>TEST: PF</th><th>TEST: R/TRADE</th><th>TEST: DD</th></tr></thead>
+        <tbody id="auditRows"><tr><td colspan="7">Calculando pruebas cronológicas sin anticipar datos…</td></tr></tbody>
+      </table>
+    </div>
+    <p id="auditNotes" class="disclaimer">Entrada en la apertura de la siguiente vela 4H, stop intrabar prioritario sobre TP, 0,10% por lado y máximo 24 velas para la salida. El tercer modelo incorpora hasta tres entradas condicionales; no hereda los resultados de Carter base. Menos de 30 operaciones de prueba es evidencia insuficiente, no una aprobación.</p>
+  </section>
   <section class="scenario-strip" aria-label="Proyecciones prospectivas en 4H">
     <article class="scenario-item pullback">
       <div class="scenario-head"><span>01</span><strong id="scenarioMainTitle">PRÓXIMA ZONA · RETROCESO</strong></div>
@@ -132,9 +149,10 @@
       <p class="disclaimer">El disparador conserva Carter 4H. El perfil, las entradas escalonadas y el objetivo estructural son una <strong>extensión exploratoria</strong> y todavía no tienen un backtest validado con datos fuera de muestra.</p>
     </section>
   </div>
-  <footer>Analizer Carter 4H · v0.5.1 · Binance Spot · Datos de mercado públicos · Sin órdenes, sin custodia, sin garantías de rentabilidad.</footer>
+  <footer>Analizer Carter 4H · v0.6 · EVIDENCIA · Binance Spot · Datos de mercado públicos · Sin órdenes, sin custodia, sin garantías de rentabilidad.</footer>
 </main>
 <script src="engine.js"></script>
+<script src="research.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
