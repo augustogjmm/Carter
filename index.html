@@ -19,9 +19,11 @@
     <label class="field pair">PAR BINANCE SPOT <input id="symbol" value="SOLUSDT" list="pairs" autocomplete="off" spellcheck="false"><datalist id="pairs"><option value="BTCUSDT"><option value="ETHUSDT"><option value="SOLUSDT"><option value="AVAXUSDT"><option value="LINKUSDT"><option value="BNBUSDT"></datalist></label>
     <button id="analyze" class="btn primary">Analizar par ↗</button>
     <div class="quick"><button data-pair="BTCUSDT">BTC</button><button data-pair="ETHUSDT">ETH</button><button data-pair="SOLUSDT">SOL</button><button data-pair="AVAXUSDT">AVAX</button></div>
-    <label class="field">PERFIL · HISTÓRICO 1H <select id="profileDays"><option value="14">14 días</option><option value="30" selected>30 días</option><option value="60">60 días</option><option value="90">90 días</option></select></label>
+    <label class="field">PERFIL · HISTÓRICO 4H <select id="profileDays"><option value="14">14 días</option><option value="30" selected>30 días</option><option value="60">60 días</option><option value="90">90 días</option></select></label>
+    <label class="field">FUENTE DEL PERFIL <select id="vpResolution"><option value="4h" selected>4H · análisis principal</option><option value="1h">1H · detalle interno opcional</option></select></label>
     <label class="toggle"><input type="checkbox" id="adxEnabled" checked> ADX ≥ <select id="adxMin"><option value="20">20</option><option value="25" selected>25</option><option value="30">30</option></select></label>
   </section>
+  <p class="timeframe-explainer"><strong>OPERACIONES SOLO EN 4H.</strong> Velas, Squeeze, momentum, ADX, E1/E2/E3, SL y TP se calculan sobre 4 horas. El detalle 1H es opcional y sirve únicamente para estimar el perfil de volumen; nunca genera señales.</p>
   <div id="error" class="error" role="alert"></div>
   <section class="decision" id="decisionCard" aria-live="polite">
     <div><div class="overline">DECISIÓN AHORA</div><div class="decision-title" id="decisionTitle">ANALIZANDO…</div><div id="decisionTime" class="muted">Cierre de vela 4H · UTC</div></div>
@@ -77,7 +79,7 @@
         <div class="profile-stat"><span>VAL · límite inferior 70%</span><strong id="val">—</strong></div>
         <div class="profile-stat"><span>VENTANA DE CÁLCULO</span><strong id="vpWindow">—</strong></div>
       </div>
-      <p class="disclaimer">Perfil aproximado obtenido de velas Binance <strong>1H</strong>: el volumen de cada vela se distribuye proporcionalmente entre sus precios mínimo y máximo. Binance OHLCV no proporciona volumen negociado exacto en cada precio; este perfil <strong>no es un footprint ni libro de órdenes</strong>. POC/VAH/VAL y soportes son referencias, no garantías de ejecución.</p>
+      <p class="disclaimer">Perfil aproximado obtenido de velas Binance <strong id="profileMethod">4H</strong>: el volumen de cada vela se distribuye proporcionalmente entre sus precios mínimo y máximo. Binance OHLCV no proporciona volumen negociado exacto en cada precio; este perfil <strong>no es un footprint ni libro de órdenes</strong>. POC/VAH/VAL y soportes son referencias, no garantías de ejecución.</p>
     </section>
     <section class="panel">
       <div class="panel-header"><h2>Por qué sí / por qué no</h2><span class="mini-tag">ÚLTIMA 4H CERRADA</span></div>
@@ -85,7 +87,7 @@
       <p class="disclaimer">El disparador conserva Carter 4H. El perfil, las entradas escalonadas y el objetivo estructural son una <strong>extensión exploratoria</strong> y todavía no tienen un backtest validado con datos fuera de muestra.</p>
     </section>
   </div>
-  <footer>Analizer Carter 4H · v0.3 · Binance Spot · Datos de mercado públicos · Sin órdenes, sin custodia, sin garantías de rentabilidad.</footer>
+  <footer>Analizer Carter 4H · v0.3.1 · Binance Spot · Datos de mercado públicos · Sin órdenes, sin custodia, sin garantías de rentabilidad.</footer>
 </main>
 <script src="engine.js"></script>
 <script src="app.js"></script>
