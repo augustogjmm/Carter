@@ -1,4 +1,4 @@
-# Carter 4H · Analizer operativo v0.3
+# Carter 4H · Analizer operativo v0.3.1
 
 Aplicación estática: https://carter-rust.vercel.app . Conectada al repositorio y desplegada automáticamente por Vercel desde la rama main.
 
@@ -6,7 +6,7 @@ Aplicación estática: https://carter-rust.vercel.app . Conectada al repositorio
 
 - Gráfico Binance Spot 4H, con señal confirmada exclusivamente al cerrar la vela.
 - Carter: TTM Squeeze BB 20/2 y KC 20/1.5, momentum por regresión 20, tendencia EMA 10/55/200. Filtro ADX Wilder 14 y +DI/-DI configurable.
-- Perfil de volumen: POC, VAH, VAL (70% de área de valor) y nodos HVN, calculado sobre velas 1H durante 14, 30, 60 o 90 días.
+- Perfil de volumen: POC, VAH, VAL (70% de área de valor) y nodos HVN, calculado **por defecto exclusivamente sobre las velas 4H** durante 14, 30, 60 o 90 días. Opcionalmente puede seleccionarse fuente 1H como mayor detalle intrabar, sin afectar indicadores, señales ni plan 4H.
 - E1: señal Carter vigente (máximo 10 minutos después de apertura y desvío menor a 0,25 ATR) o una futura zona de soporte, que requiere reconfirmación.
 - E2/E3: soportes separados en el gráfico. Son niveles CONDICIONADOS a una confirmación alcista nueva en 4H, nunca órdenes automáticas por una caída.
 - TP: primera resistencia técnica existente que permita R/R al menos 1,5:1 desde E1, medida desde el stop. Si no existe, se informa SIN TP VÁLIDO.
@@ -15,7 +15,7 @@ Aplicación estática: https://carter-rust.vercel.app . Conectada al repositorio
 
 ## Limitaciones del perfil
 
-Los OHLCV de Binance no contienen el volumen negociado exacto por precio. El perfil reparte el volumen de cada vela 1H dentro del rango máximo-mínimo de forma uniforme. Esto es una ESTIMACIÓN de volumen por precio, no un footprint, libro de órdenes ni un perfil real de transacciones. Si falla la fuente 1H se usa un perfil degradado de velas 4H y se avisa.
+Los OHLCV de Binance no contienen el volumen negociado exacto por precio. El perfil reparte el volumen de cada vela fuente (4H por defecto, 1H opcional) dentro del rango máximo-mínimo de forma uniforme. Esto es una ESTIMACIÓN de volumen por precio, no un footprint, libro de órdenes ni un perfil real de transacciones. Si falla la fuente opcional 1H se vuelve a 4H y se avisa. El volumen de 4H ofrece menor detalle interno; esto no altera el marco temporal de operación.
 
 ## Confirmación, ejecución y pruebas
 
