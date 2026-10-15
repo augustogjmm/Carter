@@ -103,6 +103,26 @@ if(p?.target)text+=' Objetivo estructural: '+p.target.source+'.';
 else if(p?.nearest)text+=' Primera resistencia observada: '+fmt(p.nearest.price)+' ('+p.nearest.source+'); no alcanza el R/R mínimo.';
 label('planSummary',text);
 label('warning',entries.length>1?'E2 y E3 son ZONAS CONDICIONALES, no compras automáticas. Antes de cada promedio debe repetirse una confirmación 4H y seguir vigente la estructura alcista. Si se pierde el stop, se cancela el plan.':'Sin señal validada, los niveles son referencias para esperar. No comprar un soporte solo por tocarlo.');
+renderStages();
+}
+function renderStages(){
+const p=S.plan,tbody=$('stageRows');
+if(!p?.stages?.length){
+tbody.innerHTML='<tr><td colspan="6">Sin estructura completa para simular entradas y salida.</td></tr>';return;
+}
+tbody.innerHTML=p.stages.map(x=>{
+ const filled='E1'+(x.fills>=2?' + E2':'')+(x.fills>=3?' + E3':'');
+ const pnl=x.profit===null?'SIN TP':(x.profit>=0?'+':'')+fmt(x.profit,2)+' '+S.quoteAsset;
+ const loss='−'+fmt(x.loss,2)+' '+S.quoteAsset;
+ const rr=x.rr===null?'—':f2(x.rr)+':1';
+ return '<tr>'+
+ '<td><strong>'+filled+'</strong></td>'+
+ '<td>'+fmt(x.average)+'</td>'+
+ '<td>'+fmt(x.invested,2)+' '+S.quoteAsset+'</td>'+
+ '<td class="'+(x.profit!==null&&x.profit>=0?'green':'')+'">'+pnl+'</td>'+
+ '<td class="red">'+loss+'</td>'+
+ '<td>'+rr+'</td></tr>';
+}).join('');
 }
 function showForecast(){
 const f=S.forecast,p=S.plan;
