@@ -140,9 +140,9 @@ if(!f){
  return;
 }
 if(p?.blocked){
- label('scenarioMainTitle','BAJISTA · PRIMER SOPORTE');
+ label('scenarioMainTitle',f.marketMode==='bearish'?'BAJISTA · PRIMER SOPORTE':'RANGO · PRIMER SOPORTE');
  label('scenarioOtherTitle','RECUPERACIÓN · PRIMERA RESISTENCIA');
- label('scenarioAdverseTitle','CONTINUACIÓN BAJISTA · SEGUNDO SOPORTE');
+ label('scenarioAdverseTitle',f.marketMode==='bearish'?'CONTINUACIÓN BAJISTA · SEGUNDO SOPORTE':'RANGO · SEGUNDO SOPORTE');
  label('forecastPullback',f.downside?fmt(f.downside.price):'SIN SOPORTE');
  label('forecastPullbackRule',f.downside?'Primer soporte observable: '+f.downside.source+'. Zona para evaluar la reacción del precio, NO una compra E1.':'No hay un soporte cercano sólido; no inventar una entrada.');
  label('forecastContinuation',f.barrier?fmt(f.barrier.price):'SIN RESISTENCIA');
@@ -221,7 +221,7 @@ let title='SIN ENTRADA',reason='Carter 4H no habilita una compra inmediata.',not
 const f=S.forecast,first=f?.entries?.[0];
 if(p?.blocked){
  title='NO COMPRAR';
- reason='Contexto 4H incompatible con Long: tendencia, momentum y/o ADX/DI no acompañan.';
+ reason=(f?.marketMode==='bearish'?'Direccionalidad bajista confirmada en 4H. ':'Contexto 4H sin condiciones alcistas suficientes. ')+'Tendencia, momentum y/o ADX/DI no acompañan.';
  note='El gráfico muestra soportes y resistencias para anticipar escenarios, NO entradas E1/E2/E3. Esperar señal Carter alcista 4H antes de preparar compras.';cls='bad';
 }else if(p?.ready){
 title='E1 HABILITADA';
