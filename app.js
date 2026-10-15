@@ -105,7 +105,7 @@ if(p?.blocked)text+=' Las referencias de soporte se mantienen en el escenario BA
 if(p?.target)text+=' Objetivo estructural: '+p.target.source+'.';
 else if(p?.nearest)text+=' Primera resistencia observada: '+fmt(p.nearest.price)+' ('+p.nearest.source+'); no alcanza el R/R mínimo.';
 label('planSummary',text);
-label('warning',entries.length>1?'E2 y E3 son ZONAS CONDICIONALES, no compras automáticas. Antes de cada promedio debe repetirse una confirmación 4H y seguir vigente la estructura alcista. Si se pierde el stop, se cancela el plan.':'Sin señal validada, los niveles son referencias para esperar. No comprar un soporte solo por tocarlo.');
+label('warning','PLAN EXPERIMENTAL. El backtest fuera de muestra todavía no confirmó una ventaja. '+(entries.length>1?'E2/E3 son hipótesis condicionadas a una nueva señal 4H, no órdenes.':'Los niveles son referencias de observación, no compras.')+' No ejecutar hasta contar con validación.');
 renderStages();
 }
 function renderStages(){
@@ -163,7 +163,7 @@ if(entry){
  label('forecastPullback',fmt(entry.zoneMin)+' — '+fmt(entry.zoneMax));
  label('forecastPullbackRule','Zona E1 '+fmt(entry.price)+' ('+(pct>=0?'+':'')+f2(pct)+'% desde precio). '+entry.source+'. Contactar la zona NO activa compra; esperar confirmación 4H.');
  label('entryChecklist','Si el precio alcanza E1 ('+fmt(entry.zoneMin)+'–'+fmt(entry.zoneMax)+'), esperar una NUEVA señal completa Carter 4H tras recuperar '+fmt(entry.price)+': liberación Squeeze, EMA10/55/200 alcistas, momentum positivo y creciente y estructura vigente'+($('adxEnabled').checked?', con ADX y +DI validando':'')+'. E2 y E3 requieren esa validación nuevamente. No activar por simple toque.');
- label('forecastStatus',p?.ready?'E1 HABILITADA AHORA':'E1 FUTURA · ESPERAR CONFIRMACIÓN');
+ label('forecastStatus',p?.ready?'SEÑAL CANDIDATA · SIN VENTAJA VALIDADA':'E1 HIPOTÉTICA · NO EJECUTAR');
 }else{
  label('forecastPullback','SIN SOPORTE');
  label('forecastPullbackRule','No hay un soporte independiente cercano y justificable para E1.');
@@ -268,9 +268,9 @@ if(p?.blocked){
  reason=(f?.marketMode==='bearish'?'Direccionalidad bajista confirmada en 4H. ':'Contexto 4H sin condiciones alcistas suficientes. ')+'Tendencia, momentum y/o ADX/DI no acompañan.';
  note='El gráfico muestra soportes y resistencias para anticipar escenarios, NO entradas E1/E2/E3. Esperar señal Carter alcista 4H antes de preparar compras.';cls='bad';
 }else if(p?.ready){
-title='E1 HABILITADA';
-reason='Carter 4H confirmado y oportunidad vigente. TP en la primera resistencia, con R/R adecuado.';
-note='E1 '+fmt(p.entries[0].price)+' · TP '+fmt(p.target.price)+' · invalidación '+fmt(p.stop)+'. Revalidar antes de operar.';cls='good';
+ title='SEÑAL EN ESTUDIO';
+ reason='Hay una configuración Carter reciente, pero el modelo escalonado no cuenta con evidencia fuera de muestra suficiente para autorizarla.';
+ note='Referencia E1 '+fmt(p.entries[0].price)+' · resistencia '+fmt(p.target.price)+' · invalidación '+fmt(p.stop)+'. NO es una entrada recomendada.';cls='wait';
 }else if(first&&p?.target){
 title='PREPARAR E1';
 reason='Zona de compra futura '+fmt(first.zoneMin)+'–'+fmt(first.zoneMax)+'; todavía NO habilitada.';
@@ -293,13 +293,13 @@ $('decisionCard').className='decision '+cls;label('decisionTitle',title);label('
 function subscribe(id){
 try{let ws=new WebSocket('wss://stream.binance.com:9443/ws/'+S.pair.toLowerCase()+'@kline_4h');S.ws=ws;
 ws.onopen=()=>{if(id===S.loadId)status('Binance en vivo','ok');};
-ws.onmessage=e=>{if(id!==S.loadId)return;let o;try{o=JSON.parse(e.data).k;}catch(_){return;}if(!o)return;let b={t:+o.t,o:+o.o,h:+o.h,l:+o.l,c:+o.c,v:+o.v,closed:!!o.x};if(o.x){let pos=S.c.findIndex(x=>x.t===b.t);if(pos>=0)S.c[pos]=b;else if(b.t>S.c.at(-1).t)S.c.push(b);S.c=S.c.slice(-MAX_4H);S.forming=null;S.quoteAt=Date.now();S.source='WebSocket';if($('vpResolution').value==='4h'){S.profile=CE.volumeProfile(S.c.slice(-profileDays()*6));S.lastProfile=Date.now();}compute();}else{S.forming=b;S.quoteAt=Date.now();S.source='WebSocket';refresh();}};
-ws.onclose=()=>{if(id===S.loadId){S.ws=null;status('REST · reconectando','');}};
+ws.onmessage=e=>{if(id!==S.loadId)return;let o;try{o=JSON.parse(e.data).k;}catch(_){return;}if(!o)return;let b={t:+o.t,o:+o.o,h:+o.h,l:+o.l,c:+o.c,v:+o.v,closed:!!o.x};if(o.x){let pos=S.c.findIndex(x=>x.t===b.t);if(pos>=0)S.c[pos]=b;else if(b.t>S.c.at(-1).t)S.c.push(b);S.c=S.c.slice(-MAX_4H);S.forming=null;S.quoteAt=Date.now();S.source='WebSocket';if($('vpResolution').value==='4h'){S.profile=CE.volumeProfile(S.c.slice(-profileDays()*6));S.lastProfile=Date.now();}compute();runAudit();}else{S.forming=b;S.quoteAt=Date.now();S.source='WebSocket';refresh();}};
+ws.onclose=()=>{if(id===S.loadId){S.ws=null;status('Binance REST · sin WebSocket','');}};
 ws.onerror=()=>{try{ws.close();}catch(_){}};
 }catch(e){status('REST · sin WebSocket','');}
 S.poller=setInterval(async()=>{
 if(id!==S.loadId)return;
-try{let bars=(await api('/api/v3/klines?symbol='+encodeURIComponent(S.pair)+'&interval=4h&limit=4')).map(candle);const changed=applyLatest(bars);S.quoteAt=Date.now();S.source='REST';if(changed)compute();else refresh();if(!S.ws||S.ws.readyState!==1)status('REST actualizado','ok');
+try{let bars=(await api('/api/v3/klines?symbol='+encodeURIComponent(S.pair)+'&interval=4h&limit=4')).map(candle);const changed=applyLatest(bars);S.quoteAt=Date.now();S.source='REST';if(changed){compute();runAudit();}else refresh();if(!S.ws||S.ws.readyState!==1)status('REST actualizado','ok');
 if(Date.now()-S.lastProfile>10*60000){try{await updateProfile();refresh();}catch(_){}}
 }catch(e){if(!S.ws||S.ws.readyState!==1)status('Sin datos recientes','err');}
 },90000);
