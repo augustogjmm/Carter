@@ -55,6 +55,16 @@
       <p id="forecastFailureRule">Determinando dónde cancelar el plan.</p>
     </article>
   </section>
+  <section class="panel analogue-section">
+    <div class="panel-header"><div><h2>Proyección empírica 4H · condiciones históricas similares</h2><small id="analogueCount">Buscando casos comparables…</small></div><span class="mini-tag">RANGOS HISTÓRICOS · NO PREDICCIÓN GARANTIZADA</span></div>
+    <div class="analogue-grid" id="analogueCards">
+      <div class="analogue-cell"><span>+24 HORAS · 6 VELAS 4H</span><strong id="emp24">—</strong><small id="emp24range">10–90% histórico</small></div>
+      <div class="analogue-cell"><span>+48 HORAS · 12 VELAS 4H</span><strong id="emp48">—</strong><small id="emp48range">10–90% histórico</small></div>
+      <div class="analogue-cell"><span>+96 HORAS · 24 VELAS 4H</span><strong id="emp96">—</strong><small id="emp96range">10–90% histórico</small></div>
+      <div class="analogue-cell result"><span>ALCANZÓ PRIMERO RESISTENCIA / STOP</span><strong id="empEvents">—</strong><small id="empEventsDetail">Ventana: 24 velas 4H desde el precio actual</small></div>
+    </div>
+    <p id="analogueNote" class="disclaimer">Las bandas se calculan con cierres históricos posteriores a velas 4H en condiciones semejantes. No asumen entrada ejecutada, no miden el rendimiento E1/E2/E3 y no sustituyen validación fuera de muestra.</p>
+  </section>
   <div class="content">
     <section class="panel chart-panel">
       <div class="panel-header"><div><h2 id="chartTitle">SOLUSDT · 4H</h2><small id="chartData">Cargando histórico</small></div><div class="toggles"><label><input type="checkbox" id="emaVisible" checked> EMAs</label><label><input type="checkbox" id="bandsVisible"> BB/KC</label><label><input type="checkbox" id="vpVisible" checked> Perfil</label><label><input type="checkbox" id="planVisible" checked> Operación</label></div></div>
@@ -122,7 +132,7 @@
       <p class="disclaimer">El disparador conserva Carter 4H. El perfil, las entradas escalonadas y el objetivo estructural son una <strong>extensión exploratoria</strong> y todavía no tienen un backtest validado con datos fuera de muestra.</p>
     </section>
   </div>
-  <footer>Analizer Carter 4H · v0.4 · Binance Spot · Datos de mercado públicos · Sin órdenes, sin custodia, sin garantías de rentabilidad.</footer>
+  <footer>Analizer Carter 4H · v0.5 · Binance Spot · Datos de mercado públicos · Sin órdenes, sin custodia, sin garantías de rentabilidad.</footer>
 </main>
 <script src="engine.js"></script>
 <script src="app.js"></script>
