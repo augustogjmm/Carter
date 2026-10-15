@@ -140,6 +140,9 @@ if(!f){
  return;
 }
 if(p?.blocked){
+ label('scenarioMainTitle','BAJISTA · PRIMER SOPORTE');
+ label('scenarioOtherTitle','RECUPERACIÓN · PRIMERA RESISTENCIA');
+ label('scenarioAdverseTitle','CONTINUACIÓN BAJISTA · SEGUNDO SOPORTE');
  label('forecastPullback',f.downside?fmt(f.downside.price):'SIN SOPORTE');
  label('forecastPullbackRule',f.downside?'Primer soporte observable: '+f.downside.source+'. Zona para evaluar la reacción del precio, NO una compra E1.':'No hay un soporte cercano sólido; no inventar una entrada.');
  label('forecastContinuation',f.barrier?fmt(f.barrier.price):'SIN RESISTENCIA');
@@ -150,6 +153,9 @@ if(p?.blocked){
  label('forecastStatus','COMPRAS BLOQUEADAS · CONTEXTO 4H');
  return;
 }
+label('scenarioMainTitle','ESCENARIO LONG · RETROCESO');
+label('scenarioOtherTitle','CONTINUACIÓN AL ALZA · RESISTENCIA');
+label('scenarioAdverseTitle','ESCENARIO ADVERSO · INVALIDACIÓN LONG');
 let entry=f.entries[0],current=f.price;
 if(entry){
  const pct=(entry.price/current-1)*100;
