@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Carter 4H · Analizer operativo</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main class="shell">
+  <header class="top">
+    <div class="brand"><div class="logo">C<span>4</span></div><div><strong>Carter <em>4H</em></strong><small>ANALIZER · WORKSTATION</small></div></div>
+    <div class="live"><span id="statusDot" class="dot"></span><strong id="status">Cargando datos</strong><span id="stamp">Binance Spot</span></div>
+  </header>
+  <section class="intro">
+    <div><div class="eyebrow">ESTRATEGIA CARTER · TEMPORALIDAD FIJA 4H</div><h1>De la señal al <em>plan de operación.</em></h1><p>Carter, ADX y perfil de volumen, con hasta tres entradas condicionadas, stop de invalidación y salida en resistencias reales del gráfico.</p></div>
+    <div class="mode"><span class="bullet"></span> MODO ANÁLISIS <small>Sin órdenes automáticas</small></div>
+  </section>
+  <section class="toolbar">
+    <label class="field pair">PAR BINANCE SPOT <input id="symbol" value="SOLUSDT" list="pairs" autocomplete="off" spellcheck="false"><datalist id="pairs"><option value="BTCUSDT"><option value="ETHUSDT"><option value="SOLUSDT"><option value="AVAXUSDT"><option value="LINKUSDT"><option value="BNBUSDT"></datalist></label>
+    <button id="analyze" class="btn primary">Analizar par ↗</button>
+    <div class="quick"><button data-pair="BTCUSDT">BTC</button><button data-pair="ETHUSDT">ETH</button><button data-pair="SOLUSDT">SOL</button><button data-pair="AVAXUSDT">AVAX</button></div>
+    <label class="field">PERFIL · HISTÓRICO 1H <select id="profileDays"><option value="14">14 días</option><option value="30" selected>30 días</option><option value="60">60 días</option><option value="90">90 días</option></select></label>
+    <label class="toggle"><input type="checkbox" id="adxEnabled" checked> ADX ≥ <select id="adxMin"><option value="20">20</option><option value="25" selected>25</option><option value="30">30</option></select></label>
+  </section>
+  <div id="error" class="error" role="alert"></div>
+  <section class="decision" id="decisionCard" aria-live="polite">
+    <div><div class="overline">DECISIÓN AHORA</div><div class="decision-title" id="decisionTitle">ANALIZANDO…</div><div id="decisionTime" class="muted">Cierre de vela 4H · UTC</div></div>
+    <div class="decision-detail"><strong id="decisionReason">Consultando Binance</strong><p id="decisionNote">Las entradas se habilitan únicamente con condiciones confirmadas y datos recientes.</p></div>
+    <div class="count"><div class="overline">SIGUIENTE CIERRE 4H</div><strong id="nextBar">—</strong><small id="signalTime">Horarios Argentina</small></div>
+  </section>
+  <section class="kpis">
+    <article><span>PRECIO</span><strong id="lastPrice">—</strong><small id="priceState">Sin datos</small></article>
+    <article><span>TENDENCIA · EMA 10/55/200</span><strong id="trend">—</strong><small id="trendDetail">—</small></article>
+    <article><span>TTM SQUEEZE</span><strong id="squeeze">—</strong><small id="squeezeDetail">BB20 / KC20</small></article>
+    <article><span>MOMENTUM CARTER</span><strong id="momentum">—</strong><small id="momDetail">Regresión 20</small></article>
+    <article><span>ADX / +DI / −DI</span><strong id="adx">—</strong><small id="adxDetail">Wilder 14</small></article>
+  </section>
+  <div class="content">
+    <section class="panel chart-panel">
+      <div class="panel-header"><div><h2 id="chartTitle">SOLUSDT · 4H</h2><small id="chartData">Cargando histórico</small></div><div class="toggles"><label><input type="checkbox" id="emaVisible" checked> EMAs</label><label><input type="checkbox" id="bandsVisible"> BB/KC</label><label><input type="checkbox" id="vpVisible" checked> Perfil</label><label><input type="checkbox" id="planVisible" checked> Operación</label></div></div>
+      <div class="legend"><span><i style="background:#f1c069"></i>EMA10</span><span><i style="background:#b19afa"></i>EMA55</span><span><i style="background:#6fbaff"></i>EMA200</span><span><i style="background:#66dfac"></i>Entradas 1/2/3</span><span><i style="background:#e0ae63"></i>TP</span><span><i style="background:#fa758c"></i>SL</span><span><i style="background:#b7a3ff"></i>POC / VA</span></div>
+      <div class="canvas-wrap"><canvas id="chart" aria-label="Gráfico de velas, perfil de volumen, entradas, TP, stop, momentum y ADX"></canvas><div class="crosshair" id="crosshair"></div></div>
+      <div class="chart-footer">Rueda = zoom · arrastrar = historial · doble clic = presente. Las velas de entrada se evalúan al cierre; el perfil representa el mercado actual.</div>
+    </section>
+    <aside class="panel side">
+      <div class="panel-header"><h2>Plan LONG · escalonado</h2><span class="mini-tag">SPOT · SIN APALANCAMIENTO</span></div>
+      <div class="side-body">
+        <p class="sidebar-description" id="planSummary">Buscando soportes, resistencias y confirmación de Carter…</p>
+        <div class="entry-list">
+          <div class="entry"><div class="step">1</div><div><strong>Primera entrada</strong><small id="e1Label">Disparo Carter o soporte confirmado</small></div><div class="right"><b id="e1">—</b><small>40% unidades</small></div></div>
+          <div class="entry"><div class="step">2</div><div><strong>Segunda entrada</strong><small id="e2Label">Solo tras nueva confirmación</small></div><div class="right"><b id="e2">—</b><small>35% unidades</small></div></div>
+          <div class="entry"><div class="step">3</div><div><strong>Tercera entrada</strong><small id="e3Label">Solo tras nueva confirmación</small></div><div class="right"><b id="e3">—</b><small>25% unidades</small></div></div>
+        </div>
+        <div class="targets">
+          <div><span>PRECIO PROMEDIO · 3 NIVELES</span><strong id="average">—</strong></div>
+          <div><span>TAKE PROFIT · RESISTENCIA</span><strong id="takeProfit" class="gold">—</strong></div>
+          <div><span>STOP · INVALIDACIÓN</span><strong id="stop" class="red">—</strong></div>
+          <div><span>R/R · SOLO ENTRADA 1</span><strong id="rrFirst">—</strong></div>
+          <div><span>R/R · PROMEDIO PROYECTADO</span><strong id="rrFull">—</strong></div>
+        </div>
+        <div id="warning" class="warning">No se deben ejecutar entradas pendientes sin una nueva validación de tendencia y estructura. Promediar una pérdida no garantiza recuperación.</div>
+        <h3>Riesgo y tamaño máximo</h3>
+        <div class="capital"><label>Capital de referencia (USDT)<input id="capital" type="number" value="1000" min="1" step="100"></label><label>Riesgo máx. (%)<input id="riskPct" type="number" value="1" min="0.1" max="5" step="0.1"></label></div>
+        <div class="kv"><span>Riesgo máximo en USDT</span><strong id="riskAmount">—</strong></div>
+        <div class="kv"><span>Capital desplegado (3 entradas)</span><strong id="exposure">—</strong></div>
+        <div class="kv"><span>Unidades totales orientativas</span><strong id="units">—</strong></div>
+        <div class="tiny-note">Distribución 40/35/25 por unidades; se dimensiona para que el escenario de 3 ejecuciones no supere el riesgo fijado. Comisiones supuestas: 0,20% ida/vuelta; deslizamiento no incluido.</div>
+      </div>
+    </aside>
+  </div>
+  <div class="lower">
+    <section class="panel">
+      <div class="panel-header"><h2>Perfil de volumen por precio</h2><span id="vpStatus" class="mini-tag">ESTIMACIÓN</span></div>
+      <div class="profile-grid">
+        <div class="profile-stat"><span>POC · nodo de mayor volumen</span><strong id="poc">—</strong></div>
+        <div class="profile-stat"><span>VAH · límite superior 70%</span><strong id="vah">—</strong></div>
+        <div class="profile-stat"><span>VAL · límite inferior 70%</span><strong id="val">—</strong></div>
+        <div class="profile-stat"><span>VENTANA DE CÁLCULO</span><strong id="vpWindow">—</strong></div>
+      </div>
+      <p class="disclaimer">Perfil aproximado obtenido de velas Binance <strong>1H</strong>: el volumen de cada vela se distribuye proporcionalmente entre sus precios mínimo y máximo. Binance OHLCV no proporciona volumen negociado exacto en cada precio; este perfil <strong>no es un footprint ni libro de órdenes</strong>. POC/VAH/VAL y soportes son referencias, no garantías de ejecución.</p>
+    </section>
+    <section class="panel">
+      <div class="panel-header"><h2>Por qué sí / por qué no</h2><span class="mini-tag">ÚLTIMA 4H CERRADA</span></div>
+      <div class="conditions" id="conditions"><div>Calculando indicadores…</div></div>
+      <p class="disclaimer">El disparador conserva Carter 4H. El perfil, las entradas escalonadas y el objetivo estructural son una <strong>extensión exploratoria</strong> y todavía no tienen un backtest validado con datos fuera de muestra.</p>
+    </section>
+  </div>
+  <footer>Analizer Carter 4H · v0.3 · Binance Spot · Datos de mercado públicos · Sin órdenes, sin custodia, sin garantías de rentabilidad.</footer>
+</main>
+<script src="app.js"></script>
+</body>
+</html>
