@@ -47,3 +47,15 @@
 .payoff-table td.green{color:#65eab7;font-weight:700}
 .payoff-table td.red{color:#ff9aab;font-weight:700}
 .payoff-table tbody tr:last-child td{border-bottom:0}
+
+/* v0.5 · empirical conditional ranges */
+.analogue-section{margin:0 0 14px}
+.analogue-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0}
+.analogue-cell{padding:15px 16px;border-right:1px solid #2b3a51;min-width:0}
+.analogue-cell:last-child{border-right:0}
+.analogue-cell span{color:#94a9c2;font-size:9px;letter-spacing:.07em;font-weight:750}
+.analogue-cell strong{display:block;font-size:clamp(15px,1.6vw,22px);margin:9px 0 4px;color:#d1e4ff;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.analogue-cell small{display:block;color:#8fa4bf;font-size:10px;line-height:1.4}
+.analogue-cell.result strong{color:#b6e4c9}
+@media(max-width:1050px){.analogue-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.analogue-cell:nth-child(2){border-right:0}.analogue-cell:nth-child(-n+2){border-bottom:1px solid #293a51}}
+@media(max-width:550px){.analogue-grid{grid-template-columns:1fr}.analogue-cell{border-right:0!important;border-bottom:1px solid #293a51}.analogue-cell:last-child{border-bottom:0}}
