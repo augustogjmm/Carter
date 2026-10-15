@@ -37,3 +37,13 @@
 .activation-foot span:first-child{color:#8ce2be;font-weight:800}
 @media(max-width:1000px){.scenario-strip{grid-template-columns:1fr 1fr}.scenario-item:last-child{grid-column:1/-1}}
 @media(max-width:650px){.scenario-strip{grid-template-columns:1fr}.scenario-item:last-child{grid-column:auto}.scenario-value{font-size:21px}.projection-label{margin:10px 10px 0}}
+
+/* v0.4 · Conditional payoffs */
+.payoff-section{margin:14px 0}
+.payoff-content{padding:0 15px 5px;overflow-x:auto}
+.payoff-table{width:100%;border-collapse:collapse;min-width:710px}
+.payoff-table th{text-align:left;font-size:10px;letter-spacing:.05em;color:#97abc2;padding:13px 11px;border-bottom:1px solid #354861;white-space:nowrap}
+.payoff-table td{padding:13px 11px;font-size:12px;color:#d2e2ef;border-bottom:1px solid #293a50;font-variant-numeric:tabular-nums;white-space:nowrap}
+.payoff-table td.green{color:#65eab7;font-weight:700}
+.payoff-table td.red{color:#ff9aab;font-weight:700}
+.payoff-table tbody tr:last-child td{border-bottom:0}
