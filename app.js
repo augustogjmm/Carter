@@ -23,6 +23,26 @@ const map=new Map();for(let page of pages)for(let r of page){let b=candle(r);map
 }
 function profileDays(){return Math.max(14,Math.min(90,Number($('profileDays').value)||30));}
 async function fetchVolume(pair,signal){let count=profileDays()*24+2;const rows=await fetchRange(pair,'1h',count,signal);if(rows.length<72)throw new Error('No hay suficientes velas 1H para el perfil');return rows;}
+async function updateProfile(signal){
+const resolution=$('vpResolution').value;
+if(resolution==='4h'){
+ S.profile=CE.volumeProfile(S.c.slice(-profileDays()*6));
+ S.profileSource='4H · misma temporalidad';
+}else{
+ try{
+   const rows=await fetchVolume(S.pair,signal);
+   S.profile=CE.volumeProfile(rows);
+   S.profileSource='1H · únicamente detalle del perfil';
+ }catch(e){
+   if(e.name==='AbortError')throw e;
+   S.profile=CE.volumeProfile(S.c.slice(-profileDays()*6));
+   S.profileSource='4H · respaldo (falló fuente 1H)';
+   error('No se pudo obtener el detalle 1H del perfil. Las señales siguen siendo 4H. '+e.message);
+ }
+}
+label('profileMethod',S.profileSource.startsWith('1H')?'1H (solo perfil)':'4H');
+S.lastProfile=Date.now();
+}
 function closeFeeds(){if(S.controller){S.controller.abort();S.controller=null;}if(S.poller){clearInterval(S.poller);S.poller=null;}if(S.ws){try{S.ws.onclose=null;S.ws.close();}catch(_){}S.ws=null;}}
 function applyLatest(rows){let map=new Map(S.c.map(x=>[x.t,x]));for(let b of rows){if(b.closed)map.set(b.t,b);else S.forming=b;}let oldLast=S.c.at(-1)?.t;S.c=Array.from(map.values()).sort((a,b)=>a.t-b.t).slice(-MAX_4H);return oldLast!==S.c.at(-1)?.t;}
 async function load(pair){
@@ -39,9 +59,9 @@ const candles=await fetchRange(pair,'4h',MAX_4H,controller.signal);
 if(id!==S.loadId)return;
 S.c=candles.filter(x=>x.closed);S.forming=candles.find(x=>!x.closed)||null;if(S.c.length<220)throw new Error('El par necesita al menos 220 velas 4H cerradas para EMA200 y Carter.');
 S.quoteAt=Date.now();S.source='REST 4H';compute();
-status('Calculando perfil 1H','');
-try{const vpRows=await fetchVolume(pair,controller.signal);if(id!==S.loadId)return;S.profile=CE.volumeProfile(vpRows);S.profileSource='1H estimado';S.lastProfile=Date.now();}
-catch(e){if(e.name==='AbortError')throw e;S.profile=CE.volumeProfile(S.c.slice(-profileDays()*6));S.profileSource='4H estimado · respaldo';S.lastProfile=Date.now();error('Sin histórico 1H: se usa perfil aproximado de 4H. '+e.message);}
+status('Calculando perfil '+$('vpResolution').value.toUpperCase()+' (operación 4H)','');
+await updateProfile(controller.signal);
+if(id!==S.loadId)return;
 compute();status('Datos REST actualizados','ok');subscribe(id);
 }catch(e){if(e.name==='AbortError')return;status('DATOS NO DISPONIBLES','err');error(e.message);S.c=[];S.profile=null;S.plan=null;redraw();}
 finally{if(id===S.loadId){S.busy=false;$('analyze').disabled=false;S.controller=null;}}
@@ -95,14 +115,14 @@ $('decisionCard').className='decision '+cls;label('decisionTitle',title);label('
 function subscribe(id){
 try{let ws=new WebSocket('wss://stream.binance.com:9443/ws/'+S.pair.toLowerCase()+'@kline_4h');S.ws=ws;
 ws.onopen=()=>{if(id===S.loadId)status('Binance en vivo','ok');};
-ws.onmessage=e=>{if(id!==S.loadId)return;let o;try{o=JSON.parse(e.data).k;}catch(_){return;}if(!o)return;let b={t:+o.t,o:+o.o,h:+o.h,l:+o.l,c:+o.c,v:+o.v,closed:!!o.x};if(o.x){let pos=S.c.findIndex(x=>x.t===b.t);if(pos>=0)S.c[pos]=b;else if(b.t>S.c.at(-1).t)S.c.push(b);S.c=S.c.slice(-MAX_4H);S.forming=null;S.quoteAt=Date.now();S.source='WebSocket';compute();}else{S.forming=b;S.quoteAt=Date.now();S.source='WebSocket';refresh();}};
+ws.onmessage=e=>{if(id!==S.loadId)return;let o;try{o=JSON.parse(e.data).k;}catch(_){return;}if(!o)return;let b={t:+o.t,o:+o.o,h:+o.h,l:+o.l,c:+o.c,v:+o.v,closed:!!o.x};if(o.x){let pos=S.c.findIndex(x=>x.t===b.t);if(pos>=0)S.c[pos]=b;else if(b.t>S.c.at(-1).t)S.c.push(b);S.c=S.c.slice(-MAX_4H);S.forming=null;S.quoteAt=Date.now();S.source='WebSocket';if($('vpResolution').value==='4h'){S.profile=CE.volumeProfile(S.c.slice(-profileDays()*6));S.lastProfile=Date.now();}compute();}else{S.forming=b;S.quoteAt=Date.now();S.source='WebSocket';refresh();}};
 ws.onclose=()=>{if(id===S.loadId){S.ws=null;status('REST · reconectando','');}};
 ws.onerror=()=>{try{ws.close();}catch(_){}};
 }catch(e){status('REST · sin WebSocket','');}
 S.poller=setInterval(async()=>{
 if(id!==S.loadId)return;
 try{let bars=(await api('/api/v3/klines?symbol='+encodeURIComponent(S.pair)+'&interval=4h&limit=4')).map(candle);const changed=applyLatest(bars);S.quoteAt=Date.now();S.source='REST';if(changed)compute();else refresh();if(!S.ws||S.ws.readyState!==1)status('REST actualizado','ok');
-if(Date.now()-S.lastProfile>10*60000){try{const rows=await fetchVolume(S.pair);S.profile=CE.volumeProfile(rows);S.profileSource='1H estimado';S.lastProfile=Date.now();refresh();}catch(_){}}
+if(Date.now()-S.lastProfile>10*60000){try{await updateProfile();refresh();}catch(_){}}
 }catch(e){if(!S.ws||S.ws.readyState!==1)status('Sin datos recientes','err');}
 },90000);
 }
@@ -158,6 +178,7 @@ $('analyze').addEventListener('click',()=>load($('symbol').value));
 $('symbol').addEventListener('keydown',e=>{if(e.key==='Enter')load($('symbol').value);});
 document.querySelectorAll('[data-pair]').forEach(b=>b.addEventListener('click',()=>{$('symbol').value=b.dataset.pair;load(b.dataset.pair);}));
 $('profileDays').addEventListener('change',()=>load(S.pair));
+$('vpResolution').addEventListener('change',()=>load(S.pair));
 for(let id of ['adxEnabled','adxMin'])$(id).addEventListener('change',()=>compute());
 for(let id of ['emaVisible','bandsVisible','vpVisible','planVisible'])$(id).addEventListener('change',redraw);
 for(let id of ['capital','riskPct'])$(id).addEventListener('input',refresh);
