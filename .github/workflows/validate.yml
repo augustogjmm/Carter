@@ -37,10 +37,37 @@ jobs:
           assert(vp.poc >= vp.low && vp.poc <= vp.high);
           const p=e.tradePlan(candles,s,vp,candles[last].c,false,1000,1);
           assert(p===null || Array.isArray(p.entries));
+          assert(typeof e.projectScenarios === 'function');
+          const forecast=e.projectScenarios(candles,s,vp,p,candles[last].c);
+          assert(forecast && Array.isArray(forecast.recoveryPath));
+          assert(Array.isArray(forecast.downPath));
+          assert(Array.isArray(forecast.breakoutPath));
+          assert(forecast.disclaimer.includes('NO representan probabilidades'));
+          if(p && p.entries && p.entries.length){
+            assert(Array.isArray(p.stages));
+            assert.equal(p.stages.length,p.entries.length);
+            p.stages.forEach((stage,n)=>{
+              assert.equal(stage.fills,n+1);
+              assert(Number.isFinite(stage.average));
+              assert(Number.isFinite(stage.loss));
+            });
+          }
+          const testPlan={
+            entries:[{price:105},{price:100},{price:95}],
+            stop:90,target:{price:125}
+          };
+          const projection=e.projectScenarios(candles,s,vp,testPlan,110);
+          assert.equal(projection.entries.length,3);
+          assert.equal(projection.recoveryPath.at(-1).price,125);
+          assert.equal(projection.downPath.at(-1).price,90);
+          assert(projection.zone.min<projection.zone.max);
           const html=fs.readFileSync('index.html','utf8');
           const app=fs.readFileSync('app.js','utf8');
           assert(html.includes('<script src="engine.js"></script>'));
           assert(html.includes('<script src="app.js"></script>'));
+          for(const id of ['forecastPullback','forecastContinuation','forecastFailure','stageRows','entryChecklist','forecastStatus']) {
+            assert(html.includes('id="'+id+'"'), 'Missing prospective UI: '+id);
+          }
           for (const m of app.matchAll(/\$\('([^']+)'\)/g)) {
             assert(html.includes('id="'+m[1]+'"'),'Missing HTML ID '+m[1]);
           }
