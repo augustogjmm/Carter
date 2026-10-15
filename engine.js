@@ -30,9 +30,11 @@ let uniq=[];for(let h of hvns){if(uniq.every(x=>Math.abs(x.price-h.price)>3*step
 return{low,high,step,vol,total,poc:low+(pocIndex+.5)*step,vah:low+(z+1)*step,val:low+a*step,hvns:uniq,first:c[0].t,last:c[c.length-1].t,candles:c.length};
 }
 function pivotLevels(c,period=160){let lows=[],highs=[],from=Math.max(2,c.length-period);for(let i=from;i<c.length-2;i++){let lo=c[i].l,hi=c[i].h;if(lo<c[i-1].l&&lo<=c[i-2].l&&lo<c[i+1].l&&lo<=c[i+2].l)lows.push({price:lo,source:'Mínimo 4H confirmado'});if(hi>c[i-1].h&&hi>=c[i-2].h&&hi>c[i+1].h&&hi>=c[i+2].h)highs.push({price:hi,source:'Máximo 4H confirmado'});}return{lows,highs};}
-function tradePlan(c,s,vp,quote,fresh,capital=1000,riskPct=1){
+function tradePlan(c,s,vp,quote,fresh,capital=1000,riskPct=1,useADX=true){
 if(!c.length||!vp)return null;let i=c.length-1,at=s.at[i],b=c[i],price=finite(quote)?quote:b.c;
 if(!finite(at)||at<=0||!finite(s.ema200[i]))return null;
+const longContext=!!s.trend[i]&&!!s.momentumOK[i]&&(!useADX||!!s.adxOK[i]);
+if(!longContext)return {entries:[],stages:[],ready:false,blocked:true,reason:'Long bloqueado: la tendencia 4H, el momentum o la direccionalidad ADX/DI no acompañan. No se prepara una compra contra tendencia.',quote:price,atr:at};
 let piv=pivotLevels(c),supports=[{price:vp.val,source:'VAL · volumen'},{price:vp.poc,source:'POC · volumen'},{price:s.ema55[i],source:'EMA55 · soporte dinámico'},{price:s.bbL[i],source:'Bollinger inferior'},...vp.hvns.map(x=>({price:x.price,source:'HVN · volumen'})),...piv.lows,...[{price:Math.min(...c.slice(-20).map(x=>x.l)),source:'Mínimo 20 velas'}]];
 supports=supports.filter(x=>finite(x.price)&&x.price>0&&x.price<price-.12*at&&x.price>price-9*at).sort((a,b)=>b.price-a.price);
 let unique=[];for(let x of supports){if(unique.every(y=>Math.abs(x.price-y.price)>.42*at))unique.push(x);}
@@ -89,13 +91,29 @@ const resistance=[
 const barrier=resistance[0]||null;
 const entries=plan?.entries||[];
 const first=entries[0]||null;
-const invalidation=finite(plan?.stop)&&plan.stop>0?plan.stop:null;
+const marketMode=plan?.blocked?'bearish':'bullish';
+const pivLows=[
+ {price:vp.val,source:'VAL · volumen'},
+ {price:vp.poc,source:'POC · volumen'},
+ {price:s.ema55[i],source:'EMA55'},
+ {price:s.bbL[i],source:'Bollinger inferior'},
+ ...vp.hvns.map(x=>({price:x.price,source:'Nodo de volumen'})),
+ ...piv.lows,{price:Math.min(...c.slice(-20).map(x=>x.l)),source:'Mínimo últimas 20 velas'}
+ ].filter(x=>finite(x.price)&&x.price>0&&x.price<price-.12*at&&x.price>price-10*at).sort((a,b)=>b.price-a.price);
+ const supportSteps=[];
+ for(const x of pivLows){if(supportSteps.every(y=>Math.abs(y.price-x.price)>=.5*at))supportSteps.push(x);if(supportSteps.length>=2)break;}
+ const downside=supportSteps[0]||null;
+const invalidation=marketMode==='bullish'&&finite(plan?.stop)&&plan.stop>0?plan.stop:null;
 const target=plan?.target||null;
 const zone=first?{min:Math.max(0,first.price-.2*at),max:first.price+.2*at}:null;
 const upside=target||barrier;
 const downPath=[{step:0,price,label:'Ahora'}];
-if(first)downPath.push({step:1,price:first.price,label:'E1'});
-for(let j=1;j<entries.length;j++)downPath.push({step:j+1,price:entries[j].price,label:'E'+(j+1)});
+if(marketMode==='bearish'){
+ for(let j=0;j<supportSteps.length;j++)downPath.push({step:Math.min(4,(j+1)*2),price:supportSteps[j].price,label:'Soporte '+(j+1)});
+}else{
+ if(first)downPath.push({step:1,price:first.price,label:'E1'});
+ for(let j=1;j<entries.length;j++)downPath.push({step:j+1,price:entries[j].price,label:'E'+(j+1)});
+}
 if(invalidation)downPath.push({step:Math.max(3,entries.length+1),price:invalidation,label:'Invalidación'});
 const recoveryPath=first&&upside?[
  {step:0,price,label:'Ahora'},
@@ -108,7 +126,7 @@ const breakoutPath=upside?[
  {step:4,price:upside.price,label:target?'TP técnico':'Primera resistencia'}
 ]:[];
 return{
- price,at,barrier,upside,zone,target,invalidation,
+ price,at,barrier,upside,zone,target,invalidation,marketMode,downside,supportSteps,
  recoveryPath,downPath,breakoutPath,
  entries:entries.map((e,j)=>({...e,index:j+1,zoneMin:Math.max(0,e.price-.2*at),zoneMax:e.price+.2*at})),
  trendAligned:!!s.trend[i],adxOK:!!s.adxOK[i],momentumOK:!!s.momentumOK[i],
@@ -162,8 +180,9 @@ function empiricalProjection(c,s,forecast,horizons=[6,12,24]){
  });
  // Frecuencia de PRIMER evento, desde precio actual. No incluye ejecución de E1.
  let outcomes=null;
- if(forecast?.upside?.price>current&&forecast?.invalidation>0&&forecast.invalidation<current){
-  const upATR=(forecast.upside.price-current)/at,downATR=(forecast.invalidation-current)/at;
+ const lowerBarrier=forecast?.marketMode==='bearish'?forecast?.downside?.price:forecast?.invalidation;
+ if(forecast?.upside?.price>current&&lowerBarrier>0&&lowerBarrier<current){
+  const upATR=(forecast.upside.price-current)/at,downATR=(lowerBarrier-current)/at;
   let upFirst=0,downFirst=0,ambiguous=0,none=0;
   for(const i of samples){
    let outcome='none',base=c[i].c,localAtr=s.at[i];
@@ -179,7 +198,7 @@ function empiricalProjection(c,s,forecast,horizons=[6,12,24]){
    else if(outcome==='ambiguous')ambiguous++;
    else none++;
   }
-  outcomes={upFirst,downFirst,ambiguous,none,total:samples.length,barrier:forecast.upside.price,stop:forecast.invalidation,horizon:maxH};
+  outcomes={upFirst,downFirst,ambiguous,none,total:samples.length,barrier:forecast.upside.price,stop:lowerBarrier,horizon:maxH,lowerType:forecast.marketMode==='bearish'?'support':'stop'};
  }
  return{valid:true,sampleSize:samples.length,matching:keys,horizons:periods,outcomes,
   explanation:'Cuantiles históricos 10/50/90 de cierres futuros; condiciones similares: '+keys.join(', ')+'. Muestras solapadas, no calibradas ni independientes.'};
