@@ -1,4 +1,4 @@
-# Carter 4H · Analizer operativo v0.5
+# Carter 4H · Analizer operativo v0.5.1
 
 Aplicación estática: https://carter-rust.vercel.app . Conectada al repositorio y desplegada automáticamente por Vercel desde la rama main.
 
@@ -18,6 +18,14 @@ Con hasta 2000 velas cerradas 4H se buscan regímenes históricos parecidos (ten
 - Número de casos comparables y circunstancias de comparación.
 
 Limitaciones: son muestras **solapadas**, no independientes, y el modelo no está validado fuera de muestra. No son probabilidades calibradas de ganancias ni de ejecución; no deben usarse para dimensionar operaciones, ni como promesa de dirección futura. La proyección cuantitativa es distinta de los caminos estructurales condicionales ilustrados en el gráfico.
+
+## Señales bloqueadas por régimen de mercado (v0.5.1)
+
+Si las velas cerradas 4H no confirman tendencia alcista + momentum positivo creciente + filtro ADX (cuando está activado), el modelo **no construye órdenes Long** ni niveles E1/E2/E3 como compras. En esos casos el gráfico conserva el estudio prospectivo de soportes, resistencias y rangos históricos como observación de mercado. Distingue mercado bajista (DI− dominante y momentum negativo) de rango/no confirmación. El panel advierte **NO COMPRAR**.
+
+Los niveles no se transforman en compras solo por caer a un soporte. El nuevo Long necesita un disparador Carter 4H auténtico (Squeeze ON → OFF, EMA alineadas, momentum positivo creciente y ADX/DI si habilitado), TP en resistencia observable y riesgo justificado. En mercados bajistas, la comparación cuantitativa de hit-rate utiliza resistencia contra soporte (no TP/SL de una compra no existente).
+
+Las verificaciones de conectividad de SOLUSDT y BTCUSDT se realizaron en navegador sobre la versión anterior v0.5 (Binance REST funcional). La corrección v0.5.1 se validó con pruebas automáticas y despliegue READY, pero su ejecución en navegador no fue repetida desde este entorno.
 
 ## Cómo funciona
 
