@@ -3,8 +3,8 @@
 const $=id=>document.getElementById(id);
 const CE=window.CarterEngine;
 const API=['https://data-api.binance.vision','https://api.binance.com','https://api1.binance.com','https://api2.binance.com'];
-const BAR=14400000,MAX_4H=2000;
-const S={pair:'SOLUSDT',quoteAsset:'USDT',baseAsset:'SOL',precision:4,c:[],forming:null,s:null,profile:null,profileSource:'',plan:null,forecast:null,empirical:null,quoteAt:0,source:'',loadId:0,controller:null,ws:null,poller:null,lastProfile:0,offset:0,view:140,drag:null,hover:-1,busy:false};
+const BAR=14400000,MAX_4H=4800;
+const S={pair:'SOLUSDT',quoteAsset:'USDT',baseAsset:'SOL',precision:4,c:[],forming:null,s:null,profile:null,profileSource:'',plan:null,forecast:null,empirical:null,audit:null,quoteAt:0,source:'',loadId:0,controller:null,ws:null,poller:null,lastProfile:0,offset:0,view:140,drag:null,hover:-1,busy:false};
 const fmt=(p,n=S.precision)=>Number.isFinite(p)?Number(p).toLocaleString('en-US',{minimumFractionDigits:Math.min(n,8),maximumFractionDigits:Math.min(n,8)}):'—';
 const f2=p=>Number.isFinite(p)?p.toFixed(2):'—';
 const date=t=>new Intl.DateTimeFormat('es-AR',{timeZone:'America/Argentina/Buenos_Aires',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date(t));
@@ -47,7 +47,7 @@ function closeFeeds(){if(S.controller){S.controller.abort();S.controller=null;}i
 function applyLatest(rows){let map=new Map(S.c.map(x=>[x.t,x]));for(let b of rows){if(b.closed)map.set(b.t,b);else S.forming=b;}let oldLast=S.c.at(-1)?.t;S.c=Array.from(map.values()).sort((a,b)=>a.t-b.t).slice(-MAX_4H);return oldLast!==S.c.at(-1)?.t;}
 async function load(pair){
 pair=norm(pair);if(!pair){error('Ingresá un par de Binance Spot, por ejemplo BTCUSDT.');return;}
-const id=++S.loadId;closeFeeds();S.busy=true;S.c=[];S.s=null;S.forming=null;S.profile=null;S.plan=null;S.forecast=null;S.empirical=null;S.pair=pair;S.offset=0;S.view=140;S.quoteAt=0;S.source='';$('symbol').value=pair;$('analyze').disabled=true;error('');status('Validando '+pair,'');redraw();
+const id=++S.loadId;closeFeeds();S.busy=true;S.c=[];S.s=null;S.forming=null;S.profile=null;S.plan=null;S.forecast=null;S.empirical=null;S.audit=null;S.pair=pair;S.offset=0;S.view=140;S.quoteAt=0;S.source='';$('symbol').value=pair;$('analyze').disabled=true;error('');status('Validando '+pair,'');redraw();
 const controller=new AbortController();S.controller=controller;
 try{
 const info=await api('/api/v3/exchangeInfo?symbol='+encodeURIComponent(pair),controller.signal);
@@ -59,6 +59,7 @@ const candles=await fetchRange(pair,'4h',MAX_4H,controller.signal);
 if(id!==S.loadId)return;
 S.c=candles.filter(x=>x.closed);S.forming=candles.find(x=>!x.closed)||null;if(S.c.length<220)throw new Error('El par necesita al menos 220 velas 4H cerradas para EMA200 y Carter.');
 S.quoteAt=Date.now();S.source='REST 4H';compute();
+runAudit();
 status('Calculando perfil '+$('vpResolution').value.toUpperCase()+' (operación 4H)','');
 await updateProfile(controller.signal);
 if(id!==S.loadId)return;
@@ -184,6 +185,49 @@ if(f.invalidation){
  label('forecastFailure','SIN STOP');
  label('forecastFailureRule','El soporte inferior no permite construir una invalidación coherente. No activar entradas.');
 }
+}
+function runAudit(){
+if(!S.c.length||!S.s||!window.CarterAudit)return;
+try{S.audit=window.CarterAudit.run(S.c,S.s,$('adxEnabled').checked);showAudit();}
+catch(e){S.audit=null;label('auditVerdict','ERROR DE PRUEBA');label('auditMessage','La auditoría histórica falló: '+e.message);label('auditRows','Revisar la auditoría.');}
+}
+function auditN(v){return Number.isFinite(v)?v.toFixed(2):'—';}
+function showAudit(){
+const a=S.audit;
+if(!a?.valid){
+ label('auditVerdict','SIN EVIDENCIA');
+ label('auditMessage',a?.reason||'No se pudo evaluar el histórico de velas 4H.');
+ return;
+}
+const formatSplit=t=>new Date(t).toLocaleDateString('es-AR',{timeZone:'UTC',day:'2-digit',month:'short',year:'2-digit'});
+label('auditRange',S.c.length+' velas cerradas 4H · '+formatSplit(a.from)+' a '+formatSplit(a.to)+' · Test desde '+formatSplit(a.periodStartTest));
+const out=a.models.map(x=>x.test);
+const sufficientlySampled=out.filter(x=>x.adequate);
+const profitable=sufficientlySampled.filter(x=>x.meanR>0&&x.pf>1&&x.maxDDR<Math.max(12,x.n*.35));
+const allNegative=out.every(x=>!x.n||x.meanR<=0);
+let verdict='EVIDENCIA INSUFICIENTE',desc='Ningún modelo tiene 30 operaciones independientes de señal en el período de prueba. No existe base estadística para elegir un ganador.',cls='';
+if(sufficientlySampled.length){
+ if(profitable.length){
+  verdict='VENTAJA EXPLORATORIA';
+  desc=profitable.map(x=>{const m=a.models.find(m=>m.test===x);return m.name;}).join(', ')+': media positiva fuera de muestra y PF >1. Requiere validación en otros activos y períodos, sin ajustar parámetros mirando el test.';cls='good';
+ }else{
+  verdict='NO HAY VENTAJA PROBADA';desc='Con las muestras suficientes no hay rentabilidad positiva y PF >1 simultáneos. No corresponde considerar Carter validado para operar.';cls='bad';
+ }
+}else if(allNegative){desc='El período de prueba no aporta muestra suficiente y, además, los modelos no muestran un promedio positivo por operación.';}
+label('auditVerdict',verdict);$('auditVerdict').className=cls;label('auditMessage',desc);
+$('auditRows').innerHTML=a.models.map(m=>{
+ const x=m.train,t=m.test,quality=t.adequate?'Muestra ≥ 30':'MUESTRA PEQUEÑA';
+ const positive=t.n>=30&&t.meanR>0&&t.pf>1;
+ return '<tr>'+
+ '<td><strong>'+m.name+'</strong><small>'+m.detail+'</small></td>'+
+ '<td>'+x.n+' / '+auditN(x.pf)+' / '+(x.totalR===null?'—':auditN(x.totalR))+'R</td>'+
+ '<td class="'+(t.n<30?'uncertain':'')+'">'+t.n+'<small>'+quality+' · '+t.skipped+' rechazadas</small></td>'+
+ '<td>'+(!t.n?'—':(100*t.winrate).toFixed(1)+'%')+'</td>'+
+ '<td class="'+(t.n>=30?(t.pf>1?'positive':'negative'):'uncertain')+'">'+auditN(t.pf)+'</td>'+
+ '<td class="'+(t.n>=30?(positive?'positive':'negative'):'uncertain')+'">'+(t.meanR===null?'—':auditN(t.meanR)+'R')+'</td>'+
+ '<td>'+auditN(t.maxDDR)+'R</td>'+
+ '</tr>';
+}).join('');
 }
 function showEmpirical(){
 const e=S.empirical;
@@ -362,7 +406,7 @@ $('symbol').addEventListener('keydown',e=>{if(e.key==='Enter')load($('symbol').v
 document.querySelectorAll('[data-pair]').forEach(b=>b.addEventListener('click',()=>{$('symbol').value=b.dataset.pair;load(b.dataset.pair);}));
 $('profileDays').addEventListener('change',()=>load(S.pair));
 $('vpResolution').addEventListener('change',()=>load(S.pair));
-for(let id of ['adxEnabled','adxMin'])$(id).addEventListener('change',()=>compute());
+for(let id of ['adxEnabled','adxMin'])$(id).addEventListener('change',()=>{compute();runAudit();});
 for(let id of ['emaVisible','bandsVisible','vpVisible','planVisible'])$(id).addEventListener('change',redraw);
 for(let id of ['capital','riskPct'])$(id).addEventListener('input',refresh);
 setInterval(()=>{if(S.c.length){refresh();}},15000);
