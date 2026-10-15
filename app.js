@@ -27,7 +27,7 @@ function closeFeeds(){if(S.controller){S.controller.abort();S.controller=null;}i
 function applyLatest(rows){let map=new Map(S.c.map(x=>[x.t,x]));for(let b of rows){if(b.closed)map.set(b.t,b);else S.forming=b;}let oldLast=S.c.at(-1)?.t;S.c=Array.from(map.values()).sort((a,b)=>a.t-b.t).slice(-MAX_4H);return oldLast!==S.c.at(-1)?.t;}
 async function load(pair){
 pair=norm(pair);if(!pair){error('Ingresá un par de Binance Spot, por ejemplo BTCUSDT.');return;}
-const id=++S.loadId;closeFeeds();S.busy=true;S.c=[];S.s=null;S.forming=null;S.profile=null;S.plan=null;S.pair=pair;S.offset=0;S.view=140;S.quoteAt=0;S.source='';label('symbol',pair);$('analyze').disabled=true;error('');status('Validando '+pair,'');redraw();
+const id=++S.loadId;closeFeeds();S.busy=true;S.c=[];S.s=null;S.forming=null;S.profile=null;S.plan=null;S.pair=pair;S.offset=0;S.view=140;S.quoteAt=0;S.source='';$('symbol').value=pair;$('analyze').disabled=true;error('');status('Validando '+pair,'');redraw();
 const controller=new AbortController();S.controller=controller;
 try{
 const info=await api('/api/v3/exchangeInfo?symbol='+encodeURIComponent(pair),controller.signal);
