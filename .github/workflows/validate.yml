@@ -14,6 +14,7 @@ jobs:
         run: |
           node --check engine.js
           node --check app.js
+          node --check research.js
       - name: Indicator and volume-profile smoke test
         run: |
           node <<'JS'
@@ -82,11 +83,26 @@ jobs:
           assert.equal(projection.recoveryPath.at(-1).price,125);
           assert.equal(projection.downPath.at(-1).price,90);
           assert(projection.zone.min<projection.zone.max);
+          vm.runInNewContext(fs.readFileSync('research.js','utf8'),context);
+          assert(context.window.CarterAudit && context.window.CarterAudit.run);
+          const audit=context.window.CarterAudit.run(candles,s,false);
+          assert.equal(audit.valid,true);
+          assert.equal(audit.models.length,3);
+          for(const model of audit.models){
+            assert(Number.isInteger(model.train.n));
+            assert(Number.isInteger(model.test.n));
+            assert(model.train.n>=0 && model.test.n>=0);
+            assert(Number.isFinite(model.train.maxDDR));
+            assert(Number.isFinite(model.test.maxDDR));
+          }
+          assert.equal(audit.horizonBars,24);
+          assert.equal(audit.feesPct,0.2);
           const html=fs.readFileSync('index.html','utf8');
           const app=fs.readFileSync('app.js','utf8');
           assert(html.includes('<script src="engine.js"></script>'));
           assert(html.includes('<script src="app.js"></script>'));
-          for(const id of ['forecastPullback','forecastContinuation','forecastFailure','stageRows','entryChecklist','forecastStatus','emp24','emp48','emp96','empEvents','analogueCount','analogueNote']) {
+          assert(html.includes('<script src="research.js"></script>'));
+          for(const id of ['forecastPullback','forecastContinuation','forecastFailure','stageRows','entryChecklist','forecastStatus','emp24','emp48','emp96','empEvents','analogueCount','analogueNote','auditRows','auditVerdict','auditMessage','auditRange','auditNotes']) {
             assert(html.includes('id="'+id+'"'), 'Missing prospective UI: '+id);
           }
           for (const m of app.matchAll(/\$\('([^']+)'\)/g)) {
