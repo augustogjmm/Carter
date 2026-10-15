@@ -4,7 +4,7 @@ const $=id=>document.getElementById(id);
 const CE=window.CarterEngine;
 const API=['https://data-api.binance.vision','https://api.binance.com','https://api1.binance.com','https://api2.binance.com'];
 const BAR=14400000,MAX_4H=2000;
-const S={pair:'SOLUSDT',quoteAsset:'USDT',baseAsset:'SOL',precision:4,c:[],forming:null,s:null,profile:null,profileSource:'',plan:null,quoteAt:0,source:'',loadId:0,controller:null,ws:null,poller:null,lastProfile:0,offset:0,view:140,drag:null,hover:-1,busy:false};
+const S={pair:'SOLUSDT',quoteAsset:'USDT',baseAsset:'SOL',precision:4,c:[],forming:null,s:null,profile:null,profileSource:'',plan:null,forecast:null,quoteAt:0,source:'',loadId:0,controller:null,ws:null,poller:null,lastProfile:0,offset:0,view:140,drag:null,hover:-1,busy:false};
 const fmt=(p,n=S.precision)=>Number.isFinite(p)?Number(p).toLocaleString('en-US',{minimumFractionDigits:Math.min(n,8),maximumFractionDigits:Math.min(n,8)}):'—';
 const f2=p=>Number.isFinite(p)?p.toFixed(2):'—';
 const date=t=>new Intl.DateTimeFormat('es-AR',{timeZone:'America/Argentina/Buenos_Aires',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date(t));
@@ -47,7 +47,7 @@ function closeFeeds(){if(S.controller){S.controller.abort();S.controller=null;}i
 function applyLatest(rows){let map=new Map(S.c.map(x=>[x.t,x]));for(let b of rows){if(b.closed)map.set(b.t,b);else S.forming=b;}let oldLast=S.c.at(-1)?.t;S.c=Array.from(map.values()).sort((a,b)=>a.t-b.t).slice(-MAX_4H);return oldLast!==S.c.at(-1)?.t;}
 async function load(pair){
 pair=norm(pair);if(!pair){error('Ingresá un par de Binance Spot, por ejemplo BTCUSDT.');return;}
-const id=++S.loadId;closeFeeds();S.busy=true;S.c=[];S.s=null;S.forming=null;S.profile=null;S.plan=null;S.pair=pair;S.offset=0;S.view=140;S.quoteAt=0;S.source='';$('symbol').value=pair;$('analyze').disabled=true;error('');status('Validando '+pair,'');redraw();
+const id=++S.loadId;closeFeeds();S.busy=true;S.c=[];S.s=null;S.forming=null;S.profile=null;S.plan=null;S.forecast=null;S.pair=pair;S.offset=0;S.view=140;S.quoteAt=0;S.source='';$('symbol').value=pair;$('analyze').disabled=true;error('');status('Validando '+pair,'');redraw();
 const controller=new AbortController();S.controller=controller;
 try{
 const info=await api('/api/v3/exchangeInfo?symbol='+encodeURIComponent(pair),controller.signal);
@@ -70,6 +70,7 @@ function compute(){if(S.c.length<220)return;S.s=CE.indicators(S.c,Number($('adxM
 function current(){return S.forming?.c??S.c.at(-1)?.c??null;}
 function executable(){if(!S.s||!S.c.length)return false;let i=S.c.length-1,last=S.c[i],forming=S.forming,age=Date.now()-(last.t+BAR),at=S.s.at[i];return !!S.s.signal[i]&&forming?.t===last.t+BAR&&age>=0&&age<=10*60000&&Number.isFinite(at)&&Math.abs(forming.c-forming.o)<=.25*at&&Date.now()-S.quoteAt<=120000;}
 function refresh(){if(!S.s||!S.c.length)return;let i=S.c.length-1,b=S.c[i],c=S.s,px=current();S.plan=CE.tradePlan(S.c,c,S.profile,px,executable(),Number($('capital').value)||0,Number($('riskPct').value)||0);
+S.forecast=CE.projectScenarios(S.c,c,S.profile,S.plan,px);
 label('chartTitle',S.pair+' · Binance Spot · 4H');
 label('chartData',S.c.length.toLocaleString('es-AR')+' velas cerradas · '+date(S.c[0].t)+' — '+date(b.t+BAR));
 label('lastPrice',fmt(px));label('priceState',(S.forming?'4H en formación':'Última 4H cerrada')+' · '+S.source);
@@ -82,11 +83,15 @@ let cond=[['EMA10 > EMA55 > EMA200 y cierre > EMA10',c.trend[i]],['Squeeze ON �
 $('conditions').innerHTML=cond.map(x=>'<div class="condition"><span>'+x[0]+'</span><em class="'+(x[1]?'ok':'no')+'">'+(x[1]?'CONFIRMADO':'NO')+'</em></div>').join('');
 if(S.profile){label('poc',fmt(S.profile.poc));label('vah',fmt(S.profile.vah));label('val',fmt(S.profile.val));label('vpWindow',profileDays()+' días · '+S.profile.candles+' velas');label('vpStatus',S.profileSource);}
 else{for(let k of ['poc','vah','val','vpWindow'])label(k,'—');label('vpStatus','CARGANDO');}
-showPlan();showDecision();redraw();
+showPlan();showForecast();showDecision();redraw();
 }
 function showPlan(){
 let p=S.plan,entries=p?.entries||[];
-for(let j=0;j<3;j++){let e=entries[j];label('e'+(j+1),e?fmt(e.price):'—');label('e'+(j+1)+'Label',e?e.source+(j?' · reconfirmar':''):'Sin soporte independiente');}
+for(let j=0;j<3;j++){
+let e=entries[j];
+label('e'+(j+1),e?fmt(e.price):'—');
+label('e'+(j+1)+'Label',e?(e.source+(j?' · reconfirmar rebote 4H':' · esperar cierre 4H')):'Sin soporte independiente');
+}
 label('average',Number.isFinite(p?.avg)?fmt(p.avg):'—');label('stop',Number.isFinite(p?.stop)?fmt(p.stop):'—');
 label('takeProfit',p?.target?fmt(p.target.price):'SIN TP VÁLIDO');
 label('rrFirst',Number.isFinite(p?.rrFirst)?f2(p.rrFirst)+' : 1':'—');label('rrFull',Number.isFinite(p?.rrAvg)?f2(p.rrAvg)+' : 1':'—');
@@ -99,17 +104,76 @@ else if(p?.nearest)text+=' Primera resistencia observada: '+fmt(p.nearest.price)
 label('planSummary',text);
 label('warning',entries.length>1?'E2 y E3 son ZONAS CONDICIONALES, no compras automáticas. Antes de cada promedio debe repetirse una confirmación 4H y seguir vigente la estructura alcista. Si se pierde el stop, se cancela el plan.':'Sin señal validada, los niveles son referencias para esperar. No comprar un soporte solo por tocarlo.');
 }
+function showForecast(){
+const f=S.forecast,p=S.plan;
+if(!f){
+ label('forecastPullback','SIN ZONA');
+ label('forecastPullbackRule','Esperando un perfil válido para ubicar soporte. No inventar entradas.');
+ label('forecastContinuation','SIN OBJETIVO');
+ label('forecastContinuationRule','Sin resistencia identificada no hay TP justificable.');
+ label('forecastFailure','SIN NIVEL');
+ label('forecastFailureRule','Todavía no se determinó la invalidación.');
+ label('entryChecklist','No activar compras hasta disponer de una estructura 4H y niveles coherentes.');
+ label('forecastStatus','PLAN NO DISPONIBLE');
+ return;
+}
+let entry=f.entries[0],current=f.price;
+if(entry){
+ const pct=(entry.price/current-1)*100;
+ label('forecastPullback',fmt(entry.zoneMin)+' — '+fmt(entry.zoneMax));
+ label('forecastPullbackRule','Zona E1 '+fmt(entry.price)+' ('+(pct>=0?'+':'')+f2(pct)+'% desde precio). '+entry.source+'. Contactar la zona NO activa compra; esperar confirmación 4H.');
+ label('entryChecklist','Si el precio alcanza E1 ('+fmt(entry.zoneMin)+'–'+fmt(entry.zoneMax)+'), esperar una vela 4H cerrada recuperando '+fmt(entry.price)+', momentum girando al alza y estructura vigente'+($('adxEnabled').checked?', con ADX y +DI validando':'')+'. E2 y E3 requieren esa validación nuevamente. No activar por simple toque.');
+ label('forecastStatus',p?.ready?'E1 HABILITADA AHORA':'E1 FUTURA · ESPERAR CONFIRMACIÓN');
+}else{
+ label('forecastPullback','SIN SOPORTE');
+ label('forecastPullbackRule','No hay un soporte independiente cercano y justificable para E1.');
+ label('entryChecklist','Sin zona E1 estructural no se prepara una compra. Reevaluar tras el próximo cierre 4H.');
+ label('forecastStatus','NO HAY E1 PROPUESTA');
+}
+if(f.barrier){
+ const tp=f.target?' · TP válido':' · obstáculo previo';
+ label('forecastContinuation',fmt(f.barrier.price));
+ label('forecastContinuationRule','Primera resistencia: '+f.barrier.source+tp+'. Si no hay retroceso a E1, esperar una señal Carter 4H nueva, comprobar R/R y no perseguir precio.');
+}else{
+ label('forecastContinuation','SIN RESISTENCIA');
+ label('forecastContinuationRule','No se identifica un objetivo estructural superior. No asumir extensión alcista sin evidencia.');
+}
+if(f.invalidation){
+ label('forecastFailure',fmt(f.invalidation));
+ label('forecastFailureRule','Si cierra una 4H por debajo de esta invalidación, cancelar compras pendientes. No promediar por inercia.');
+}else{
+ label('forecastFailure','SIN STOP');
+ label('forecastFailureRule','El soporte inferior no permite construir una invalidación coherente. No activar entradas.');
+}
+}
 function showDecision(){
 if(!S.c.length||!S.s)return;let i=S.c.length-1,c=S.s,b=S.c[i],p=S.plan,now=Date.now(),next=b.t+2*BAR;if(next<=now)next=Math.ceil((now+1)/BAR)*BAR;
 let rem=Math.max(0,next-now),hh=Math.floor(rem/3600000),mm=Math.floor(rem%3600000/60000);
 label('nextBar',String(hh).padStart(2,'0')+'h '+String(mm).padStart(2,'0')+'m');label('signalTime',date(next)+' · Argentina');
 label('decisionTime','Último cierre: '+date(b.t+BAR)+' · AR');
-let title='NO ENTRAR',reason='Carter 4H no confirmó una compra reciente.',note='El plan de niveles es un escenario de espera, no una orden.',cls='bad';
-if(p?.ready){title='ENTRAR LONG';reason='Carter 4H confirmado, precio cercano a la apertura, datos frescos y TP estructural con R/R ≥ 1,5.';note='E1 '+fmt(p.entries[0].price)+' · TP '+fmt(p.target.price)+' · SL '+fmt(p.stop)+' · E2/E3 solo tras nueva confirmación.';cls='good';}
-else if(c.signal[i]){title='ESPERAR';reason=p?.target?'La señal Carter existió, pero su ventana operativa pasó o el precio se alejó.':'La señal existe pero no hay TP estructural que cumpla R/R ≥ 1,5.';note='No perseguir la vela. Usá E1/E2/E3 solo si vuelven a confirmarse las condiciones 4H.';cls='wait';}
-else if(c.sq[i]){title='ESPERAR';reason='TTM Squeeze comprimido; falta liberación ON → OFF al cierre.';note='El escenario técnico no habilita una orden por sí solo.';cls='wait';}
-else if(p?.entries?.length&&c.trend[i]){title='ESPERAR ZONA';reason='Tendencia favorable pero sin un nuevo disparador Carter. Hay soportes potenciales.';note='Próxima compra solo tras señal confirmada, nunca por descenso aislado.';cls='wait';}
-else{reason='Tendencia o momentum no valida un Long nuevo. No convertir un stop en una orden de compra.';}
+let title='SIN ENTRADA',reason='Carter 4H no habilita una compra inmediata.',note='La proyección estructura escenarios futuros con activaciones pendientes.',cls='bad';
+const f=S.forecast,first=f?.entries?.[0];
+if(p?.ready){
+title='E1 HABILITADA';
+reason='Carter 4H confirmado y oportunidad vigente. TP en la primera resistencia, con R/R adecuado.';
+note='E1 '+fmt(p.entries[0].price)+' · TP '+fmt(p.target.price)+' · invalidación '+fmt(p.stop)+'. Revalidar antes de operar.';cls='good';
+}else if(first&&p?.target){
+title='PREPARAR E1';
+reason='Zona de compra futura '+fmt(first.zoneMin)+'–'+fmt(first.zoneMax)+'; todavía NO habilitada.';
+note='Esperar llegada + recuperación confirmada al cierre 4H + impulso y ADX si corresponde. TP '+fmt(p.target.price)+'.';cls='wait';
+}else if(first&&f?.barrier){
+title='ESPERAR · R/R';
+reason='E1 está proyectada, pero la primera resistencia '+fmt(f.barrier.price)+' queda demasiado cerca.';
+note='No saltear resistencias para justificar una entrada. Reevaluar con estructura nueva.';cls='wait';
+}else if(first){
+title='ESPERAR E1';
+reason='Hay un soporte futuro '+fmt(first.price)+' pero falta salida técnica o confirmación suficiente.';
+note='No ejecutar mientras no exista un objetivo y un stop coherentes.';cls='wait';
+}else if(c.sq[i]){
+title='ESPERAR SEÑAL';
+reason='Squeeze comprimido en la última 4H cerrada.';
+note='La posible liberación futura es un escenario, no una compra habilitada.';cls='wait';
+}
 $('decisionCard').className='decision '+cls;label('decisionTitle',title);label('decisionReason',reason);label('decisionNote',note);
 }
 function subscribe(id){
