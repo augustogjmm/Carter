@@ -196,16 +196,27 @@ function paint(){
 let rect=canvas.getBoundingClientRect(),w=rect.width,h=rect.height;if(w<25)return;let dpi=Math.min(2,window.devicePixelRatio||1);canvas.width=Math.round(w*dpi);canvas.height=Math.round(h*dpi);ctx.setTransform(dpi,0,0,dpi,0,0);ctx.fillStyle='#0c1725';ctx.fillRect(0,0,w,h);
 if(!S.s||!S.c.length){ctx.fillStyle='#a6bad0';ctx.font='13px sans-serif';ctx.fillText('Cargando velas 4H y perfil de volumen…',20,40);return;}
 let c=S.c,s=S.s,N=c.length,count=Math.min(S.view,N),maxOffset=Math.max(0,N-count);S.offset=Math.min(maxOffset,Math.max(0,S.offset));let end=N-S.offset,start=Math.max(0,end-count);
-let x0=49,x1=w-113,plot=x1-x0,dx=plot/count,yt=17,yb=h*.61,volTop=h*.645,volBot=h*.738,momTop=h*.762,momBot=h*.872,adxTop=h*.897,adxBot=h*.963;
+let x0=49,x1=w-113,plot=x1-x0,projectionOn=S.offset===0&&$('planVisible').checked&&!!S.forecast;
+let futureWidth=projectionOn?Math.min(235,Math.max(96,plot*.31)):0;
+let historyEnd=x1-futureWidth,dx=(historyEnd-x0)/count;
+let yt=17,yb=h*.61,volTop=h*.645,volBot=h*.738,momTop=h*.762,momBot=h*.872,adxTop=h*.897,adxBot=h*.963;
 let shown=c.slice(start,end),lo=Math.min(...shown.map(x=>x.l)),hi=Math.max(...shown.map(x=>x.h)),plan=S.plan;
 if(S.offset===0&&plan&&$('planVisible').checked){for(let v of [plan.stop,plan.target?.price,...(plan.entries||[]).map(x=>x.price)]){if(Number.isFinite(v)&&v>0){lo=Math.min(lo,v);hi=Math.max(hi,v);}}}
 let margin=(hi-lo)*.07||hi*.01||1;lo-=margin;hi+=margin;let X=i=>x0+(i-start+.5)*dx,Y=v=>yt+(hi-v)/(hi-lo)*(yb-yt);
-geom={x0,x1,dx,start,end,yt,yb,lo,hi,volTop,volBot,momTop,momBot,adxTop,adxBot};
+geom={x0,x1,historyEnd,dx,start,end,yt,yb,lo,hi,volTop,volBot,momTop,momBot,adxTop,adxBot};
+if(projectionOn){
+ ctx.fillStyle='#1e2f4388';ctx.fillRect(historyEnd+3,yt,Math.max(0,x1-historyEnd-3),yb-yt);
+ ctx.strokeStyle='#8ea9c988';ctx.setLineDash([4,4]);ctx.lineWidth=1;
+ ctx.beginPath();ctx.moveTo(historyEnd+2,yt);ctx.lineTo(historyEnd+2,yb);ctx.stroke();ctx.setLineDash([]);
+ ctx.fillStyle='#9bbbe0';ctx.font='bold 9px sans-serif';
+ ctx.fillText('FUTURO · 4H',historyEnd+9,yt+12);
+ ctx.font='9px sans-serif';ctx.fillText('sin plazo previsto',historyEnd+9,yt+24);
+}
 ctx.lineWidth=1;ctx.font='10px ui-monospace,monospace';for(let k=0;k<=6;k++){let v=lo+(hi-lo)*k/6,y=Y(v);ctx.strokeStyle='#1f3146';ctx.beginPath();ctx.moveTo(x0,y);ctx.lineTo(x1,y);ctx.stroke();ctx.fillStyle='#95a9bd';ctx.fillText(fmt(v),x1+7,y+3);}
 const profile=S.profile;
-if(profile&&$('vpVisible').checked){let width=125,maxV=Math.max(...profile.vol)||1;ctx.fillStyle='#16263a99';ctx.fillRect(x1-width-4,yt,width+4,yb-yt);ctx.save();ctx.beginPath();ctx.rect(x1-width-4,yt,width+4,yb-yt);ctx.clip();
-for(let j=0;j<profile.vol.length;j++){let base=profile.low+j*profile.step,top=base+profile.step,y1=Y(top),y2=Y(base);if(y2<yt||y1>yb)continue;ctx.fillStyle=base>=profile.val&&top<=profile.vah?'#607eac88':'#3b52744b';ctx.fillRect(x1-width+(1-profile.vol[j]/maxV)*width,Math.max(yt,y1),profile.vol[j]/maxV*width,Math.max(1,Math.min(yb,y2)-Math.max(yt,y1)));}ctx.restore();
-for(let q of [[profile.poc,'POC','#cbb7ff'],[profile.vah,'VAH','#786ba9'],[profile.val,'VAL','#786ba9']]){let y=Y(q[0]);if(y<yt||y>yb)continue;ctx.strokeStyle=q[2];ctx.globalAlpha=.8;ctx.setLineDash([3,4]);ctx.beginPath();ctx.moveTo(x0,y);ctx.lineTo(x1,y);ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;ctx.fillStyle=q[2];ctx.font='bold 9px sans-serif';ctx.fillText(q[1],x1-36,y-3);}}
+if(profile&&$('vpVisible').checked){let width=Math.min(125,(historyEnd-x0)*.26),maxV=Math.max(...profile.vol)||1;ctx.fillStyle='#16263a99';ctx.fillRect(historyEnd-width-4,yt,width+4,yb-yt);ctx.save();ctx.beginPath();ctx.rect(historyEnd-width-4,yt,width+4,yb-yt);ctx.clip();
+for(let j=0;j<profile.vol.length;j++){let base=profile.low+j*profile.step,top=base+profile.step,y1=Y(top),y2=Y(base);if(y2<yt||y1>yb)continue;ctx.fillStyle=base>=profile.val&&top<=profile.vah?'#607eac88':'#3b52744b';ctx.fillRect(historyEnd-width+(1-profile.vol[j]/maxV)*width,Math.max(yt,y1),profile.vol[j]/maxV*width,Math.max(1,Math.min(yb,y2)-Math.max(yt,y1)));}ctx.restore();
+for(let q of [[profile.poc,'POC','#cbb7ff'],[profile.vah,'VAH','#786ba9'],[profile.val,'VAL','#786ba9']]){let y=Y(q[0]);if(y<yt||y>yb)continue;ctx.strokeStyle=q[2];ctx.globalAlpha=.8;ctx.setLineDash([3,4]);ctx.beginPath();ctx.moveTo(x0,y);ctx.lineTo(x1,y);ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;ctx.fillStyle=q[2];ctx.font='bold 9px sans-serif';ctx.fillText(q[1],historyEnd-36,y-3);}}
 const maxVol=Math.max(1,...shown.map(x=>x.v));
 let moms=s.mom.slice(start,end).filter(Number.isFinite),maxMom=Math.max(1,...moms.map(Math.abs))*1.15,momZero=(momTop+momBot)/2;
 for(let i=start;i<end;i++){let b=c[i],x=X(i),bw=Math.max(1,Math.min(12,dx*.68)),up=b.c>=b.o,color=up?'#41ceaa':'#f16c80';
@@ -220,6 +231,44 @@ if($('emaVisible').checked){line(s.ema10,'#f1c069');line(s.ema55,'#b19afa');line
 if($('bandsVisible').checked){line(s.bbU,'#899fc8',[4,3]);line(s.bbL,'#899fc8',[4,3]);line(s.kcU,'#496cab',[3,3]);line(s.kcL,'#496cab',[3,3]);}
 if(S.offset===0&&plan&&$('planVisible').checked){let levels=(plan.entries||[]).map((e,i)=>[e.price,'E'+(i+1),['#6df3c0','#52cbae','#409d95'][i]]);if(plan.entries?.length>1)levels.push([plan.avg,'PROM','#a6e3dd']);if(Number.isFinite(plan.stop))levels.push([plan.stop,'SL','#ff7a8e']);if(plan.target)levels.push([plan.target.price,'TP','#f4c27d']);
 for(let t of levels){let y=Y(t[0]);if(y<yt||y>yb)continue;ctx.strokeStyle=t[2];ctx.lineWidth=t[1]==='TP'||t[1]==='SL'?1.8:1.2;ctx.setLineDash(t[1]==='PROM'?[3,4]:t[1].startsWith('E')?[6,4]:[]);ctx.beginPath();ctx.moveTo(x0,y);ctx.lineTo(x1,y);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=t[2];ctx.font='bold 10px ui-monospace,monospace';ctx.fillText(t[1]+' '+fmt(t[0]),x1+6,y-4);}}
+if(projectionOn&&S.forecast){
+ const f=S.forecast;
+ const xNow=X(end-1),xEnd=x1-11,widthF=xEnd-xNow;
+ function projectedPath(points,color,name,opacity=.85){
+  if(!points||points.length<2)return;
+  ctx.save();ctx.strokeStyle=color;ctx.globalAlpha=opacity;ctx.lineWidth=2;
+  ctx.setLineDash([7,5]);ctx.beginPath();
+  points.forEach((pt,j)=>{
+   const xx=j===0?xNow:xNow+Math.min(1,pt.step/4)*widthF;
+   const yy=Y(pt.price);
+   if(!Number.isFinite(yy))return;
+   if(j===0)ctx.moveTo(xx,yy);else ctx.lineTo(xx,yy);
+  });
+  ctx.stroke();ctx.setLineDash([]);
+  const last=points[points.length-1],ex=xNow+Math.min(1,last.step/4)*widthF,ey=Y(last.price);
+  if(ey>=yt&&ey<=yb){
+   ctx.fillStyle=color;ctx.beginPath();ctx.arc(ex,ey,3.4,0,2*Math.PI);ctx.fill();
+  }
+  ctx.restore();
+ }
+ // Tres rutas de SECUENCIA, no predicción puntual sobre tiempo/precio.
+ projectedPath(f.downPath,'#fb8194','invalidación',.75);
+ projectedPath(f.breakoutPath,'#a2aaff','continuación',.72);
+ projectedPath(f.recoveryPath,'#65eeb8','rebote hacia resistencia',.94);
+ if(f.zone&&f.entries.length){
+  const highY=Y(f.zone.max),lowY=Y(f.zone.min);
+  const upper=Math.max(yt,Math.min(yb,Math.min(highY,lowY)));
+  const lower=Math.max(yt,Math.min(yb,Math.max(highY,lowY)));
+  ctx.fillStyle='#55d9a922';ctx.fillRect(historyEnd+4,upper,Math.max(0,xEnd-historyEnd),Math.max(1,lower-upper));
+ }
+ ctx.font='bold 9px sans-serif';
+ if(f.target){
+  const y=Y(f.target.price);if(y>=yt+38&&y<=yb-5){ctx.fillStyle='#f4c27d';ctx.fillText('TP',xEnd-21,y-9);}
+ }
+ if(f.invalidation){
+  const y=Y(f.invalidation);if(y>=yt+38&&y<=yb-5){ctx.fillStyle='#ff91a3';ctx.fillText('INV',xEnd-25,y+15);}
+ }
+}
 ctx.strokeStyle='#3c536b';ctx.beginPath();ctx.moveTo(x0,momZero);ctx.lineTo(x1,momZero);ctx.stroke();let adxSeries=[s.adx,s.plusDI,s.minusDI],adxMaximum=Math.max(50,...adxSeries.flatMap(x=>x.slice(start,end).filter(Number.isFinite)))*1.04,ADY=v=>adxBot-v/adxMaximum*(adxBot-adxTop);
 for(let q of [[s.adx,'#f4c27d'],[s.plusDI,'#54d4b0'],[s.minusDI,'#ef7c91']]){ctx.strokeStyle=q[1];ctx.lineWidth=1.5;ctx.beginPath();let init=false;for(let j=start;j<end;j++){if(!Number.isFinite(q[0][j])){init=false;continue;}let x=X(j),y=ADY(q[0][j]);if(!init){ctx.moveTo(x,y);init=true;}else ctx.lineTo(x,y);}ctx.stroke();}
 let thr=Number($('adxMin').value)||25;ctx.strokeStyle='#657790';ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(x0,ADY(thr));ctx.lineTo(x1,ADY(thr));ctx.stroke();ctx.setLineDash([]);
