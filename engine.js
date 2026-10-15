@@ -91,7 +91,7 @@ const resistance=[
 const barrier=resistance[0]||null;
 const entries=plan?.entries||[];
 const first=entries[0]||null;
-const marketMode=plan?.blocked?'bearish':'bullish';
+const marketMode=plan?.blocked?(s.plusDI[i]<s.minusDI[i]&&s.mom[i]<0?'bearish':'neutral'):'bullish';
 const pivLows=[
  {price:vp.val,source:'VAL · volumen'},
  {price:vp.poc,source:'POC · volumen'},
@@ -108,7 +108,7 @@ const target=plan?.target||null;
 const zone=first?{min:Math.max(0,first.price-.2*at),max:first.price+.2*at}:null;
 const upside=target||barrier;
 const downPath=[{step:0,price,label:'Ahora'}];
-if(marketMode==='bearish'){
+if(marketMode!=='bullish'){
  for(let j=0;j<supportSteps.length;j++)downPath.push({step:Math.min(4,(j+1)*2),price:supportSteps[j].price,label:'Soporte '+(j+1)});
 }else{
  if(first)downPath.push({step:1,price:first.price,label:'E1'});
@@ -180,7 +180,7 @@ function empiricalProjection(c,s,forecast,horizons=[6,12,24]){
  });
  // Frecuencia de PRIMER evento, desde precio actual. No incluye ejecución de E1.
  let outcomes=null;
- const lowerBarrier=forecast?.marketMode==='bearish'?forecast?.downside?.price:forecast?.invalidation;
+ const lowerBarrier=forecast?.marketMode!=='bullish'?forecast?.downside?.price:forecast?.invalidation;
  if(forecast?.upside?.price>current&&lowerBarrier>0&&lowerBarrier<current){
   const upATR=(forecast.upside.price-current)/at,downATR=(lowerBarrier-current)/at;
   let upFirst=0,downFirst=0,ambiguous=0,none=0;
@@ -198,7 +198,7 @@ function empiricalProjection(c,s,forecast,horizons=[6,12,24]){
    else if(outcome==='ambiguous')ambiguous++;
    else none++;
   }
-  outcomes={upFirst,downFirst,ambiguous,none,total:samples.length,barrier:forecast.upside.price,stop:lowerBarrier,horizon:maxH,lowerType:forecast.marketMode==='bearish'?'support':'stop'};
+  outcomes={upFirst,downFirst,ambiguous,none,total:samples.length,barrier:forecast.upside.price,stop:lowerBarrier,horizon:maxH,lowerType:forecast.marketMode!=='bullish'?'support':'stop'};
  }
  return{valid:true,sampleSize:samples.length,matching:keys,horizons:periods,outcomes,
   explanation:'Cuantiles históricos 10/50/90 de cierres futuros; condiciones similares: '+keys.join(', ')+'. Muestras solapadas, no calibradas ni independientes.'};
