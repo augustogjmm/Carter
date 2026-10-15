@@ -13,3 +13,27 @@
 /* Temporalidad operativa fija */
 .timeframe-explainer{color:#a9bdd2;font-size:11px;line-height:1.55;margin:0 0 15px;padding:9px 12px;background:#142438;border-left:3px solid #70bdff;border-radius:0 8px 8px 0}
 .timeframe-explainer strong{color:#c5e9ff;letter-spacing:.025em}
+
+/* v0.4 · Forward-planning surfaces */
+.scenario-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0 0 14px}
+.scenario-item{padding:15px 16px 13px;background:linear-gradient(150deg,#142337,#111b2b);border:1px solid #314662;border-radius:12px;min-width:0}
+.scenario-item.pullback{border-top:3px solid #52d2a8}
+.scenario-item.continuation{border-top:3px solid #a2a1ff}
+.scenario-item.invalidation{border-top:3px solid #f17f92}
+.scenario-head{display:flex;align-items:center;gap:10px;color:#a6b9d0;font-size:10px;letter-spacing:.06em}
+.scenario-head span{height:25px;width:25px;display:grid;place-items:center;background:#273e56;color:#d4e7fa;border-radius:7px;font-size:10px}
+.scenario-value{font-size:clamp(18px,1.9vw,25px);font-weight:800;letter-spacing:-.035em;margin:11px 0 4px;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.scenario-item.pullback .scenario-value{color:#68e2b3}
+.scenario-item.continuation .scenario-value{color:#b6b5ff}
+.scenario-item.invalidation .scenario-value{color:#ff9eaf}
+.scenario-item p{font-size:11px;line-height:1.5;color:#9aadc5;margin:0}
+.projection-label{font-size:11px;background:linear-gradient(90deg,#21344b,#172439);color:#afc2d7;margin:11px 15px 0;padding:10px 12px;border-left:3px solid #85afe8;border-radius:0 8px 8px 0;line-height:1.5}
+.projection-label span{display:inline-block;margin-right:7px;font-weight:900;color:#cee4fc;letter-spacing:.035em}
+.projection-label strong{color:#e3edf7}
+.activation{margin:13px 0 4px;background:#172b31;border:1px solid #355c56;border-radius:10px;padding:12px}
+.activation-head{font-size:10px;font-weight:900;color:#9deacc;letter-spacing:.08em}
+.activation p{color:#bad1cf;font-size:11px;line-height:1.65;margin:9px 0}
+.activation-foot{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;padding-top:9px;border-top:1px solid #30504d;color:#88a79d;font-size:9px}
+.activation-foot span:first-child{color:#8ce2be;font-weight:800}
+@media(max-width:1000px){.scenario-strip{grid-template-columns:1fr 1fr}.scenario-item:last-child{grid-column:1/-1}}
+@media(max-width:650px){.scenario-strip{grid-template-columns:1fr}.scenario-item:last-child{grid-column:auto}.scenario-value{font-size:21px}.projection-label{margin:10px 10px 0}}
