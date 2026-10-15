@@ -40,17 +40,17 @@
   
   <section class="scenario-strip" aria-label="Proyecciones prospectivas en 4H">
     <article class="scenario-item pullback">
-      <div class="scenario-head"><span>01</span><strong>ESCENARIO PRINCIPAL · RETROCESO</strong></div>
+      <div class="scenario-head"><span>01</span><strong id="scenarioMainTitle">PRÓXIMA ZONA · RETROCESO</strong></div>
       <div class="scenario-value" id="forecastPullback">—</div>
       <p id="forecastPullbackRule">Proyectando la zona E1 y su confirmación 4H…</p>
     </article>
     <article class="scenario-item continuation">
-      <div class="scenario-head"><span>02</span><strong>CONTINUACIÓN SIN RETROCESO</strong></div>
+      <div class="scenario-head"><span>02</span><strong id="scenarioOtherTitle">CONTINUACIÓN SIN RETROCESO</strong></div>
       <div class="scenario-value" id="forecastContinuation">—</div>
       <p id="forecastContinuationRule">Evaluando resistencia y posibilidad de una señal Carter nueva…</p>
     </article>
     <article class="scenario-item invalidation">
-      <div class="scenario-head"><span>03</span><strong>ESCENARIO ADVERSO · INVALIDACIÓN</strong></div>
+      <div class="scenario-head"><span>03</span><strong id="scenarioAdverseTitle">ESCENARIO ADVERSO · INVALIDACIÓN</strong></div>
       <div class="scenario-value" id="forecastFailure">—</div>
       <p id="forecastFailureRule">Determinando dónde cancelar el plan.</p>
     </article>
@@ -74,7 +74,7 @@
       <div class="chart-footer">Rueda = zoom · arrastrar = historial · doble clic = presente. Derecha sombreada: <strong>escenarios futuros ilustrativos</strong>, no velas pronosticadas ni plazo estimado. Solo 4H para generar entradas.</div>
     </section>
     <aside class="panel side">
-      <div class="panel-header"><h2>Operación futura · hasta 3 compras</h2><span class="mini-tag">SPOT · SIN APALANCAMIENTO</span></div>
+      <div class="panel-header"><h2>Plan LONG condicionado · hasta 3 entradas</h2><span class="mini-tag">SPOT · SIN APALANCAMIENTO</span></div>
       <div class="side-body">
         <p class="sidebar-description" id="planSummary">Proyectando próxima zona, activación en 4H, invalidez y salida técnica…</p>
         <div class="entry-list">
@@ -132,7 +132,7 @@
       <p class="disclaimer">El disparador conserva Carter 4H. El perfil, las entradas escalonadas y el objetivo estructural son una <strong>extensión exploratoria</strong> y todavía no tienen un backtest validado con datos fuera de muestra.</p>
     </section>
   </div>
-  <footer>Analizer Carter 4H · v0.5 · Binance Spot · Datos de mercado públicos · Sin órdenes, sin custodia, sin garantías de rentabilidad.</footer>
+  <footer>Analizer Carter 4H · v0.5.1 · Binance Spot · Datos de mercado públicos · Sin órdenes, sin custodia, sin garantías de rentabilidad.</footer>
 </main>
 <script src="engine.js"></script>
 <script src="app.js"></script>
