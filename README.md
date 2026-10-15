@@ -1,4 +1,4 @@
-# Carter 4H · Analizer operativo v0.4
+# Carter 4H · Analizer operativo v0.5
 
 Aplicación estática: https://carter-rust.vercel.app . Conectada al repositorio y desplegada automáticamente por Vercel desde la rama main.
 
@@ -9,6 +9,15 @@ El panel principal muestra escenarios futuros condicionados por la estructura: r
 Se comparan las operaciones hipotéticas con E1, E1+E2 y E1+E2+E3: promedio, exposición, resultado al TP y al SL descontando una comisión aproximada total de 0,20%. El TP debe estar en la **primera resistencia relevante**, no se salta una resistencia próxima para simular mejor beneficio/riesgo. Si el primer obstáculo no ofrece R/R suficiente, se descarta la entrada.
 
 Estos escenarios sirven para **preparar decisiones**, no predicen qué dirección tomará el mercado. Sin backtest específico no hay una tasa de éxito válida para el modelo escalonado.
+
+## Referencia cuantitativa 4H (v0.5)
+
+Con hasta 2000 velas cerradas 4H se buscan regímenes históricos parecidos (tendencia EMA, signo del momentum, direccionalidad DI y fuerza ADX, con relajación explícita si la muestra es pequeña). Solo se muestran resultados cuando hay **al menos 30 observaciones**. Se visualiza:
+- Precio de cierre mediano y percentiles 10/90 observados después de 6, 12 y 24 velas de 4H (24/48/96 horas).
+- Frecuencia histórica de alcanzar primero la resistencia o la invalidación dentro de las 24 velas posteriores, relativa al ATR y **partiendo del precio actual**, no de las entradas E1/E2/E3.
+- Número de casos comparables y circunstancias de comparación.
+
+Limitaciones: son muestras **solapadas**, no independientes, y el modelo no está validado fuera de muestra. No son probabilidades calibradas de ganancias ni de ejecución; no deben usarse para dimensionar operaciones, ni como promesa de dirección futura. La proyección cuantitativa es distinta de los caminos estructurales condicionales ilustrados en el gráfico.
 
 ## Cómo funciona
 
