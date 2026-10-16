@@ -71,7 +71,7 @@ jobs:
           const r=core.classify(bars);
           assert.equal(typeof r.signal,'boolean');
           assert(Number.isFinite(r.adx) && Number.isFinite(r.atr));
-          assert.equal(r.signal, r.A||r.B);
+          assert.equal(r.signal, (r.A||r.B)&&!r.positionOpen);
           assert.throws(()=>core.classify(bars.slice(0,-1)),/sincronizada/);
           const x=Array.from({length:50},(_,i)=>({id:'asset-'+i,symbol:'T'+i,name:'Coin '+i,rank:i+1,price:1}));
           assert.equal(core.normalizeCoins(x).length,50);
