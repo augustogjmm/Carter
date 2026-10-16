@@ -159,6 +159,8 @@ render();
 async function scan(forceRank=false){
 if(R.busy)return;
 R.busy=true;R.token++;const token=R.token;R.scanAt=0;R.attemptAt=Date.now();R.problem='';
+for(const item of R.items){item.status='queued';item.reason='Revalidando la última vela 4H: señal anterior suspendida';}
+render();
 $('radarRefresh').disabled=true;label('radarStatus','Verificando ranking por capitalización…');
 try{
 let ranked;
