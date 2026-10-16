@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="PCS Squeeze Regime Pro: análisis gráfico 4H BTC/ETH, señales A/B, ADX, squeeze, riesgo ATR y backtest exploratorio.">
+<title>PCS · Squeeze Regime Pro | Carter Workstation</title>
+<link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="pcs.css">
+</head>
+<body>
+<main class="shell pcs-shell">
+<header class="top pcs-top">
+ <div class="brand"><div class="logo">P<span>CS</span></div><div><strong>PCS <em>4H</em></strong><small>SQUEEZE REGIME PRO · WORKSTATION</small></div></div>
+ <nav class="pcs-nav" aria-label="Elegir estrategia"><a href="index.html">Carter · anterior</a><a href="pcs.html" aria-current="page">PCS · nueva</a></nav>
+ <div class="live"><span id="pcsDot" class="dot"></span><strong id="pcsStatus">Sin datos</strong></div>
+</header>
+<section class="pcs-heading">
+ <div><div class="eyebrow">SISTEMA PCS · BTCUSDT / ETHUSDT · SPOT 4H · SOLO LARGOS</div><h1>¿Hay una entrada <em>confirmada</em>?</h1><p>Primero el régimen. Después las puertas A/B. Ejecución exclusivamente en la apertura siguiente, con riesgo ATR, TP1 parcial y trailing. Una posición por activo, sin promedios.</p></div>
+ <div class="pcs-flag" id="pcsEvidence">VALIDACIÓN INDEPENDIENTE PENDIENTE</div>
+</section>
+<section class="pcs-toolbar" aria-label="Parámetros de consulta">
+ <div class="pcs-segment" role="group" aria-label="Activo"><button data-symbol="BTCUSDT" class="selected" type="button">BTC / USDT</button><button data-symbol="ETHUSDT" type="button">ETH / USDT</button></div>
+ <label>EXPOSICIÓN MÁXIMA <select id="pcsLeverage"><option value="3">PCS original · hasta 3× (teórico)</option><option value="1">Spot financiado · máximo 1×</option></select></label>
+ <label>CAPITAL USDT <input id="pcsCapital" type="number" value="1000" min="1" step="100"></label>
+ <button id="pcsRefresh" class="btn primary" type="button">Actualizar datos ↗</button>
+ <span class="pcs-data" id="pcsSource">Buscando Binance Spot…</span>
+</section>
+<div id="pcsError" role="alert" class="error"></div>
+<div id="pcsProgress" role="status" class="pcs-progress">Cargando velas históricas 4H cerradas…</div>
+<section class="pcs-decision" id="pcsDecision" aria-live="polite">
+ <div><span class="overline">SEÑAL · ÚLTIMA 4H CERRADA</span><h2 id="pcsDecisionTitle">EVALUANDO…</h2><div class="pcs-small" id="pcsSignalWhen">—</div></div>
+ <p id="pcsDecisionDetail">Se evalúan simultáneamente el régimen y las puertas A y B.</p>
+ <div class="pcs-decision-side"><span>PRÓXIMO CIERRE 4H (ARG)</span><strong id="pcsNextClose">—</strong><small>Un cierre no garantiza apertura ejecutable</small></div>
+</section>
+<section class="pcs-kpis">
+ <article><span>CIERRE 4H</span><strong id="pcsPrice">—</strong><small id="pcsPriceAt">—</small></article>
+ <article><span>RÉGIMEN · EMA50/200</span><strong id="pcsRegime">—</strong><small id="pcsRegimeSub">—</small></article>
+ <article><span>SQUEEZE 20/2 · KC20/1.5</span><strong id="pcsSqueeze">—</strong><small id="pcsSqSub">—</small></article>
+ <article><span>ADX14 / +DI / −DI</span><strong id="pcsADX">—</strong><small id="pcsADXSub">—</small></article>
+ <article><span>ATR20 / VOLUMEN</span><strong id="pcsAtr">—</strong><small id="pcsVolSub">—</small></article>
+</section>
+<div class="pcs-layout">
+ <section class="panel pcs-chartpanel">
+  <div class="panel-header"><div><h2 id="pcsChartTitle">BTCUSDT · 4H · cierres confirmados</h2><small id="pcsDataSpan">Esperando histórico verificable</small></div><div class="pcs-show"><label><input id="pcsShowBands" type="checkbox"> BB / KC</label><label><input id="pcsShowSignals" type="checkbox" checked> Señales A/B</label><label><input id="pcsShowLevels" type="checkbox" checked> Plan de riesgo</label></div></div>
+  <div class="pcs-legend"><span><i class="pcs-l10"></i>EMA10</span><span><i class="pcs-l50"></i>EMA50</span><span><i class="pcs-l200"></i>EMA200</span><span><i class="pcs-la"></i>Puerta A</span><span><i class="pcs-lb"></i>Puerta B</span><span><i class="pcs-lsq"></i>Squeeze ON</span></div>
+  <div class="pcs-canvaswrap"><canvas id="pcsChart" aria-label="Velas japonesas, EMAs, squeezes, señales, volumen y ADX 4H"></canvas></div>
+  <div id="pcsHover" class="pcs-hover">Rueda: zoom · arrastrar: historial · doble clic: últimas velas. Volumen: línea discontinua 1,3 × SMA20. ADX: líneas de referencia 18 y 20.</div>
+ </section>
+ <aside class="panel pcs-aside">
+  <div class="panel-header"><h2>Gatillos separados</h2><span class="mini-tag">NO REPINTA · AL CIERRE</span></div>
+  <div class="pcs-gate"><div class="pcs-gateheading"><b>0 · Régimen</b><strong id="pcsRegFlag">—</strong></div><p id="pcsRegText">Cierre sobre EMA200 y EMA50 creciente durante 5 velas.</p></div>
+  <div class="pcs-gate"><div class="pcs-gateheading"><b>A · Ruptura post-squeeze</b><strong id="pcsAFlag">—</strong></div><div id="pcsAConditions" class="pcs-checks">Sin datos</div></div>
+  <div class="pcs-gate"><div class="pcs-gateheading"><b>B · Rebote EMA10</b><strong id="pcsBFlag">—</strong></div><div id="pcsBConditions" class="pcs-checks">Sin datos</div></div>
+  <div class="pcs-plan">
+   <div class="pcs-planhead"><b>Operación conforme a PCS</b><span id="pcsPlanState">CONDICIONAL</span></div>
+   <div class="pcs-planrow"><span>Entrada · próxima apertura</span><strong id="pcsEntry">—</strong></div>
+   <div class="pcs-planrow"><span>Stop inicial · −1,5 ATR</span><strong id="pcsSL">—</strong></div>
+   <div class="pcs-planrow"><span>TP1 · +1R (vende 50%)</span><strong id="pcsTP1">—</strong></div>
+   <div class="pcs-planrow"><span>Trailing · 2,5 ATR</span><strong id="pcsTrail">—</strong></div>
+   <div class="pcs-planrow"><span>Tamaño máximo estimado</span><strong id="pcsQty">—</strong></div>
+   <div class="pcs-planrow"><span>Riesgo previsto (sin gaps/fees)</span><strong id="pcsRisk">—</strong></div>
+   <p id="pcsPlanNote" class="pcs-note">El precio de próxima apertura es desconocido. Niveles preliminares, no órdenes automáticas.</p>
+  </div>
+  <p class="pcs-caution" id="pcsCaution">PCS original contempla hasta 3× de notional respecto del patrimonio: en spot sin margen no es ejecutable. Elegí el modo máximo 1× para simular solo capital disponible.</p>
+ </aside>
+</div>
+<section class="panel pcs-audit">
+ <div class="panel-header"><div><h2>Backtest exploratorio · mismo conjunto de velas</h2><small>No es la auditoría cuantitativa independiente. Sin ajustes de parámetros ni promesas de desempeño.</small></div><span class="mini-tag" id="pcsCompleteness">COBERTURA SIN VERIFICAR</span></div>
+ <div class="pcs-tablewrap"><table><thead><tr><th>TRAMO</th><th>RET. ANUAL</th><th>MAX DD</th><th>CALMAR</th><th>PF</th><th>WR · PIERNAS</th><th>OPS / PIERNAS</th></tr></thead><tbody id="pcsStats"><tr><td colspan="7">Esperando histórico…</td></tr></tbody></table></div>
+ <div class="pcs-info"><div><span>OPERACIONES ÚLTIMAS</span><div class="pcs-tablewrap"><table><thead><tr><th>Entrada</th><th>Salida</th><th>Motivo</th><th>PNL neto USDT</th></tr></thead><tbody id="pcsTrades"><tr><td colspan="4">—</td></tr></tbody></table></div></div><div><span>FINGERPRINT DEL DATASET</span><p id="pcsFingerprint">No hay datos confirmados.</p><span>SUPUESTOS DE EJECUCIÓN</span><p>STOP antes que TP1 dentro de cada 4H; gap al peor precio, TP1 50% a +1R, breakeven, trailing desde próxima vela y salida temporal a 300 velas. 0,10% por fill. Equity marcada a mercado.</p></div></div>
+ <p class="pcs-disclaimer">El modo 3× replica la fórmula indicada, pero puede demandar financiamiento y no incluye intereses; el modo 1× modifica el dimensionamiento. Ninguno supone liquidez garantizada ni deslizamiento. Ante gaps y comisiones, la pérdida puede superar el 1%. El perfil de volumen no es filtro PCS.</p>
+</section>
+<footer>PCS Squeeze Regime Pro · Visualizador de investigación · BTC/ETH Binance Spot 4H, respaldo Bybit si falla · Sin órdenes reales. Resultados sujetos a auditoría independiente.</footer>
+</main>
+<script src="pcs.js"></script>
+</body></html>
