@@ -48,7 +48,7 @@ let cash=capital,pos=null,pending=null,ops=[],legs=[],curve=[];
 for(let k=0;k<b.length;k++){
 const c=b[k];
 if(pending!==null&&!pos&&cash>0&&finite(s.atr[pending])&&s.atr[pending]>0){
-let entry=c.o,dist=1.5*s.atr[pending],qty=Math.min(0.01*cash/dist,cap*cash/entry);
+let entry=c.o,dist=1.5*s.atr[pending],qty=Math.min(0.01*cash/dist,cap*cash/(entry*(cap===1?1+FEE:1)));
 if(qty>0&&finite(qty)){
 cash-=qty*entry*(1+FEE);
 pos={entry,dist,sl:entry-dist,tp:entry+dist,qty,orig:qty,tpDone:false,start:k,entryT:c.t,pnl:0,parts:0,signal:pending};
@@ -159,7 +159,7 @@ title.className='pcs-decision '+(p?'long':hasSignal?'wait':q.regime?'wait':'bloc
 if(p){set('pcsDecisionTitle','POSICIÓN TEÓRICA ABIERTA');set('pcsDecisionDetail','El backtest muestra una operación todavía abierta al cierre. No implica que hayas comprado. Stop y TP1 se basan en fills históricos simulados.');}
 else if(hasSignal){set('pcsDecisionTitle','SEÑAL '+(q.A&&q.B?'A + B':q.A?'A · RUPTURA':'B · REBOTE'));set('pcsDecisionDetail','Confirmada al cierre anterior. PCS exige ejecutar en la apertura de la vela siguiente: esa apertura ya ocurrió. No se debe convertir una señal pasada en una orden tardía.');}
 else{set('pcsDecisionTitle',q.regime?'ESPERAR DISPARO A / B':'NO HABILITAR LONG');set('pcsDecisionDetail',q.regime?'Régimen alcista, pero ninguna de las dos puertas cumple todos los requisitos al cierre.':'El cierre no supera EMA200 con pendiente EMA50 positiva a cinco velas. Las puertas A/B quedan bloqueadas.');}
-const stopDist=1.5*s.atr[last],proxy=p?p.entry:x.c,riskEq=p?NaN:cap,qty=p?p.orig:Math.min(0.01*cap/stopDist,limit*cap/proxy),sl=p?p.sl:proxy-stopDist,tp=p?p.tp:proxy+stopDist;
+const stopDist=1.5*s.atr[last],proxy=p?p.entry:x.c,riskEq=p?NaN:cap,qty=p?p.orig:Math.min(0.01*cap/stopDist,limit*cap/(proxy*(limit===1?1+FEE:1))),sl=p?p.sl:proxy-stopDist,tp=p?p.tp:proxy+stopDist;
 set('pcsPlanState',p?'POSICIÓN SIMULADA':hasSignal?'SEÑAL CERRADA':'HIPÓTESIS · SIN ENTRADA');
 set('pcsEntry',fmtp(proxy)+(p?' · fill histórico':' · cierre proxy'));
 set('pcsSL',fmtp(sl));set('pcsTP1',fmtp(tp));
