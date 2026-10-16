@@ -1,6 +1,17 @@
-# Carter 4H · Analizer operativo v0.5.1
+# Carter 4H y PCS · Workstation
 
 Aplicación estática: https://carter-rust.vercel.app . Conectada al repositorio y desplegada automáticamente por Vercel desde la rama main.
+
+## Nueva vista PCS Squeeze Regime Pro (16/10/2026)
+
+- **Enlace:** [PCS 4H](https://carter-rust.vercel.app/pcs.html), disponible desde la pestaña «PCS · nueva» en Carter. El modelo Carter original se conserva en index.html.
+- **Universo fijo:** BTCUSDT y ETHUSDT, spot 4H con velas cerradas desde 2020-01-01 UTC. Binance Spot paginado hasta última vela completa, respaldo Bybit spot (marcado explícitamente si no cubre el histórico); revisión de duplicados, saltos y fechas.
+- **Indicadores independientes:** EMA 10/50/200, SMA20 y sigma poblacional BB, Keltner EMA20 ± 1,5×ATR20 (ATR como SMA de TR), ADX14/DI Wilder, volumen > 1,3×SMA20 y priorHH21 excluyendo vela actual.
+- **Señales:** régimen Cierre > EMA200 y EMA50 creciente (5 velas), puerta A de squeeze ON en últimas 16 + ruptura + ADX18 + volumen, o puerta B de rebote EMA10 con vela verde y ADX20. El gráfico identifica A/B y diferencia condiciones parciales de señales confirmadas.
+- **Ejecución visual, no órdenes:** entrada en apertura siguiente, stop 1,5 ATR del cierre señal, TP1 +1R en mitad de la posición, stop a breakeven, trailing 2,5 ATR tras TP1 desde vela siguiente, límite 300 velas, stop prioritario a TP, fee 0,10% por fill. No se ofrece E2/E3 ni promedio.
+- **Exposición:** 3× reproduce sizing PCS matemático, pero **no es spot al contado sin margen**; se ofrece una variante opcional 1× que incorpora fee de entrada en el techo de capital y no debe confundirse con la réplica original.
+- **Métricas exploratorias:** FULL, IS y OOS sobre las velas que efectivamente descarga el navegador, marcado a mercado y comisiones; datos incompletos explícitamente señalizados. Este módulo es una visualización local, **NO certifica la validación independiente C1–C10 ni confirma los números originales**.
+- **Límites:** el cierre de la señal coincide con la apertura de la vela siguiente. Si se observa una señal ya cerrada, ese precio de apertura puede haber pasado. Una línea condicional basada en el último cierre NO es un precio futuro conocido.
 
 ## Qué se proyecta (siempre 4H)
 
