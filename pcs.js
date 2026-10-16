@@ -164,7 +164,7 @@ set('pcsPlanState',p?'POSICIÓN SIMULADA':hasSignal?'SEÑAL CERRADA':'HIPÓTESIS
 set('pcsEntry',fmtp(proxy)+(p?' · fill histórico':' · cierre proxy'));
 set('pcsSL',fmtp(sl));set('pcsTP1',fmtp(tp));
 set('pcsTrail',p?(p.tpDone?'ACTIVO · SL '+fmtp(p.sl):'Tras TP1; no activo'):'Solo después de TP1');
-set('pcsQty',fmt(qty,6)+' '+state.symbol.slice(0,3));
+set('pcsQty',fmt(qty,6)+' '+state.symbol.replace(/USDT$/,''));
 set('pcsRisk',fmt(qty*stopDist,2)+' USDT · '+fmt(qty*stopDist/cap*100,2)+'%');
 set('pcsPlanNote',p?'Posición simulada, no consta ninguna tenencia real. Vela en curso excluida.':hasSignal?'Entrada de la vela siguiente NO disponible retroactivamente. Los niveles con el cierre son estimaciones: los definitivos dependen de la apertura y del ATR de la señal.':'Sin señal actual. Niveles ilustrativos usando el último cierre como precio hipotético. No son niveles de una orden PCS.');
 set('pcsCaution',limit===3?'Modo original: exposición máxima 3×. Requiere margen cuando el notional supera el capital; no es operativa spot al contado sin financiación. Intereses, funding y slippage no están modelados.':'Modo contado: exposición máxima 1×, por lo que NO replica exactamente el sizing original 3×. Se mantienen las demás reglas PCS.');
@@ -253,5 +253,6 @@ window.addEventListener('resize',draw);
 load(state.symbol);
 }
 window.PCSEngine={indicators,backtest,stats,dedup};
+window.PCSApp={loadSymbol(symbol){for(const el of document.querySelectorAll('[data-symbol]'))el.classList.toggle('selected',el.dataset.symbol===symbol);return load(symbol);},getSymbol(){return state.symbol;}};
 if(typeof document!=='undefined'){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();}
 })();
