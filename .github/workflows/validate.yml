@@ -15,6 +15,41 @@ jobs:
           node --check engine.js
           node --check app.js
           node --check research.js
+          node --check pcs.js
+      - name: PCS independent smoke tests
+        run: |
+          node <<'JS'
+          const assert = require('node:assert/strict');
+          const fs = require('node:fs');
+          const vm = require('node:vm');
+          const c = {window:{}};
+          vm.runInNewContext(fs.readFileSync('pcs.js','utf8'),c);
+          const e=c.window.PCSEngine;
+          assert(e && e.indicators && e.backtest && e.stats && e.dedup);
+          const bars=Array.from({length:350},(_,i)=>{
+            const p=100+i*.08+Math.sin(i/12)*2;
+            return {t:Date.UTC(2020,0,1)+i*14400000,o:p,h:p+1.3,l:p-1.3,c:p+.2,v:100+i%27};
+          });
+          const s=e.indicators(bars);
+          assert(Number.isFinite(s.atr[349]));
+          assert(Number.isFinite(s.adx[349]));
+          assert(Number.isFinite(s.ema200[349]));
+          const newer=e.indicators([...bars,{t:bars.at(-1).t+14400000,o:100,h:200,l:1,c:120,v:10000}]);
+          assert.equal(JSON.stringify(s.sig[300]),JSON.stringify(newer.sig[300]),'Future candle changed past signal');
+          const bySlot=bars.map((b,i)=>({...b,o:100,h:101,l:99,c:100,v:100}));
+          bySlot[251]={...bySlot[251],o:100,h:103,l:97,c:100};
+          const sim={sig:bySlot.map(()=>({A:false,B:false})),atr:Array(350).fill(1)};
+          sim.sig[250]={A:true,B:false};
+          const result=e.backtest(bySlot,sim,1000,3);
+          assert.equal(result.ops.length,1);
+          assert.equal(result.legs.length,1);
+          assert.equal(result.legs[0].why,'SL','Stop must have priority over TP1 in same candle');
+          assert(Math.abs(result.legs[0].pnl-(result.curve.at(-1).equity-1000))<1e-6,'PnL must reconcile to equity');
+          assert(e.stats(result).dd>0);
+          assert(fs.readFileSync('index.html','utf8').includes('href="pcs.html"'));
+          for(const id of ['pcsChart','pcsDecisionTitle','pcsAConditions','pcsBConditions','pcsStats','pcsSL','pcsTP1'])assert(fs.readFileSync('pcs.html','utf8').includes('id="'+id+'"'));
+          console.log('PCS fixed-rule smoke tests: OK');
+          JS
       - name: Indicator and volume-profile smoke test
         run: |
           node <<'JS'
