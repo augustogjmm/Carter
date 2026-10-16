@@ -7,7 +7,7 @@ const $=id=>document.getElementById(id), BAR=14400000, ONE_HOUR=3600000;
 const SOURCES=['https://data-api.binance.vision','https://api.binance.com','https://api1.binance.com'];
 const STABLE=new Set(['tether','usd-coin','dai','ethena-usde','usds','usdd','first-digital-usd','paypal-usd','true-usd','frax','frax-usd','usdd','usual-usd','world-liberty-financial-usd','binance-usd','pax-dollar','gemini-dollar','usdt0','rlusd','ripple-usd','usdf','a7a5','usde','usd1','ondo-us-dollar-yield','yield-bearing-usd']);
 const WRAPPED=new Set(['wrapped-bitcoin','wrapped-steth','staked-ether','wrapped-eth','coinbase-wrapped-btc','bitcoin-avalanche-bridged-btc-b','lido-staked-ether','rocket-pool-eth','binance-bridged-usdt-bnb-smart-chain','wrapped-eeth','renbtc','wrapped-solana','wrapped-bnb','bridged-usdc-polygon-pos-bridge','wrapped-tron','binance-peg-ethereum','binance-peg-dogecoin','paypal-wrapped-bitcoin']);
-const R={coins:[],marketAt:0,source:'',items:[],pool:[],busy:false,scanned:0,verified:0,scanAt:0,token:0,view:'all',sortSignals:true,barId:null};
+const R={coins:[],marketAt:0,source:'',items:[],pool:[],busy:false,scanned:0,verified:0,scanAt:0,token:0,view:'all',sortSignals:true,barId:null,attemptAt:0,problem:''};
 const fmt=(v,n=2)=>Number.isFinite(v)?Number(v).toLocaleString('en-US',{maximumFractionDigits:n,minimumFractionDigits:n}):'—';
 const time=t=>new Intl.DateTimeFormat('es-AR',{timeZone:'America/Argentina/Buenos_Aires',hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date(t));
 const label=(id,t)=>{$(id).textContent=String(t);};
@@ -110,7 +110,7 @@ return({signal:item.A&&item.B?'LONG A+B':item.A?'LONG A':item.B?'LONG B':'LONG',
 function render(){
 const total=R.items.length,signals=R.items.filter(x=>x.status==='signal'),watched=R.items.filter(x=>x.status==='watch'),done=R.items.filter(x=>!['queued','scanning'].includes(x.status)),failed=R.items.filter(x=>x.status==='error');
 label('radarPositive',signals.length);label('radarWatch',watched.length);label('radarProgress',done.length+' / '+total);
-label('radarStatus',R.busy?'Analizando '+done.length+' de '+total+' · '+(signals.length?'hay señales PCS':'sin señales confirmadas hasta ahora'):'Escaneo finalizado · '+done.length+' / '+total);
+label('radarStatus',R.problem?'Radar no disponible: '+R.problem:R.busy?'Analizando '+done.length+' de '+total+' · '+(signals.length?'hay señales PCS':'sin señales confirmadas hasta ahora'):'Escaneo finalizado · '+done.length+' / '+total);
 label('radarSource',R.source?(R.source+' · ranking '+time(R.marketAt)+' · 4H Binance'):'Ranking en espera');
 const bar=$('radarBar');bar.style.width=(total?done.length/total*100:0)+'%';
 let a=[...R.items];if(R.sortSignals){let priorities={signal:0,watch:1,position:1,blocked:2,scanning:3,queued:3,missing:4,excluded:4,error:5};a.sort((x,y)=>(priorities[x.status]??6)-(priorities[y.status]??6)||x.rank-y.rank);}else a.sort((x,y)=>x.rank-y.rank);
@@ -158,7 +158,7 @@ render();
 }
 async function scan(forceRank=false){
 if(R.busy)return;
-R.busy=true;R.token++;const token=R.token;R.scanAt=0;
+R.busy=true;R.token++;const token=R.token;R.scanAt=0;R.attemptAt=Date.now();R.problem='';
 $('radarRefresh').disabled=true;label('radarStatus','Verificando ranking por capitalización…');
 try{
 let ranked;
@@ -182,13 +182,13 @@ if(token!==R.token)return;
 R.scanAt=Date.now();R.barId=Math.floor((Date.now()-3000)/BAR);
 render();
 }catch(e){
-if(token===R.token){label('radarStatus','No se pudo completar el radar');label('radarError',e.message||e);$('radarError').classList.add('show');if(!R.items.length){label('radarProgress','0 / 50');}}
+if(token===R.token){R.problem=String(e.message||e);label('radarError',R.problem);$('radarError').classList.add('show');for(const item of R.items){item.status='error';item.available=false;item.reason='El radar no está actualizado; no se conserva una señal verde antigua.';}if(!R.items.length){label('radarProgress','0 / 50');}}
 }finally{if(token===R.token){R.busy=false;$('radarRefresh').disabled=false;render();}}
 }
 function autoCheck(){
 if(R.busy)return;
 const latestId=Math.floor((Date.now()-30000)/BAR);
-if(R.barId!==null&&latestId>R.barId)scan(false);
+if(R.barId===null){if(Date.now()-R.attemptAt>300000)scan(false);}else if(latestId>R.barId)scan(false);
 }
 function init(){
 $('radarRefresh').addEventListener('click',()=>{label('radarError','');$('radarError').classList.remove('show');scan(true);});
