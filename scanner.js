@@ -26,9 +26,10 @@ if(sorted.length<250)throw new Error('Insuficiente histórico deduplicado');
 const last=sorted.at(-1),prev=sorted.at(-2);
 if(last.t!==expected||last.t-prev.t!==BAR)throw new Error('Última vela 4H no sincronizada');
 const ind=window.PCSEngine.indicators(sorted),i=sorted.length-1,q=ind.sig[i];
+const simulated=window.PCSEngine.backtest(sorted,ind,1000,3),positionOpen=!!simulated.pos;
 if(!finite(ind.ema200[i])||!finite(ind.adx[i])||!finite(ind.atr[i])||ind.atr[i]<=0)throw new Error('Indicadores no confirmados');
 let volRatio=ind.v20[i]>0?last.v/ind.v20[i]:NaN;
-return{signal:!!(q.A||q.B),regime:!!q.regime,A:!!q.A,B:!!q.B,sq:!!q.squeeze,adx:ind.adx[i],diPlus:ind.plus[i],diMinus:ind.minus[i],atr:ind.atr[i],price:last.c,volumeRatio:volRatio,lastCandle:last.t,reason:reasonFor(q,ind.adx[i],volRatio)};
+return{signal:!!(q.A||q.B)&&!positionOpen,positionOpen,regime:!!q.regime,A:!!q.A,B:!!q.B,sq:!!q.squeeze,adx:ind.adx[i],diPlus:ind.plus[i],diMinus:ind.minus[i],atr:ind.atr[i],price:last.c,volumeRatio:volRatio,lastCandle:last.t,reason:positionOpen?'PCS ya mantiene una posición teórica abierta: no admite nueva entrada':reasonFor(q,ind.adx[i],volRatio)};
 }
 function normalizeCoins(rows){
 if(!Array.isArray(rows)||rows.length!==50)throw new Error('El ranking no tiene exactamente 50 activos');
@@ -102,9 +103,9 @@ function fmtPrice(v){
 if(!Number.isFinite(v))return '—';
 return v>=100?fmt(v,2):v>=1?fmt(v,3):v>=.01?fmt(v,5):fmt(v,8);
 }
-function statusClass(item){return item.status==='signal'?'radar-long':item.status==='watch'?'radar-watch':item.status==='error'?'radar-error':item.status==='scanning'?'radar-active':'radar-idle';}
+function statusClass(item){return item.status==='signal'?'radar-long':(item.status==='watch'||item.status==='position')?'radar-watch':item.status==='error'?'radar-error':item.status==='scanning'?'radar-active':'radar-idle';}
 function statusText(item){
-return({signal:item.A&&item.B?'LONG A+B':item.A?'LONG A':item.B?'LONG B':'LONG',watch:'VIGILAR',blocked:'SIN ENTRADA',missing:'SIN PAR',excluded:'NO APLICA',error:'SIN DATOS',scanning:'ANALIZANDO',queued:'EN COLA'})[item.status]||item.status.toUpperCase();
+return({signal:item.A&&item.B?'LONG A+B':item.A?'LONG A':item.B?'LONG B':'LONG',watch:'VIGILAR',position:'LONG PREVIO',blocked:'SIN ENTRADA',missing:'SIN PAR',excluded:'NO APLICA',error:'SIN DATOS',scanning:'ANALIZANDO',queued:'EN COLA'})[item.status]||item.status.toUpperCase();
 }
 function render(){
 const total=R.items.length,signals=R.items.filter(x=>x.status==='signal'),watched=R.items.filter(x=>x.status==='watch'),done=R.items.filter(x=>!['queued','scanning'].includes(x.status)),failed=R.items.filter(x=>x.status==='error');
@@ -112,7 +113,7 @@ label('radarPositive',signals.length);label('radarWatch',watched.length);label('
 label('radarStatus',R.busy?'Analizando '+done.length+' de '+total+' · '+(signals.length?'hay señales PCS':'sin señales confirmadas hasta ahora'):'Escaneo finalizado · '+done.length+' / '+total);
 label('radarSource',R.source?(R.source+' · ranking '+time(R.marketAt)+' · 4H Binance'):'Ranking en espera');
 const bar=$('radarBar');bar.style.width=(total?done.length/total*100:0)+'%';
-let a=[...R.items];if(R.sortSignals){let priorities={signal:0,watch:1,blocked:2,scanning:3,queued:3,missing:4,excluded:4,error:5};a.sort((x,y)=>(priorities[x.status]??6)-(priorities[y.status]??6)||x.rank-y.rank);}else a.sort((x,y)=>x.rank-y.rank);
+let a=[...R.items];if(R.sortSignals){let priorities={signal:0,watch:1,position:1,blocked:2,scanning:3,queued:3,missing:4,excluded:4,error:5};a.sort((x,y)=>(priorities[x.status]??6)-(priorities[y.status]??6)||x.rank-y.rank);}else a.sort((x,y)=>x.rank-y.rank);
 if(R.view==='signal')a=a.filter(x=>x.status==='signal');
 let body=$('radarRows');body.replaceChildren();
 for(let item of a){
@@ -129,7 +130,7 @@ for(let item of a){
  const detail=make('td','radar-detail',item.reason||'Esperando análisis 4H');
  const values=make('td','radar-technical',Number.isFinite(item.adx)?'ADX '+fmt(item.adx,1)+' · V '+fmt(item.volumeRatio,2)+'×':'—');
  let action=make('td','radar-action');
- if(item.symbol&&['signal','watch','blocked'].includes(item.status)&&item.available){
+ if(item.symbol&&['signal','watch','blocked','position'].includes(item.status)&&item.available){
   let btn=make('button','radar-open','Ver gráfico ↗');btn.type='button';btn.title='Abrir '+item.symbol+'USDT en el gráfico PCS';btn.addEventListener('click',()=>openChart(item));action.append(btn);
  }else action.append(make('span','radar-muted','—'));
  tr.append(rank,identity,market,d,tag,detail,values,action);body.append(tr);
@@ -151,7 +152,7 @@ try{
 const bars=await candles(item.symbol);
 if(token!==R.token)return;
 const value=classify(bars);
-Object.assign(item,value,{status:value.signal?'signal':value.regime?'watch':'blocked',available:true,reason:value.reason});
+Object.assign(item,value,{status:value.positionOpen?'position':value.signal?'signal':value.regime?'watch':'blocked',available:true,reason:value.reason});
 }catch(e){if(token!==R.token)return;item.status='error';item.available=false;item.reason=e.message||String(e);}
 render();
 }
