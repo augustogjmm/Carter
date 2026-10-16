@@ -52,6 +52,40 @@ jobs:
           for(const id of ['pcsChart','pcsDecisionTitle','pcsAConditions','pcsBConditions','pcsStats','pcsSL','pcsTP1'])assert(fs.readFileSync('pcs.html','utf8').includes('id="'+id+'"'));
           console.log('PCS fixed-rule smoke tests: OK');
           JS
+      - name: Top-50 radar smoke tests
+        run: |
+          node <<'JS'
+          const assert = require('node:assert/strict');
+          const vm = require('node:vm');
+          const fs = require('node:fs');
+          const sandbox = {window:{}};
+          vm.runInNewContext(fs.readFileSync('pcs.js','utf8'),sandbox);
+          vm.runInNewContext(fs.readFileSync('scanner.js','utf8'),sandbox);
+          const core=sandbox.window.PCSScannerCore;
+          assert(core && typeof core.classify==='function');
+          const now=Math.floor(Date.now()/14400000)*14400000-14400000;
+          const bars=Array.from({length:800},(_,i)=>{
+            const p=100+i*.08+2*Math.sin(i/12);
+            return {t:now-(799-i)*14400000,o:p,h:p+1,l:p-1,c:p+0.2,v:100+i%14};
+          });
+          const r=core.classify(bars);
+          assert.equal(typeof r.signal,'boolean');
+          assert(Number.isFinite(r.adx) && Number.isFinite(r.atr));
+          assert.equal(r.signal, r.A||r.B);
+          assert.throws(()=>core.classify(bars.slice(0,-1)),/sincronizada/);
+          const x=Array.from({length:50},(_,i)=>({id:'asset-'+i,symbol:'T'+i,name:'Coin '+i,rank:i+1,price:1}));
+          assert.equal(core.normalizeCoins(x).length,50);
+          assert.throws(()=>core.normalizeCoins(x.slice(0,49)),/exactamente 50/);
+          assert.equal(core.unscannable({id:'tether',symbol:'USDT',name:'Tether'},new Set(['USDT']),new Set()).status,'excluded');
+          assert.equal(core.unscannable({id:'wrapped-bitcoin',symbol:'BTC',name:'Wrapped Bitcoin'},new Set(['BTC']),new Set()).status,'excluded');
+          assert.equal(core.unscannable({id:'bitcoin',symbol:'BTC',name:'Bitcoin'},new Set(['BTC']),new Set()),null);
+          assert.equal(core.unscannable({id:'unknown',symbol:'XXX',name:'Not listed'},new Set(),new Set()).status,'missing');
+          for(const id of ['radarRows','radarProgress','radarPositive','radarRefresh','radarError','radarSelected']){
+            assert(fs.readFileSync('pcs.html','utf8').includes('id="'+id+'"'));
+          }
+          assert(fs.readFileSync('pcs.html','utf8').includes('<script src="scanner.js"></script>'));
+          console.log('Top 50 radar smoke tests OK');
+          JS
       - name: Indicator and volume-profile smoke test
         run: |
           node <<'JS'
