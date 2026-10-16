@@ -2,6 +2,10 @@
 
 Aplicación estática: https://carter-rust.vercel.app . Conectada al repositorio y desplegada automáticamente por Vercel desde la rama main.
 
+## Radar top 50 y PCS Squeeze Regime Pro (16/10/2026)
+
+La vista PCS incluye una tabla top 50 ordenada por capitalización de CoinGecko (snapshot actual obtenido por /api/top50, cacheado aproximadamente 15 min en Vercel). Se muestran **exactamente 50** activos (incluidas stablecoins, tokens envueltos y activos sin par spot); los no aplicables o no listados se identifican como tales, nunca se sustituyen por otros tickers. Consulta el catálogo de Binance spot USDT y analiza hasta 1000 velas cerradas 4H por par disponible, con un máximo de cuatro consultas simultáneas. Señales verdes solo cuando hay puerta A/B, régimen y simulación FLAT; si el sistema mantiene un LONG teórico, indica LONG PREVIO, nunca una nueva entrada. Las señales en verde **se refieren al cierre de la última vela 4H, no a un precio de compra vigente**. El radar actualiza al cerrar una nueva vela 4H y refresca el ranking pasado una hora, **solo mientras esté abierto el navegador**. Maneja datos obsoletos, errores de API, ausencia de pares y reintentos sin inventar precios ni mantener verdes antiguos.
+
 ## Nueva vista PCS Squeeze Regime Pro (16/10/2026)
 
 - **Enlace:** [PCS 4H](https://carter-rust.vercel.app/pcs.html), disponible desde la pestaña «PCS · nueva» en Carter. El modelo Carter original se conserva en index.html.
