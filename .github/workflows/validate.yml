@@ -16,6 +16,8 @@ jobs:
           node --check app.js
           node --check research.js
           node --check pcs.js
+          node --check scanner.js
+          node --check api/top50.js
       - name: PCS independent smoke tests
         run: |
           node <<'JS'
