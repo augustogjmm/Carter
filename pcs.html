@@ -14,7 +14,7 @@
  <div class="live"><span id="pcsDot" class="dot"></span><strong id="pcsStatus">Sin datos</strong></div>
 </header>
 <section class="pcs-heading">
- <div><div class="eyebrow">SISTEMA PCS · BTCUSDT / ETHUSDT · SPOT 4H · SOLO LARGOS</div><h1>¿Hay una entrada <em>confirmada</em>?</h1><p>Primero el régimen. Después las puertas A/B. Ejecución exclusivamente en la apertura siguiente, con riesgo ATR, TP1 parcial y trailing. Una posición por activo, sin promedios.</p></div>
+ <div><div class="eyebrow">SISTEMA PCS · RADAR TOP 50 · SPOT USDT · 4H · SOLO LARGOS</div><h1>¿Hay una entrada <em>confirmada</em>?</h1><p>Primero el régimen. Después las puertas A/B. Ejecución exclusivamente en la apertura siguiente, con riesgo ATR, TP1 parcial y trailing. Una posición por activo, sin promedios.</p></div>
  <div class="pcs-flag" id="pcsEvidence">VALIDACIÓN INDEPENDIENTE PENDIENTE</div>
 </section>
 <section class="pcs-toolbar" aria-label="Parámetros de consulta">
@@ -23,6 +23,27 @@
  <label>CAPITAL USDT <input id="pcsCapital" type="number" value="1000" min="1" step="100"></label>
  <button id="pcsRefresh" class="btn primary" type="button">Actualizar datos ↗</button>
  <span class="pcs-data" id="pcsSource">Buscando Binance Spot…</span>
+</section>
+<section class="panel radar-panel" aria-label="Radar PCS de las 50 criptomonedas principales">
+  <div class="panel-header radar-head">
+    <div><div class="overline">DETECCIÓN AUTOMÁTICA · TOP 50 POR CAPITALIZACIÓN</div><h2>Radar PCS · 50 criptoactivos</h2><small id="radarSource">Ranking de CoinGecko · 4H spot Binance · sin datos aún</small></div>
+    <div class="radar-controls"><label><input type="checkbox" id="radarSort" checked> Ver señales primero</label><label><input type="checkbox" id="radarOnly"> Solo verdes</label><button class="btn primary" type="button" id="radarRefresh">Reanalizar 50 ↗</button></div>
+  </div>
+  <div class="radar-stats">
+    <div class="radar-stat radar-stat-green"><span>SEÑAL PCS CONFIRMADA</span><strong id="radarPositive">0</strong><small>Puerta A y/o B · última 4H cerrada</small></div>
+    <div class="radar-stat radar-stat-amber"><span>RÉGIMEN ALCISTA · ESPERAR</span><strong id="radarWatch">0</strong><small>Tendencia válida, sin disparo</small></div>
+    <div class="radar-stat"><span>ACTIVOS REVISADOS</span><strong id="radarProgress">0 / 50</strong><small id="radarScanAt">Esperando resultados</small></div>
+  </div>
+  <div class="radar-progress"><div id="radarBar"></div></div>
+  <div class="radar-sub"><strong id="radarStatus">Preparando la revisión de 50 activos…</strong><span>Actualiza al cerrar cada 4H mientras esta pestaña esté abierta.</span></div>
+  <div id="radarError" class="error" role="alert"></div>
+  <div id="radarSelected" class="radar-selected" aria-live="polite">Seleccioná una criptomoneda para abrir su gráfico 4H y evaluar el plan completo.</div>
+  <div class="radar-tablewrap"><table class="radar-table" aria-label="Top 50 criptomonedas y señales PCS">
+    <thead><tr><th>RANK</th><th>ACTIVO</th><th>PRECIO REF. USD</th><th>24H</th><th>ESTADO PCS</th><th>MOTIVO DE LA EVALUACIÓN</th><th>INDICADORES</th><th>DETALLE</th></tr></thead>
+    <tbody id="radarRows"><tr><td colspan="8">Obteniendo el ranking…</td></tr></tbody>
+  </table></div>
+  <p id="radarAlert" class="radar-disclaimer">Verde = señal técnica en la vela 4H cerrada, NO una orden de compra a precio de mercado. La apertura siguiente puede haber ocurrido. Los activos sin par o no adecuados se mantienen en el top 50, sin sustitutos.</p>
+  <p class="radar-disclaimer">La lista es el <strong>top 50 exacto por capitalización</strong> de CoinGecko, no las 50 monedas más operables. No se reemplazan stablecoins ni tokens envueltos. El análisis se ejecuta en segundo plano <strong>dentro del navegador mientras la página permanece abierta</strong>; no existe vigilancia remota ni envío automático de operaciones.</p>
 </section>
 <div id="pcsError" role="alert" class="error"></div>
 <div id="pcsProgress" role="status" class="pcs-progress">Cargando velas históricas 4H cerradas…</div>
@@ -72,4 +93,5 @@
 <footer>PCS Squeeze Regime Pro · Visualizador de investigación · BTC/ETH Binance Spot 4H, respaldo Bybit si falla · Sin órdenes reales. Resultados sujetos a auditoría independiente.</footer>
 </main>
 <script src="pcs.js"></script>
+<script src="scanner.js"></script>
 </body></html>
