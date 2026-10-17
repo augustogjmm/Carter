@@ -15,6 +15,13 @@
     <div><div class="eyebrow">MODELO CARTER ANTERIOR · TEMPORALIDAD FIJA 4H</div><h1>Proyectá la <em>próxima operación 4H.</em></h1><p>Modelo Carter escalonado E1/E2/E3 y perfil de volumen. Para el nuevo sistema de una única entrada, elegí la pestaña PCS · nueva.</p></div>
     <div class="mode"><span class="bullet"></span> MODO ANÁLISIS <small>Sin órdenes automáticas</small></div>
   </section>
+  <section class="panel" id="carterRadar" style="margin:16px 0;padding:18px">
+    <div class="panel-header"><h2>Radar Carter · Top 50 por capitalización</h2><span class="mini-tag">VELAS 4H CERRADAS · SIN ÓRDENES</span></div>
+    <p class="disclaimer">Se aplica el disparador Carter original a cada activo, no las reglas PCS. Verde = señal confirmada en la última vela cerrada; no garantiza una entrada rentable. Los activos sin mercado o datos válidos permanecen visibles.</p>
+    <button id="carterRadarRefresh" class="btn primary" type="button">Actualizar Top 50</button>
+    <p id="carterRadarStatus" role="status">Preparando radar…</p>
+    <div id="carterRadarRows" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:9px"></div>
+  </section>
   <section class="toolbar">
     <label class="field pair">PAR BINANCE SPOT <input id="symbol" value="SOLUSDT" list="pairs" autocomplete="off" spellcheck="false"><datalist id="pairs"><option value="BTCUSDT"><option value="ETHUSDT"><option value="SOLUSDT"><option value="AVAXUSDT"><option value="LINKUSDT"><option value="BNBUSDT"></datalist></label>
     <button id="analyze" class="btn primary">Analizar par ↗</button>
@@ -154,5 +161,6 @@
 <script src="engine.js"></script>
 <script src="research.js"></script>
 <script src="app.js"></script>
+<script src="carter-radar.js"></script>
 </body>
 </html>
