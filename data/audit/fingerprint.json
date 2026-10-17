@@ -1,0 +1,118 @@
+[
+  {
+    "symbol": "BTCUSDT",
+    "tf": "4h",
+    "source": "Binance public data API",
+    "bars": 14888,
+    "first": 1577836800000,
+    "last_open": 1792224000000,
+    "gaps": [
+      {
+        "before": 1582099200000,
+        "after": 1582128000000,
+        "missing": 1
+      }
+    ],
+    "strict_integrity": "FAIL",
+    "sha256_csv": "627cccd1af7001ee539ea60e5af43faa73491afcd2e0c31f85fe67d8a7c3df2c"
+  },
+  {
+    "symbol": "ETHUSDT",
+    "tf": "4h",
+    "source": "Binance public data API",
+    "bars": 14888,
+    "first": 1577836800000,
+    "last_open": 1792224000000,
+    "gaps": [
+      {
+        "before": 1582099200000,
+        "after": 1582128000000,
+        "missing": 1
+      }
+    ],
+    "strict_integrity": "FAIL",
+    "sha256_csv": "5edfe50494189b4a82f5cf6d304bd655831a2eb8dfa9e5c610cef7fa2ec3a993"
+  },
+  {
+    "symbol": "BTCUSDT",
+    "tf": "1h",
+    "source": "Binance public data API",
+    "bars": 42012,
+    "first": 1640995200000,
+    "last_open": 1792238400000,
+    "gaps": [
+      {
+        "before": 1679659200000,
+        "after": 1679666400000,
+        "missing": 1
+      }
+    ],
+    "strict_integrity": "FAIL",
+    "sha256_csv": "635e1f9a9a8339546d62e3e5aeed72c71789145fe367038fddac516c9fc7276b"
+  },
+  {
+    "symbol": "ETHUSDT",
+    "tf": "1h",
+    "source": "Binance public data API",
+    "bars": 42012,
+    "first": 1640995200000,
+    "last_open": 1792238400000,
+    "gaps": [
+      {
+        "before": 1679659200000,
+        "after": 1679666400000,
+        "missing": 1
+      }
+    ],
+    "strict_integrity": "FAIL",
+    "sha256_csv": "145ad288af644bd7f8110fbdb1e18c7d77e74a18424f25458ec6f11d10beb413"
+  },
+  {
+    "symbol": "BTCUSDT",
+    "tf": "15m",
+    "source": "binance-spot-api",
+    "sha256_rowhash": "321fd7e723c979772b936395c990c9dde7a7800d247e63207b041dd95791f7fa",
+    "bars": 97973,
+    "first": "2024-01-01T00:00:00+00:00",
+    "last_open": "2026-10-17T13:00:00+00:00",
+    "last_close": "2026-10-17T13:15:00+00:00",
+    "gaps_missing_bars": 0,
+    "filepath": "audit_cache/BTCUSDT_15m_2024_20261017.csv"
+  },
+  {
+    "symbol": "ETHUSDT",
+    "tf": "15m",
+    "source": "binance-spot-api",
+    "sha256_rowhash": "5da07c219beed6dd1c0baa36c946082203ba6d6be97bb2197742b6befaa43b0d",
+    "bars": 97973,
+    "first": "2024-01-01T00:00:00+00:00",
+    "last_open": "2026-10-17T13:00:00+00:00",
+    "last_close": "2026-10-17T13:15:00+00:00",
+    "gaps_missing_bars": 0,
+    "filepath": "audit_cache/ETHUSDT_15m_2024_20261017.csv"
+  },
+  {
+    "symbol": "SOLUSDT",
+    "tf": "4h",
+    "source": "binance-spot-api",
+    "sha256_rowhash": "728f51d690660637dd3ed804911b633e321f86d28efc13ec5ac29b6479b7de00",
+    "bars": 12693,
+    "first": "2021-01-01T00:00:00+00:00",
+    "last_open": "2026-10-17T08:00:00+00:00",
+    "last_close": "2026-10-17T12:00:00+00:00",
+    "gaps_missing_bars": 0,
+    "filepath": "audit_cache/SOLUSDT_4h_2021_20261017.csv"
+  },
+  {
+    "symbol": "BNBUSDT",
+    "tf": "4h",
+    "source": "binance-spot-api",
+    "sha256_rowhash": "839b2ab48d9c8078bc22cea8be4ed5885a0916005637823530b64e35106479db",
+    "bars": 12693,
+    "first": "2021-01-01T00:00:00+00:00",
+    "last_open": "2026-10-17T08:00:00+00:00",
+    "last_close": "2026-10-17T12:00:00+00:00",
+    "gaps_missing_bars": 0,
+    "filepath": "audit_cache/BNBUSDT_4h_2021_20261017.csv"
+  }
+]

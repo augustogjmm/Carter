@@ -1,0 +1,108 @@
+{
+  "criteria": {
+    "C1": false,
+    "C2": false,
+    "C3": false,
+    "C4": false,
+    "C5": false,
+    "C6": false,
+    "C7": false,
+    "C8": false,
+    "C9": false,
+    "C10": false
+  },
+  "details": {
+    "C3_neighbors_tested": 107,
+    "C3_bad_neighbors": 41,
+    "C4_note": "PASS de sensibilidad al lag no prueba por sí solo ausencia de look-ahead; se exige también test causal prefix-invariance",
+    "C9_per_component": {
+      "BTCUSDT/sin_regimen": true,
+      "BTCUSDT/sin_volumen": true,
+      "BTCUSDT/solo_A": false,
+      "BTCUSDT/solo_B": true,
+      "BTCUSDT/sin_TP1": false,
+      "BTCUSDT/sin_BE": true,
+      "BTCUSDT/sin_tiempo": false,
+      "ETHUSDT/sin_regimen": true,
+      "ETHUSDT/sin_volumen": true,
+      "ETHUSDT/solo_A": true,
+      "ETHUSDT/solo_B": true,
+      "ETHUSDT/sin_TP1": false,
+      "ETHUSDT/sin_BE": true,
+      "ETHUSDT/sin_tiempo": false
+    },
+    "C10_note": "DCA Calmar proxy por valor/aporte acumulado: no comparable rigurosamente",
+    "data_quality_failures": [
+      {
+        "symbol": "BTCUSDT",
+        "tf": "4h",
+        "source": "Binance public data API",
+        "bars": 14888,
+        "first": 1577836800000,
+        "last_open": 1792224000000,
+        "gaps": [
+          {
+            "before": 1582099200000,
+            "after": 1582128000000,
+            "missing": 1
+          }
+        ],
+        "strict_integrity": "FAIL",
+        "sha256_csv": "627cccd1af7001ee539ea60e5af43faa73491afcd2e0c31f85fe67d8a7c3df2c"
+      },
+      {
+        "symbol": "ETHUSDT",
+        "tf": "4h",
+        "source": "Binance public data API",
+        "bars": 14888,
+        "first": 1577836800000,
+        "last_open": 1792224000000,
+        "gaps": [
+          {
+            "before": 1582099200000,
+            "after": 1582128000000,
+            "missing": 1
+          }
+        ],
+        "strict_integrity": "FAIL",
+        "sha256_csv": "5edfe50494189b4a82f5cf6d304bd655831a2eb8dfa9e5c610cef7fa2ec3a993"
+      },
+      {
+        "symbol": "BTCUSDT",
+        "tf": "1h",
+        "source": "Binance public data API",
+        "bars": 42012,
+        "first": 1640995200000,
+        "last_open": 1792238400000,
+        "gaps": [
+          {
+            "before": 1679659200000,
+            "after": 1679666400000,
+            "missing": 1
+          }
+        ],
+        "strict_integrity": "FAIL",
+        "sha256_csv": "635e1f9a9a8339546d62e3e5aeed72c71789145fe367038fddac516c9fc7276b"
+      },
+      {
+        "symbol": "ETHUSDT",
+        "tf": "1h",
+        "source": "Binance public data API",
+        "bars": 42012,
+        "first": 1640995200000,
+        "last_open": 1792238400000,
+        "gaps": [
+          {
+            "before": 1679659200000,
+            "after": 1679666400000,
+            "missing": 1
+          }
+        ],
+        "strict_integrity": "FAIL",
+        "sha256_csv": "145ad288af644bd7f8110fbdb1e18c7d77e74a18424f25458ec6f11d10beb413"
+      }
+    ],
+    "download_failures": [],
+    "methodology": "Historical gaps preserved as observed. Strict integrity failed where indicated; results there are exploratory, never certified."
+  }
+}

@@ -1,0 +1,3 @@
+symbol,window,permutations,legs,DD_median,DD_P95,final_median,final_P5,P_losing,P_DD_gt50,note
+BTCUSDT,OOS,5000,282,0.12019953692467089,0.18354299460297405,1.460679967187593,1.460679967187591,0.0,0.0,Permutación de piernas con factores secuenciales reconciliados: terminal invariante
+ETHUSDT,OOS,5000,229,0.0771622484164462,0.1198609291400581,1.414229623911339,1.4142296239113372,0.0,0.0,Permutación de piernas con factores secuenciales reconciliados: terminal invariante
