@@ -14,6 +14,10 @@ Registro prospectivo: 28 cuentas teóricas (7 modelos × BTC/ETH/SOL/BNB), con c
 
 El ledger se prueba contra los siete backtests independientes antes de la liquidación terminal. La muestra prospectiva mínima indicada (tres meses y 20 operaciones cerradas por activo) no implica aprobación ni garantiza que se alcance una ventaja. No puede completarse con datos futuros que aún no existen.
 
+## Hipótesis de contexto diario
+
+Se ejecutó una segunda hipótesis, declarada en research/mtf_protocol.json: ocho variantes que combinan señales 4H con un régimen diario cerrado. La única candidata se elige por entrenamiento BTC/ETH 2020–2022; luego se evalúa en períodos posteriores y en XRP/ADA/AVAX/LTC, que no participan en esa selección. Se conserva el riesgo 1%, contado 1× y los criterios de aprobación. Los 240 controles de prefijos incluyen el momento exacto en que un día completo pasa a estar disponible, evitando usar el cierre diario antes de tiempo. Datos y decisión en data/mtf-study/; no altera el estudio prospectivo anterior.
+
 ## Actualización 17/10/2026
 
 - Radar y gráfico usan el mismo histórico desde 2020 o desde el listado del activo, el mismo motor y la misma caché por cierre. Se elimina la discrepancia de simular 1000 velas en el radar y todo el histórico en el detalle.
@@ -50,3 +54,6 @@ Carter anterior mantiene su motor, perfil de volumen estimado y escenarios propi
 Escaneo remoto verificado del 17/10/2026 13:31 UTC: 50 filas, 29 activos calculados, 10 excluidos, 11 sin par spot Binance y cero errores de descarga. HYPE se calculó con KuCoin spot y sin huecos. Los activos sin par y los excluidos permanecen identificados; no se sustituyen por monedas fuera del top 50.
 
 Las posiciones son teóricas, reconstruidas desde el histórico disponible; no equivalen a tenencias del usuario. Las estadísticas FULL/IS/OOS del panel son segmentos de esa simulación continua. La auditoría publicada sí reinicia las ventanas de manera independiente. No hay ejecución de órdenes, seguimiento de una cuenta real ni rentabilidad garantizada.
+### Diagnóstico del Carter real
+
+`research/carter_actual.py` ejecuta `engine.js` y `research.js` directamente mediante Node, sin reinterpretar sus señales. Publica estadísticas en R de los tres modelos históricos de la aplicación, ocho activos y ventanas de calendario, junto con operaciones y SHA-256 del código. Prueba invariancia por prefijos de cinco campos causales. No selecciona un ganador ni aprueba el sistema: el simulador original excluye slippage y gaps de ejecución y no calcula una cartera comparable al estudio PCS. La vista está en `review.html#carter-actual`.

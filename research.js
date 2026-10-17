@@ -120,7 +120,9 @@ function evaluate(c,s,split,mode,start,end,opts={}){
   trades.push({...trade,signalAt:i,price:entry});
   lastExit=trade.exitIndex;
  }
- return stats(trades,skips,signals);
+ const result=stats(trades,skips,signals);
+ if(opts.includeTrades)result.trades=trades;
+ return result;
 }
 function run(c,s,useADX=true){
  if(!Array.isArray(c)||c.length<450)return{valid:false,reason:'Se necesitan al menos 450 velas 4H'};

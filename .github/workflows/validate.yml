@@ -22,6 +22,9 @@ jobs:
           node --check audit.js
           node --check review.js
           node --check paper.js
+          node --check mtf-study.js
+          node --check carter-actual.js
+          node --check research/carter_actual.cjs
       - name: Product regression tests
         run: node --test tests/product.test.cjs
       - name: PCS independent smoke tests
