@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "declaredAt": "2026-10-17T14:19:49Z",
+  "hypothesis": "A fully closed daily trend filter can reduce 4H whipsaws without future daily closes",
+  "trainingAssets": ["BTCUSDT", "ETHUSDT"],
+  "heldoutAssets": ["XRPUSDT", "ADAUSDT", "AVAXUSDT", "LTCUSDT"],
+  "trainingWindow": ["2020-01-01", "2023-01-01"],
+  "selection": "One model: maximum minimum BTC/ETH IS Calmar, with no later reselection",
+  "risk": 0.01,
+  "exposureMax": 1,
+  "fee": 0.001,
+  "stressEquivalentFee": 0.002,
+  "dailyRegime": "Latest fully closed complete UTC day: close>EMA200 and EMA50>EMA50 five closed days earlier; availableAt=day close <= 4H signal close",
+  "promotionGate": "Same BTC/ETH performance, recent and stress requirements as review_protocol.json, AND at least 3 of 4 heldout assets with CAGR>0, PF>=1.2, DD<=20% and >=20 trades",
+  "variants": [
+    {"id":"DC21_DAILY","entry":"DC21","partial":false,"trail":2.5},
+    {"id":"DC55_DAILY","entry":"DC55","partial":false,"trail":2.5},
+    {"id":"PCS_DAILY","entry":"PCS","partial":true,"trail":2.5},
+    {"id":"PULLBACK_DAILY","entry":"B","partial":false,"trail":2.5},
+    {"id":"SQUEEZE_DAILY","entry":"SQ","partial":false,"trail":2.5},
+    {"id":"DC21_DAILY_TRAIL4","entry":"DC21","partial":false,"trail":4.0},
+    {"id":"PCS_DAILY_TRAIL4","entry":"PCS","partial":false,"trail":4.0},
+    {"id":"A_DAILY","entry":"A","partial":true,"trail":2.5}
+  ],
+  "limits": ["BTC/ETH aggregate later results are already known, so not blind validation", "Heldout assets are a predeclared surviving liquid sample, not a survivor-free universe", "No parameter or risk changes after seeing results", "This does not alter the frozen prospective paper study"]
+}
