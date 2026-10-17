@@ -6,7 +6,7 @@ Entrada principal: https://carter-rust.vercel.app/pcs.html. Carter anterior se c
 
 - Radar y gráfico usan el mismo histórico desde 2020 o desde el listado del activo, el mismo motor y la misma caché por cierre. Se elimina la discrepancia de simular 1000 velas en el radar y todo el histórico en el detalle.
 - Escaneo remoto GitHub Actions cada 4 horas a minuto 7 UTC, además de cada cambio del motor. Guarda data/radar.json y el despliegue conectado lo publica. La programación puede demorarse por la cola del proveedor. El navegador rechaza snapshots de otro cierre y analiza directamente si falta el vigente.
-- La descarga tiene límites de tiempo y respaldo por API del mismo sitio, con endpoints de mercado restringidos. No existen órdenes ni credenciales de exchange.
+- La descarga tiene límites de tiempo y respaldo por API del mismo sitio, con endpoints de mercado restringidos. Binance es la fuente primaria, con Bybit y KuCoin spot como respaldo explícito. No se mezclan velas de exchanges distintos en una misma serie. No existen órdenes ni credenciales de exchange.
 - La pantalla limpia gráficos, niveles y señales antes de cambiar de activo. Una falla muestra SIN DATOS y no conserva el plan anterior.
 - Solo velas cerradas, validación OHLCV, deduplicación, vigencia del último cierre y continuidad en las últimas 350 barras. Los huecos históricos anteriores siguen visibles en la cobertura del backtest y no se presentan como una serie íntegra.
 - Modo inicial contado 1×. El modo matemático original 3× sigue disponible, etiquetado como teórico. El sizing no modifica las reglas de señal.
@@ -14,7 +14,7 @@ Entrada principal: https://carter-rust.vercel.app/pcs.html. Carter anterior se c
 - Una posición por activo, stop prioritario, TP1 50%, breakeven y trailing desde la siguiente vela. El backtest no registra compras reales del usuario.
 - Pruebas: node --test tests/product.test.cjs; smoke heredado en validate.yml; escaneo real independiente en scan.yml.
 
-La funcionalidad del producto y la rentabilidad de la estrategia son comprobaciones distintas. La auditoría cuantitativa independiente C1–C10 continúa pendiente; no se certifica un porcentaje de acierto ni una rentabilidad.
+La auditoría independiente C1–C10 se ejecutó el 17/10/2026 con 8 series reales y 320 escenarios, más la variante de contado 1×. Dictamen final: **RECHAZADA bajo los criterios definidos**, con cuatro series que presentan huecos históricos declarados. Los resultados medidos y las limitaciones se publican en audit.html y data/audit/. No se certifica rentabilidad futura. La implementación del motor no transforma un dictamen desfavorable en aprobación.
 
 ## Reglas congeladas
 
@@ -35,6 +35,6 @@ Carter anterior mantiene su motor, perfil de volumen estimado y escenarios propi
 
 ## Cobertura y límites observados
 
-Primera ejecución remota del 17/10/2026: 50 filas, 28 activos calculados, 10 excluidos, 11 sin par spot Binance y HYPE sin histórico suficiente accesible. Es un estado variable del proveedor, no un resultado inventado. Los activos sin cobertura permanecen visibles y sin señales.
+Escaneo remoto verificado del 17/10/2026 13:31 UTC: 50 filas, 29 activos calculados, 10 excluidos, 11 sin par spot Binance y cero errores de descarga. HYPE se calculó con KuCoin spot y sin huecos. Los activos sin par y los excluidos permanecen identificados; no se sustituyen por monedas fuera del top 50.
 
-Las posiciones son teóricas, reconstruidas desde el histórico disponible; no equivalen a tenencias del usuario. Las estadísticas FULL/IS/OOS del panel son segmentos de esa simulación continua, no una réplica de ventanas independientes de la auditoría C1–C10. No hay ejecución de órdenes, seguimiento de una cuenta real ni rentabilidad garantizada.
+Las posiciones son teóricas, reconstruidas desde el histórico disponible; no equivalen a tenencias del usuario. Las estadísticas FULL/IS/OOS del panel son segmentos de esa simulación continua. La auditoría publicada sí reinicia las ventanas de manera independiente. No hay ejecución de órdenes, seguimiento de una cuenta real ni rentabilidad garantizada.

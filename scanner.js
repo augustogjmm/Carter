@@ -155,7 +155,7 @@ if(!forceRank){
  const remote=await getJson('/data/radar.json',6000),expected=Math.floor(Date.now()/BAR)*BAR-BAR;
  if(remote.version!==2||remote.lastCandle!==expected||!Array.isArray(remote.items)||remote.items.length!==50||Date.now()-Date.parse(remote.generatedAt)>BAR)throw new Error('Snapshot remoto no vigente');
  normalizeCoins(remote.items);
- R.items=remote.items;R.coins=remote.items;R.marketAt=Date.parse(remote.marketAt);R.source='Escaneo programado · CoinGecko / Binance';R.scanAt=Date.parse(remote.generatedAt);R.barId=Math.floor(Date.now()/BAR);R.problem='';
+ R.items=remote.items;R.coins=remote.items;R.marketAt=Date.parse(remote.marketAt);R.source='Escaneo programado · ranking CoinGecko';R.scanAt=Date.parse(remote.generatedAt);R.barId=Math.floor(Date.now()/BAR);R.problem='';
  label('radarError','');$('radarError').classList.remove('show');return;
  }catch(e){/* El escaneo local mantiene servicio si el programado está pendiente. */}
 }
