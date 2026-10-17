@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ['research/carter_actual.py', 'research/carter_actual.cjs', '.github/workflows/carter-actual.yml']
+    paths: ['engine.js', 'research.js', 'research/carter_actual.py', 'research/carter_actual.cjs', '.github/workflows/carter-actual.yml']
 jobs:
   diagnose:
     runs-on: ubuntu-latest

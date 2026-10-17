@@ -95,7 +95,7 @@ function stats(trades,skipped,signals){
  return{n,signals,skipped,wins:w,winrate:wr,ciLow:low,ciHigh:high,meanR:mean,totalR:total,pf:neg>0?pos/neg:null,maxDDR:dd,wonTP,lostSL,expired,filled2,filled3,adequate:n>=30};
 }
 function evaluate(c,s,split,mode,start,end,opts={}){
- const trades=[],maxIndex=end-HORIZON-1;
+ const trades=[],rejectionReasons={},maxIndex=end-HORIZON-1;
  let skips=0,signals=0,lastExit=start-1;
  const filter=mode!=='base';
  for(let i=Math.max(230,start);i<=maxIndex;i++){
@@ -112,7 +112,7 @@ function evaluate(c,s,split,mode,start,end,opts={}){
     if(stop>0)trade=fixedTrade(c,i,end,stop,tp);
   }else{
     const level=calcLevels(c,s,i,entry,true);
-    if(!level?.valid){skips++;continue;}
+    if(!level?.valid){skips++;const reason=level?.reason||'Niveles inválidos';rejectionReasons[reason]=(rejectionReasons[reason]||0)+1;continue;}
     // The historical stopped trade is explicitly anchored to a historical 4H trigger.
     trade=stagedTrade(c,s,i,end,level);
   }
@@ -121,7 +121,7 @@ function evaluate(c,s,split,mode,start,end,opts={}){
   lastExit=trade.exitIndex;
  }
  const result=stats(trades,skips,signals);
- if(opts.includeTrades)result.trades=trades;
+ if(opts.includeTrades){result.trades=trades;result.rejectionReasons=rejectionReasons;}
  return result;
 }
 function run(c,s,useADX=true){

@@ -27,6 +27,8 @@ jobs:
           node --check research/carter_actual.cjs
       - name: Product regression tests
         run: node --test tests/product.test.cjs
+      - name: Actual Carter causal and export regression tests
+        run: node --test tests/carter-actual.test.cjs
       - name: PCS independent smoke tests
         run: |
           node <<'JS'
