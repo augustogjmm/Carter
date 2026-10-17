@@ -1,0 +1,27 @@
+name: Declared daily-regime hypothesis
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['research/mtf_protocol.json', 'research/mtf_study.py', '.github/workflows/mtf-study.yml']
+jobs:
+  study:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install numpy==2.3.5 pandas==2.3.3 requests==2.32.5
+      - run: python -u research/mtf_study.py
+      - name: Publish fixed hypothesis results
+        run: |
+          git config user.name 'augustogjmm'
+          git config user.email '44848888+augustogjmm@users.noreply.github.com'
+          git add data/mtf-study
+          git commit -m 'research: evaluate closed-daily regime with predeclared heldout assets'
+          git pull --rebase origin main
+          git push origin HEAD:main
