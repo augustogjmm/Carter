@@ -1,0 +1,27 @@
+name: Fixed strategy comparison and causal review
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['research/review_protocol.json', 'research/review_suite.py', '.github/workflows/review.yml']
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install numpy==2.3.5 pandas==2.3.3 requests==2.32.5 tabulate==0.9.0
+      - run: python -u research/review_suite.py
+      - name: Publish evidence and fixed decision
+        run: |
+          git config user.name 'augustogjmm'
+          git config user.email '44848888+augustogjmm@users.noreply.github.com'
+          git add data/review
+          git commit -m 'research: fixed candidate comparison, causal checks and promotion decision'
+          git pull --rebase origin main
+          git push origin HEAD:main
