@@ -1,6 +1,6 @@
 {
   "completed": true,
-  "generatedAt": "2026-10-17T13:40:54.067910+00:00",
+  "generatedAt": "2026-10-17T13:47:12.473222+00:00",
   "protocol": {
     "version": 1,
     "declaredAt": "2026-10-17",
@@ -1724,6 +1724,210 @@
       "end": "2026-07-01"
     },
     {
+      "symbol": "BTCUSDT",
+      "window": "FULL",
+      "experiment": "B&H",
+      "CAGR": 0.4292110328,
+      "MaxDD": 0.770433932,
+      "Calmar": 0.5571029715,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": 10.3148887778,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "BTCUSDT",
+      "window": "FULL",
+      "experiment": "DCA",
+      "CAGR": 0.4282914923,
+      "MaxDD": 0.7704934408,
+      "Calmar": 0.5558665001,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": 10.2655247758,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "BTCUSDT",
+      "window": "IS",
+      "experiment": "B&H",
+      "CAGR": 0.3189218767,
+      "MaxDD": 0.770433932,
+      "Calmar": 0.4139509743,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": 1.2944819425,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "BTCUSDT",
+      "window": "IS",
+      "experiment": "DCA",
+      "CAGR": 0.3171623722,
+      "MaxDD": 0.7704934408,
+      "Calmar": 0.4116353954,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": 1.2853106471,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "BTCUSDT",
+      "window": "VALIDATION",
+      "experiment": "B&H",
+      "CAGR": 1.3751198339,
+      "MaxDD": 0.3000609141,
+      "Calmar": 4.5828022559,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": 4.6456494659,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "BTCUSDT",
+      "window": "VALIDATION",
+      "experiment": "DCA",
+      "CAGR": 1.3710404664,
+      "MaxDD": 0.3001597056,
+      "Calmar": 4.5677032625,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": 4.6262640166,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "BTCUSDT",
+      "window": "RECENT",
+      "experiment": "B&H",
+      "CAGR": -0.0747775682,
+      "MaxDD": 0.5344740218,
+      "Calmar": -0.1399087049,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": -0.1299762724,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "BTCUSDT",
+      "window": "RECENT",
+      "experiment": "DCA",
+      "CAGR": -0.0769552834,
+      "MaxDD": 0.534835038,
+      "Calmar": -0.1438860171,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": -0.1336414083,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "BTCUSDT",
+      "window": "OOS_REVIEW",
+      "experiment": "B&H",
+      "CAGR": 0.5222261564,
+      "MaxDD": 0.5344740218,
+      "Calmar": 0.9770842643,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": 3.9216825243,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "BTCUSDT",
+      "window": "OOS_REVIEW",
+      "experiment": "DCA",
+      "CAGR": 0.5207132683,
+      "MaxDD": 0.5345401538,
+      "Calmar": 0.9741331209,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": 3.9031556355,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "BTCUSDT",
+      "window": "STRESS",
+      "experiment": "B&H",
+      "CAGR": 0.5214236812,
+      "MaxDD": 0.5344740218,
+      "Calmar": 0.9755828345,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": 3.9118489731,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "BTCUSDT",
+      "window": "STRESS",
+      "experiment": "DCA",
+      "CAGR": 0.5183891361,
+      "MaxDD": 0.534606276,
+      "Calmar": 0.9696652648,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": 3.8747943301,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
       "symbol": "ETHUSDT",
       "window": "FULL",
       "experiment": "PCS",
@@ -3269,6 +3473,210 @@
       "leverage_entries": null,
       "start": "2026-01-01",
       "end": "2026-07-01"
+    },
+    {
+      "symbol": "ETHUSDT",
+      "window": "FULL",
+      "experiment": "B&H",
+      "CAGR": 0.540226438,
+      "MaxDD": 0.811181193,
+      "Calmar": 0.665975053,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": 17.8087369428,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "ETHUSDT",
+      "window": "FULL",
+      "experiment": "DCA",
+      "CAGR": 0.5394689374,
+      "MaxDD": 0.8111899841,
+      "Calmar": 0.6650340217,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": 17.7459839799,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "ETHUSDT",
+      "window": "IS",
+      "experiment": "B&H",
+      "CAGR": 1.0984700312,
+      "MaxDD": 0.811181193,
+      "Calmar": 1.3541611179,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": 8.2423360938,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "ETHUSDT",
+      "window": "IS",
+      "experiment": "DCA",
+      "CAGR": 1.0963281103,
+      "MaxDD": 0.8111899841,
+      "Calmar": 1.3515059749,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": 8.2140617015,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "ETHUSDT",
+      "window": "VALIDATION",
+      "experiment": "B&H",
+      "CAGR": 0.6684143968,
+      "MaxDD": 0.4532178705,
+      "Calmar": 1.4748191549,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": 1.78490725,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "ETHUSDT",
+      "window": "VALIDATION",
+      "experiment": "DCA",
+      "CAGR": 0.6653419329,
+      "MaxDD": 0.4533316896,
+      "Calmar": 1.46767135,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": 1.7746549506,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "ETHUSDT",
+      "window": "RECENT",
+      "experiment": "B&H",
+      "CAGR": -0.1624998661,
+      "MaxDD": 0.6802938134,
+      "Calmar": -0.2388671819,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": -0.2721699862,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "ETHUSDT",
+      "window": "RECENT",
+      "experiment": "DCA",
+      "CAGR": -0.1645448009,
+      "MaxDD": 0.6805476933,
+      "Calmar": -0.2417829088,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": -0.2753506183,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "ETHUSDT",
+      "window": "OOS_REVIEW",
+      "experiment": "B&H",
+      "CAGR": 0.2053941472,
+      "MaxDD": 0.6802938134,
+      "Calmar": 0.3019197635,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": 1.0309970183,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "ETHUSDT",
+      "window": "OOS_REVIEW",
+      "experiment": "DCA",
+      "CAGR": 0.20403871,
+      "MaxDD": 0.6803712971,
+      "Calmar": 0.2998931772,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": 1.0223485009,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "ETHUSDT",
+      "window": "STRESS",
+      "experiment": "B&H",
+      "CAGR": 0.204758697,
+      "MaxDD": 0.6802938134,
+      "Calmar": 0.3009856815,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": 1.0269390741,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "ETHUSDT",
+      "window": "STRESS",
+      "experiment": "DCA",
+      "CAGR": 0.2020491942,
+      "MaxDD": 0.6804487405,
+      "Calmar": 0.2969352166,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": 1.0097033289,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
     },
     {
       "symbol": "SOLUSDT",
@@ -4818,6 +5226,210 @@
       "end": "2026-07-01"
     },
     {
+      "symbol": "SOLUSDT",
+      "window": "FULL",
+      "experiment": "B&H",
+      "CAGR": 1.0785687086,
+      "MaxDD": 0.9659882371,
+      "Calmar": 1.1165443502,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": 68.234404249,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "SOLUSDT",
+      "window": "FULL",
+      "experiment": "DCA",
+      "CAGR": 1.0775121959,
+      "MaxDD": 0.9660004925,
+      "Calmar": 1.1154364871,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": 68.0308444373,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "SOLUSDT",
+      "window": "IS",
+      "experiment": "B&H",
+      "CAGR": 1.5702276649,
+      "MaxDD": 0.9659882371,
+      "Calmar": 1.6255142708,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": 5.5946977201,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "SOLUSDT",
+      "window": "IS",
+      "experiment": "DCA",
+      "CAGR": 1.5671397807,
+      "MaxDD": 0.9660004925,
+      "Calmar": 1.6222970826,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": 5.5788758691,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "SOLUSDT",
+      "window": "VALIDATION",
+      "experiment": "B&H",
+      "CAGR": 3.3502432801,
+      "MaxDD": 0.4566691786,
+      "Calmar": 7.3362587998,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": 17.9500259019,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "SOLUSDT",
+      "window": "VALIDATION",
+      "experiment": "DCA",
+      "CAGR": 3.3441710833,
+      "MaxDD": 0.4571074544,
+      "Calmar": 7.3159408168,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": 17.897136733,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "SOLUSDT",
+      "window": "RECENT",
+      "experiment": "B&H",
+      "CAGR": -0.2824350897,
+      "MaxDD": 0.7846562325,
+      "Calmar": -0.3599475515,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": -0.4482020541,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "SOLUSDT",
+      "window": "RECENT",
+      "experiment": "DCA",
+      "CAGR": -0.2842767925,
+      "MaxDD": 0.7853955782,
+      "Calmar": -0.3619536453,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": -0.4507366332,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "SOLUSDT",
+      "window": "OOS_REVIEW",
+      "experiment": "B&H",
+      "CAGR": 0.8577882188,
+      "MaxDD": 0.7846562325,
+      "Calmar": 1.0932025812,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": 9.4775194715,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "SOLUSDT",
+      "window": "OOS_REVIEW",
+      "experiment": "DCA",
+      "CAGR": 0.8562899183,
+      "MaxDD": 0.7846970665,
+      "Calmar": 1.0912362934,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": 9.4455057544,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "SOLUSDT",
+      "window": "STRESS",
+      "experiment": "B&H",
+      "CAGR": 0.8568088446,
+      "MaxDD": 0.7846562325,
+      "Calmar": 1.0919544242,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": 9.4565853248,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "SOLUSDT",
+      "window": "STRESS",
+      "experiment": "DCA",
+      "CAGR": 0.8537076986,
+      "MaxDD": 0.7847372486,
+      "Calmar": 1.0878898639,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": 9.3905013854,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
       "symbol": "BNBUSDT",
       "window": "FULL",
       "experiment": "PCS",
@@ -6363,6 +6975,210 @@
       "leverage_entries": null,
       "start": "2026-01-01",
       "end": "2026-07-01"
+    },
+    {
+      "symbol": "BNBUSDT",
+      "window": "FULL",
+      "experiment": "B&H",
+      "CAGR": 0.6665930801,
+      "MaxDD": 0.7243973479,
+      "Calmar": 0.9202036452,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": 18.2627667518,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "BNBUSDT",
+      "window": "FULL",
+      "experiment": "DCA",
+      "CAGR": 0.6656076713,
+      "MaxDD": 0.7245667034,
+      "Calmar": 0.9186285654,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": 18.1968980744,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "BNBUSDT",
+      "window": "IS",
+      "experiment": "B&H",
+      "CAGR": 1.5672637711,
+      "MaxDD": 0.7243973479,
+      "Calmar": 2.1635415642,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": 5.5795108114,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "BNBUSDT",
+      "window": "IS",
+      "experiment": "DCA",
+      "CAGR": 1.5637850496,
+      "MaxDD": 0.7245667034,
+      "Calmar": 2.158234766,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": 5.5617082522,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "BNBUSDT",
+      "window": "VALIDATION",
+      "experiment": "B&H",
+      "CAGR": 0.6865190676,
+      "MaxDD": 0.4126756524,
+      "Calmar": 1.6635802562,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": 1.8457036265,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "BNBUSDT",
+      "window": "VALIDATION",
+      "experiment": "DCA",
+      "CAGR": 0.682742062,
+      "MaxDD": 0.4132695545,
+      "Calmar": 1.6520502287,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": 1.8329660403,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "BNBUSDT",
+      "window": "RECENT",
+      "experiment": "B&H",
+      "CAGR": 0.0137071045,
+      "MaxDD": 0.596234979,
+      "Calmar": 0.0229894337,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": 0.0246888991,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "BNBUSDT",
+      "window": "RECENT",
+      "experiment": "DCA",
+      "CAGR": 0.0113824992,
+      "MaxDD": 0.5964901382,
+      "Calmar": 0.01908246,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": 0.0204831513,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "BNBUSDT",
+      "window": "OOS_REVIEW",
+      "experiment": "B&H",
+      "CAGR": 0.3266997182,
+      "MaxDD": 0.596234979,
+      "Calmar": 0.5479378596,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": 1.9218402791,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "BNBUSDT",
+      "window": "OOS_REVIEW",
+      "experiment": "DCA",
+      "CAGR": 0.3250052354,
+      "MaxDD": 0.5962882019,
+      "Calmar": 0.5450472345,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": 1.9077113131,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "BNBUSDT",
+      "window": "STRESS",
+      "experiment": "B&H",
+      "CAGR": 0.3260003191,
+      "MaxDD": 0.596234979,
+      "Calmar": 0.5467648336,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": 1.9160024247,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
+    },
+    {
+      "symbol": "BNBUSDT",
+      "window": "STRESS",
+      "experiment": "DCA",
+      "CAGR": 0.3228033526,
+      "MaxDD": 0.5963413017,
+      "Calmar": 0.5413063822,
+      "PF": null,
+      "WinRate_legs": null,
+      "trades": 0,
+      "legs": 0,
+      "avg_leg_return": null,
+      "return_total": 1.8894267753,
+      "leverage_entries": null,
+      "start": null,
+      "end": null
     }
   ],
   "bootstrap": [
@@ -6706,101 +7522,841 @@
   "causality": [
     {
       "symbol": "BTCUSDT",
+      "model": "PCS",
       "bars": 250,
       "prefixInvariant": true
     },
     {
       "symbol": "BTCUSDT",
+      "model": "PCS_A",
+      "bars": 250,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BTCUSDT",
+      "model": "PCS_TRAIL",
+      "bars": 250,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BTCUSDT",
+      "model": "CARTER_RAW",
+      "bars": 250,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BTCUSDT",
+      "model": "LATINO",
+      "bars": 250,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BTCUSDT",
+      "model": "DONCHIAN21",
+      "bars": 250,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BTCUSDT",
+      "model": "EMA50_200",
+      "bars": 250,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BTCUSDT",
+      "model": "PCS",
       "bars": 500,
       "prefixInvariant": true
     },
     {
       "symbol": "BTCUSDT",
+      "model": "PCS_A",
+      "bars": 500,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BTCUSDT",
+      "model": "PCS_TRAIL",
+      "bars": 500,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BTCUSDT",
+      "model": "CARTER_RAW",
+      "bars": 500,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BTCUSDT",
+      "model": "LATINO",
+      "bars": 500,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BTCUSDT",
+      "model": "DONCHIAN21",
+      "bars": 500,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BTCUSDT",
+      "model": "EMA50_200",
+      "bars": 500,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BTCUSDT",
+      "model": "PCS",
       "bars": 1000,
       "prefixInvariant": true
     },
     {
       "symbol": "BTCUSDT",
+      "model": "PCS_A",
+      "bars": 1000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BTCUSDT",
+      "model": "PCS_TRAIL",
+      "bars": 1000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BTCUSDT",
+      "model": "CARTER_RAW",
+      "bars": 1000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BTCUSDT",
+      "model": "LATINO",
+      "bars": 1000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BTCUSDT",
+      "model": "DONCHIAN21",
+      "bars": 1000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BTCUSDT",
+      "model": "EMA50_200",
+      "bars": 1000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BTCUSDT",
+      "model": "PCS",
       "bars": 5000,
       "prefixInvariant": true
     },
     {
       "symbol": "BTCUSDT",
+      "model": "PCS_A",
+      "bars": 5000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BTCUSDT",
+      "model": "PCS_TRAIL",
+      "bars": 5000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BTCUSDT",
+      "model": "CARTER_RAW",
+      "bars": 5000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BTCUSDT",
+      "model": "LATINO",
+      "bars": 5000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BTCUSDT",
+      "model": "DONCHIAN21",
+      "bars": 5000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BTCUSDT",
+      "model": "EMA50_200",
+      "bars": 5000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BTCUSDT",
+      "model": "PCS",
+      "bars": 14888,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BTCUSDT",
+      "model": "PCS_A",
+      "bars": 14888,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BTCUSDT",
+      "model": "PCS_TRAIL",
+      "bars": 14888,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BTCUSDT",
+      "model": "CARTER_RAW",
+      "bars": 14888,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BTCUSDT",
+      "model": "LATINO",
+      "bars": 14888,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BTCUSDT",
+      "model": "DONCHIAN21",
+      "bars": 14888,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BTCUSDT",
+      "model": "EMA50_200",
       "bars": 14888,
       "prefixInvariant": true
     },
     {
       "symbol": "ETHUSDT",
+      "model": "PCS",
       "bars": 250,
       "prefixInvariant": true
     },
     {
       "symbol": "ETHUSDT",
+      "model": "PCS_A",
+      "bars": 250,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "ETHUSDT",
+      "model": "PCS_TRAIL",
+      "bars": 250,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "ETHUSDT",
+      "model": "CARTER_RAW",
+      "bars": 250,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "ETHUSDT",
+      "model": "LATINO",
+      "bars": 250,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "ETHUSDT",
+      "model": "DONCHIAN21",
+      "bars": 250,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "ETHUSDT",
+      "model": "EMA50_200",
+      "bars": 250,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "ETHUSDT",
+      "model": "PCS",
       "bars": 500,
       "prefixInvariant": true
     },
     {
       "symbol": "ETHUSDT",
+      "model": "PCS_A",
+      "bars": 500,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "ETHUSDT",
+      "model": "PCS_TRAIL",
+      "bars": 500,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "ETHUSDT",
+      "model": "CARTER_RAW",
+      "bars": 500,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "ETHUSDT",
+      "model": "LATINO",
+      "bars": 500,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "ETHUSDT",
+      "model": "DONCHIAN21",
+      "bars": 500,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "ETHUSDT",
+      "model": "EMA50_200",
+      "bars": 500,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "ETHUSDT",
+      "model": "PCS",
       "bars": 1000,
       "prefixInvariant": true
     },
     {
       "symbol": "ETHUSDT",
+      "model": "PCS_A",
+      "bars": 1000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "ETHUSDT",
+      "model": "PCS_TRAIL",
+      "bars": 1000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "ETHUSDT",
+      "model": "CARTER_RAW",
+      "bars": 1000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "ETHUSDT",
+      "model": "LATINO",
+      "bars": 1000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "ETHUSDT",
+      "model": "DONCHIAN21",
+      "bars": 1000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "ETHUSDT",
+      "model": "EMA50_200",
+      "bars": 1000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "ETHUSDT",
+      "model": "PCS",
       "bars": 5000,
       "prefixInvariant": true
     },
     {
       "symbol": "ETHUSDT",
+      "model": "PCS_A",
+      "bars": 5000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "ETHUSDT",
+      "model": "PCS_TRAIL",
+      "bars": 5000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "ETHUSDT",
+      "model": "CARTER_RAW",
+      "bars": 5000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "ETHUSDT",
+      "model": "LATINO",
+      "bars": 5000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "ETHUSDT",
+      "model": "DONCHIAN21",
+      "bars": 5000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "ETHUSDT",
+      "model": "EMA50_200",
+      "bars": 5000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "ETHUSDT",
+      "model": "PCS",
+      "bars": 14888,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "ETHUSDT",
+      "model": "PCS_A",
+      "bars": 14888,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "ETHUSDT",
+      "model": "PCS_TRAIL",
+      "bars": 14888,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "ETHUSDT",
+      "model": "CARTER_RAW",
+      "bars": 14888,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "ETHUSDT",
+      "model": "LATINO",
+      "bars": 14888,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "ETHUSDT",
+      "model": "DONCHIAN21",
+      "bars": 14888,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "ETHUSDT",
+      "model": "EMA50_200",
       "bars": 14888,
       "prefixInvariant": true
     },
     {
       "symbol": "SOLUSDT",
+      "model": "PCS",
       "bars": 250,
       "prefixInvariant": true
     },
     {
       "symbol": "SOLUSDT",
+      "model": "PCS_A",
+      "bars": 250,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "SOLUSDT",
+      "model": "PCS_TRAIL",
+      "bars": 250,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "SOLUSDT",
+      "model": "CARTER_RAW",
+      "bars": 250,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "SOLUSDT",
+      "model": "LATINO",
+      "bars": 250,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "SOLUSDT",
+      "model": "DONCHIAN21",
+      "bars": 250,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "SOLUSDT",
+      "model": "EMA50_200",
+      "bars": 250,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "SOLUSDT",
+      "model": "PCS",
       "bars": 500,
       "prefixInvariant": true
     },
     {
       "symbol": "SOLUSDT",
+      "model": "PCS_A",
+      "bars": 500,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "SOLUSDT",
+      "model": "PCS_TRAIL",
+      "bars": 500,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "SOLUSDT",
+      "model": "CARTER_RAW",
+      "bars": 500,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "SOLUSDT",
+      "model": "LATINO",
+      "bars": 500,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "SOLUSDT",
+      "model": "DONCHIAN21",
+      "bars": 500,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "SOLUSDT",
+      "model": "EMA50_200",
+      "bars": 500,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "SOLUSDT",
+      "model": "PCS",
       "bars": 1000,
       "prefixInvariant": true
     },
     {
       "symbol": "SOLUSDT",
+      "model": "PCS_A",
+      "bars": 1000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "SOLUSDT",
+      "model": "PCS_TRAIL",
+      "bars": 1000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "SOLUSDT",
+      "model": "CARTER_RAW",
+      "bars": 1000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "SOLUSDT",
+      "model": "LATINO",
+      "bars": 1000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "SOLUSDT",
+      "model": "DONCHIAN21",
+      "bars": 1000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "SOLUSDT",
+      "model": "EMA50_200",
+      "bars": 1000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "SOLUSDT",
+      "model": "PCS",
       "bars": 5000,
       "prefixInvariant": true
     },
     {
       "symbol": "SOLUSDT",
+      "model": "PCS_A",
+      "bars": 5000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "SOLUSDT",
+      "model": "PCS_TRAIL",
+      "bars": 5000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "SOLUSDT",
+      "model": "CARTER_RAW",
+      "bars": 5000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "SOLUSDT",
+      "model": "LATINO",
+      "bars": 5000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "SOLUSDT",
+      "model": "DONCHIAN21",
+      "bars": 5000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "SOLUSDT",
+      "model": "EMA50_200",
+      "bars": 5000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "SOLUSDT",
+      "model": "PCS",
+      "bars": 12693,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "SOLUSDT",
+      "model": "PCS_A",
+      "bars": 12693,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "SOLUSDT",
+      "model": "PCS_TRAIL",
+      "bars": 12693,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "SOLUSDT",
+      "model": "CARTER_RAW",
+      "bars": 12693,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "SOLUSDT",
+      "model": "LATINO",
+      "bars": 12693,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "SOLUSDT",
+      "model": "DONCHIAN21",
+      "bars": 12693,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "SOLUSDT",
+      "model": "EMA50_200",
       "bars": 12693,
       "prefixInvariant": true
     },
     {
       "symbol": "BNBUSDT",
+      "model": "PCS",
       "bars": 250,
       "prefixInvariant": true
     },
     {
       "symbol": "BNBUSDT",
+      "model": "PCS_A",
+      "bars": 250,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BNBUSDT",
+      "model": "PCS_TRAIL",
+      "bars": 250,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BNBUSDT",
+      "model": "CARTER_RAW",
+      "bars": 250,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BNBUSDT",
+      "model": "LATINO",
+      "bars": 250,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BNBUSDT",
+      "model": "DONCHIAN21",
+      "bars": 250,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BNBUSDT",
+      "model": "EMA50_200",
+      "bars": 250,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BNBUSDT",
+      "model": "PCS",
       "bars": 500,
       "prefixInvariant": true
     },
     {
       "symbol": "BNBUSDT",
+      "model": "PCS_A",
+      "bars": 500,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BNBUSDT",
+      "model": "PCS_TRAIL",
+      "bars": 500,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BNBUSDT",
+      "model": "CARTER_RAW",
+      "bars": 500,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BNBUSDT",
+      "model": "LATINO",
+      "bars": 500,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BNBUSDT",
+      "model": "DONCHIAN21",
+      "bars": 500,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BNBUSDT",
+      "model": "EMA50_200",
+      "bars": 500,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BNBUSDT",
+      "model": "PCS",
       "bars": 1000,
       "prefixInvariant": true
     },
     {
       "symbol": "BNBUSDT",
+      "model": "PCS_A",
+      "bars": 1000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BNBUSDT",
+      "model": "PCS_TRAIL",
+      "bars": 1000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BNBUSDT",
+      "model": "CARTER_RAW",
+      "bars": 1000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BNBUSDT",
+      "model": "LATINO",
+      "bars": 1000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BNBUSDT",
+      "model": "DONCHIAN21",
+      "bars": 1000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BNBUSDT",
+      "model": "EMA50_200",
+      "bars": 1000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BNBUSDT",
+      "model": "PCS",
       "bars": 5000,
       "prefixInvariant": true
     },
     {
       "symbol": "BNBUSDT",
+      "model": "PCS_A",
+      "bars": 5000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BNBUSDT",
+      "model": "PCS_TRAIL",
+      "bars": 5000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BNBUSDT",
+      "model": "CARTER_RAW",
+      "bars": 5000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BNBUSDT",
+      "model": "LATINO",
+      "bars": 5000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BNBUSDT",
+      "model": "DONCHIAN21",
+      "bars": 5000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BNBUSDT",
+      "model": "EMA50_200",
+      "bars": 5000,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BNBUSDT",
+      "model": "PCS",
+      "bars": 12693,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BNBUSDT",
+      "model": "PCS_A",
+      "bars": 12693,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BNBUSDT",
+      "model": "PCS_TRAIL",
+      "bars": 12693,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BNBUSDT",
+      "model": "CARTER_RAW",
+      "bars": 12693,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BNBUSDT",
+      "model": "LATINO",
+      "bars": 12693,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BNBUSDT",
+      "model": "DONCHIAN21",
+      "bars": 12693,
+      "prefixInvariant": true
+    },
+    {
+      "symbol": "BNBUSDT",
+      "model": "EMA50_200",
       "bars": 12693,
       "prefixInvariant": true
     }
