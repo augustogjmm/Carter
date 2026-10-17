@@ -1,3 +1,21 @@
+# PCS 4H · Producto integrado
+
+Entrada principal: https://carter-rust.vercel.app/pcs.html. Carter anterior se conserva en index.html.
+
+## Actualización 17/10/2026
+
+- Radar y gráfico usan el mismo histórico desde 2020 o desde el listado del activo, el mismo motor y la misma caché por cierre. Se elimina la discrepancia de simular 1000 velas en el radar y todo el histórico en el detalle.
+- Escaneo remoto GitHub Actions cada 4 horas a minuto 7 UTC, además de cada cambio del motor. Guarda data/radar.json y el despliegue conectado lo publica. La programación puede demorarse por la cola del proveedor. El navegador rechaza snapshots de otro cierre y analiza directamente si falta el vigente.
+- La descarga tiene límites de tiempo y respaldo por API del mismo sitio, con endpoints de mercado restringidos. No existen órdenes ni credenciales de exchange.
+- La pantalla limpia gráficos, niveles y señales antes de cambiar de activo. Una falla muestra SIN DATOS y no conserva el plan anterior.
+- Solo velas cerradas, validación OHLCV, deduplicación, vigencia del último cierre y continuidad en las últimas 350 barras. Los huecos históricos anteriores siguen visibles en la cobertura del backtest y no se presentan como una serie íntegra.
+- Modo inicial contado 1×. El modo matemático original 3× sigue disponible, etiquetado como teórico. El sizing no modifica las reglas de señal.
+- Señales al cierre i; ejecución teórica en apertura i+1. Verde indica señal cerrada con sistema teórico FLAT, no un precio de compra actual. No se modifica PCS para generar más verdes.
+- Una posición por activo, stop prioritario, TP1 50%, breakeven y trailing desde la siguiente vela. El backtest no registra compras reales del usuario.
+- Pruebas: node --test tests/product.test.cjs; smoke heredado en validate.yml; escaneo real independiente en scan.yml.
+
+La funcionalidad del producto y la rentabilidad de la estrategia son comprobaciones distintas. La auditoría cuantitativa independiente C1–C10 continúa pendiente; no se certifica un porcentaje de acierto ni una rentabilidad.
+
 # Carter 4H y PCS · Workstation
 
 Aplicación estática: https://carter-rust.vercel.app . Conectada al repositorio y desplegada automáticamente por Vercel desde la rama main.
@@ -67,3 +85,4 @@ Los OHLCV de Binance no contienen el volumen negociado exacto por precio. El per
 - Vercel informa producción READY y la página se puede abrir.
 - No se completó una prueba integral con cotizaciones de Binance desde un navegador real del usuario.
 - El modelo E1/E2/E3 + TP estructural es NUEVO: todavía NO fue contrastado con backtesting fuera de muestra y no debe confundirse con la variante Carter 4H previamente simulada en Python.
+

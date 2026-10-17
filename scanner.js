@@ -25,6 +25,7 @@ const sorted=window.PCSEngine.dedup(bars),expected=Math.floor(Date.now()/BAR)*BA
 if(sorted.length<250)throw new Error('Insuficiente histórico deduplicado');
 const last=sorted.at(-1),prev=sorted.at(-2);
 if(last.t!==expected||last.t-prev.t!==BAR)throw new Error('Última vela 4H no sincronizada');
+for(let k=Math.max(1,sorted.length-350);k<sorted.length;k++)if(sorted[k].t-sorted[k-1].t!==BAR)throw new Error('Hueco en velas recientes');
 const ind=window.PCSEngine.indicators(sorted),i=sorted.length-1,q=ind.sig[i];
 const simulated=window.PCSEngine.backtest(sorted,ind,1000,3),positionOpen=!!simulated.pos;
 if(!finite(ind.ema200[i])||!finite(ind.adx[i])||!finite(ind.atr[i])||ind.atr[i]<=0)throw new Error('Indicadores no confirmados');
@@ -35,6 +36,7 @@ function normalizeCoins(rows){
 if(!Array.isArray(rows)||rows.length!==50)throw new Error('El ranking no tiene exactamente 50 activos');
 const list=rows.map(x=>({id:String(x.id),symbol:String(x.symbol).toUpperCase(),name:String(x.name),rank:Number(x.market_cap_rank??x.rank),price:Number(x.current_price??x.price),change:Number(x.price_change_percentage_24h??x.change24h),marketCap:Number(x.market_cap??x.marketCap)}));
 if(list.some(x=>!x.id||!x.symbol||!x.name||!Number.isInteger(x.rank)||x.rank<1))throw new Error('Ranking inválido');
+if(new Set(list.map(x=>x.rank)).size!==50)throw new Error('Ranking de capitalización ambiguo');
 if(new Set(list.map(x=>x.id)).size!==50)throw new Error('Ranking duplicado');
 return list;
 }
@@ -58,7 +60,7 @@ async function exchange(){
 let errors=[];
 for(let url of SOURCES){
  try{
-  const data=await getJson(url+'/api/v3/exchangeInfo',15000);
+  const data=await window.PCSEngine.getJson(url+'/api/v3/exchangeInfo');
   if(!Array.isArray(data?.symbols))throw new Error('exchangeInfo inválido');
   const set=new Set();
   for(const x of data.symbols){
@@ -80,22 +82,7 @@ if(duplicated.has(c.symbol))return{status:'excluded',reason:'Símbolo ambiguo de
 if(!available.has(c.symbol))return{status:'missing',reason:'No existe par '+c.symbol+'USDT spot TRADING verificado en Binance'};
 return null;
 }
-async function candles(symbol){
-let errors=[];
-for(let base of SOURCES){
- try{
-  let rows=await getJson(base+'/api/v3/klines?symbol='+encodeURIComponent(symbol)+'USDT&interval=4h&limit=1000',15000);
-  if(!Array.isArray(rows)||rows.length<250)throw new Error('Menos de 250 velas');
-  const now=Date.now(),closed=rows.filter(r=>+r[0]+BAR<=now-3000).map(r=>({t:+r[0],o:+r[1],h:+r[2],l:+r[3],c:+r[4],v:+r[5]}));
-  if(closed.length<250)throw new Error('Histórico insuficiente');
-  return closed;
- }catch(e){
-  errors.push(e.message);
-  if(/HTTP 429|HTTP 418/.test(e.message)){throw new Error('Límite de Binance: '+e.message);}
- }
-}
-throw new Error('Binance sin datos 4H: '+errors.slice(-2).join(' / '));
-}
+async function candles(symbol){return (await window.PCSEngine.download(symbol+'USDT')).bars;}
 function make(tag,className,content){
 let el=document.createElement(tag);if(className)el.className=className;if(content!==undefined)el.textContent=String(content);return el;
 }
@@ -109,8 +96,8 @@ return({signal:item.A&&item.B?'LONG A+B':item.A?'LONG A':item.B?'LONG B':'LONG',
 }
 function render(){
 const total=R.items.length,signals=R.items.filter(x=>x.status==='signal'),watched=R.items.filter(x=>x.status==='watch'),done=R.items.filter(x=>!['queued','scanning'].includes(x.status)),failed=R.items.filter(x=>x.status==='error');
-label('radarPositive',signals.length);label('radarWatch',watched.length);label('radarProgress',done.length+' / '+total);
-label('radarStatus',R.problem?'Radar no disponible: '+R.problem:R.busy?'Analizando '+done.length+' de '+total+' · '+(signals.length?'hay señales PCS':'sin señales confirmadas hasta ahora'):'Escaneo finalizado · '+done.length+' / '+total);
+label('radarPositive',signals.length);label('radarWatch',watched.length);label('radarProgress',done.length+' / '+(total||50));
+label('radarStatus',R.problem?'Radar no disponible: '+R.problem:R.busy?'Analizando '+done.length+' de '+total+' · '+(signals.length?'hay señales PCS':'sin señales confirmadas hasta ahora'):(failed.length?'Escaneo parcial':'Escaneo finalizado')+' · '+done.length+' / '+(total||50));
 label('radarSource',R.source?(R.source+' · ranking '+time(R.marketAt)+' · 4H Binance'):'Ranking en espera');
 const bar=$('radarBar');bar.style.width=(total?done.length/total*100:0)+'%';
 let a=[...R.items];if(R.sortSignals){let priorities={signal:0,watch:1,position:1,blocked:2,scanning:3,queued:3,missing:4,excluded:4,error:5};a.sort((x,y)=>(priorities[x.status]??6)-(priorities[y.status]??6)||x.rank-y.rank);}else a.sort((x,y)=>x.rank-y.rank);
@@ -147,7 +134,7 @@ const chart=document.querySelector('.pcs-chartpanel');chart?.scrollIntoView({beh
 }
 async function workItem(item,token){
 if(token!==R.token)return;
-item.status='scanning';item.reason='Consultando Binance spot 4H…';render();
+item.status='scanning';item.reason='Consultando histórico PCS 4H…';render();
 try{
 const bars=await candles(item.symbol);
 if(token!==R.token)return;
@@ -163,6 +150,15 @@ for(const item of R.items){item.status='queued';item.reason='Revalidando la últ
 render();
 $('radarRefresh').disabled=true;label('radarStatus','Verificando ranking por capitalización…');
 try{
+if(!forceRank){
+ try{
+ const remote=await getJson('/data/radar.json',6000),expected=Math.floor(Date.now()/BAR)*BAR-BAR;
+ if(remote.version!==2||remote.lastCandle!==expected||!Array.isArray(remote.items)||remote.items.length!==50||Date.now()-Date.parse(remote.generatedAt)>BAR)throw new Error('Snapshot remoto no vigente');
+ normalizeCoins(remote.items);
+ R.items=remote.items;R.coins=remote.items;R.marketAt=Date.parse(remote.marketAt);R.source='Escaneo programado · CoinGecko / Binance';R.scanAt=Date.parse(remote.generatedAt);R.barId=Math.floor(Date.now()/BAR);R.problem='';
+ label('radarError','');$('radarError').classList.remove('show');return;
+ }catch(e){/* El escaneo local mantiene servicio si el programado está pendiente. */}
+}
 let ranked;
 if(forceRank||!R.coins.length||Date.now()-R.marketAt>ONE_HOUR){
  ranked=await rank();R.coins=ranked.coins;R.marketAt=ranked.at;R.source=ranked.source;
@@ -181,6 +177,7 @@ const jobs=R.items.filter(x=>x.status==='queued');let next=0;
 const runner=async()=>{while(next<jobs.length&&token===R.token){const j=next++;await workItem(jobs[j],token);}};
 await Promise.all(Array.from({length:Math.min(4,jobs.length)},runner));
 if(token!==R.token)return;
+label('radarError','');$('radarError').classList.remove('show');
 R.scanAt=Date.now();R.barId=Math.floor((Date.now()-3000)/BAR);
 render();
 }catch(e){
@@ -196,9 +193,10 @@ function init(){
 $('radarRefresh').addEventListener('click',()=>{label('radarError','');$('radarError').classList.remove('show');scan(true);});
 $('radarOnly').addEventListener('change',e=>{R.view=e.target.checked?'signal':'all';render();});
 $('radarSort').addEventListener('change',e=>{R.sortSignals=e.target.checked;render();});
-render();scan(true);
+render();scan(false);
 setInterval(autoCheck,60000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)autoCheck();});
 }
-window.PCSScannerCore={classify,normalizeCoins,unscannable};
+window.PCSScannerCore={classify,normalizeCoins,unscannable,rank,exchange,reasonFor};
 if(typeof document!=='undefined'){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();}
 })();

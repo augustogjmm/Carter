@@ -7,8 +7,9 @@ export default async function handler(req,res) {
     if(!response.ok)throw new Error('Ranking externo HTTP '+response.status);
     const rows=await response.json();
     if(!Array.isArray(rows)||rows.length!==50||rows.some(x=>!x.id||!x.symbol||!Number.isFinite(x.market_cap_rank)))throw new Error('Ranking incompleto o inválido');
-    const items=rows.map(x=>({id:String(x.id),symbol:String(x.symbol).toUpperCase(),name:String(x.name),rank:x.market_cap_rank,marketCap:x.market_cap,price:x.current_price,change24h:x.price_change_percentage_24h||null}));
+    const items=rows.map(x=>({id:String(x.id),symbol:String(x.symbol).toUpperCase(),name:String(x.name),rank:x.market_cap_rank,marketCap:x.market_cap,price:x.current_price,change24h:x.price_change_percentage_24h??null}));
     res.setHeader('Cache-Control','public, s-maxage=900, stale-while-revalidate=3600');
     res.status(200).json({source:'CoinGecko /coins/markets',fetchedAt:new Date().toISOString(),items});
   }catch(e){res.setHeader('Cache-Control','no-store');res.status(503).json({error:'Ranking top 50 no disponible: '+String(e.message||e)});}
 }
+
