@@ -20,6 +20,8 @@ jobs:
           node --check api/top50.js
           node --check api/market.js
           node --check audit.js
+          node --check review.js
+          node --check paper.js
       - name: Product regression tests
         run: node --test tests/product.test.cjs
       - name: PCS independent smoke tests

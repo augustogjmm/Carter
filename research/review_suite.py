@@ -49,6 +49,11 @@ def run(d,model,start,end,fee=.001):
   return a.run_engine(q,p,start,end)
  finally:a.signal_array=original
 
+def signals(d,model):
+ if model=='EMA50_200':return ((d.ema50>d.ema200)&(d.ema50.shift(1)<=d.ema200.shift(1))).fillna(False).to_numpy()
+ q,p=prepare(d,model)
+ return q.attrs['custom_signal'] if model=='DONCHIAN21' else a.signal_array(q,p)
+
 def cross(d,start,end,fee):
  t=d.t.to_numpy(dtype=np.int64);first=int(np.searchsorted(t,a.ts_ms(start)));last=int(np.searchsorted(t,a.ts_ms(end)))
  up=(d.ema50>d.ema200)&(d.ema50.shift(1)<=d.ema200.shift(1));down=(d.ema50<d.ema200)&(d.ema50.shift(1)>=d.ema200.shift(1))
@@ -98,18 +103,27 @@ def main():
  for sym in PROTOCOL['assets']:
   d,fp=data(sym);datasets[sym]=d;fingerprints.append(fp)
   for n in [250,500,1000,5000,len(d)]:
-   prefix=a.indicators(d.iloc[:n][['t','o','h','l','c','v']]);equal=np.array_equal(a.signal_array(d,a.Params())[:n],a.signal_array(prefix,a.Params()))
-   causal.append({'symbol':sym,'bars':n,'prefixInvariant':bool(equal)})
-   assert equal,'Causal prefix mismatch'
+   prefix=a.indicators(d.iloc[:n][['t','o','h','l','c','v']])
+   for model in MODELS:
+    equal=np.array_equal(signals(d,model)[:n],signals(prefix,model))
+    causal.append({'symbol':sym,'model':model,'bars':n,'prefixInvariant':bool(equal)})
+    assert equal,'Causal prefix mismatch: '+model
   windows={'FULL':(pd.to_datetime(d.t.iloc[0],unit='ms',utc=True),a.END_UTC),'IS':(pd.to_datetime(d.t.iloc[0],unit='ms',utc=True),SPLIT),'VALIDATION':(SPLIT,RECENT),'RECENT':(RECENT,a.END_UTC),'OOS_REVIEW':(SPLIT,a.END_UTC)}
   for model in MODELS:
    for win,(start,end) in windows.items():
-    result=run(d,model,start,end);rows.append(a.outrow(sym,win,model,result))
+    result=run(d,model,start,end)
+    assert abs(sum(t['net_pnl'] for t in result['trades'])-(result['curve'][-1]-1))<1e-7,'Cash reconciliation failed: '+model
+    rows.append(a.outrow(sym,win,model,result))
     if win=='OOS_REVIEW':boot.append({'symbol':sym,'model':model,**bootstrap(result['trades'])})
    rows.append(a.outrow(sym,'STRESS',model,run(d,model,SPLIT,a.END_UTC,.002)))
    q=SPLIT
    while q+pd.DateOffset(months=6)<=a.END_UTC:
     end=q+pd.DateOffset(months=6);rows.append(a.outrow(sym,'WF',model,run(d,model,q,end),{'start':str(q.date()),'end':str(end.date())}));q=end
+  for win,(start,end) in windows.items():
+   rows.append(a.outrow(sym,win,'B&H',a.buyhold(d,start,end,.001)))
+   rows.append(a.outrow(sym,win,'DCA',a.dca_twr(d,start,end,.001)))
+  rows.append(a.outrow(sym,'STRESS','B&H',a.buyhold(d,SPLIT,a.END_UTC,.002)))
+  rows.append(a.outrow(sym,'STRESS','DCA',a.dca_twr(d,SPLIT,a.END_UTC,.002)))
   print('COMPLETE',sym,flush=True)
  frame=pd.DataFrame(rows);frame.to_csv(OUT/'comparison.csv',index=False)
  def one(sym,model,win):return frame[(frame.symbol==sym)&(frame.experiment==model)&(frame.window==win)].iloc[0]

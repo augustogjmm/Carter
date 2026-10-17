@@ -1,0 +1,33 @@
+name: Frozen prospective paper ledger
+on:
+  schedule:
+    - cron: '9 */4 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['research/paper_core.py', 'research/paper_run.py', 'research/paper_core_test.py', '.github/workflows/paper.yml']
+concurrency:
+  group: pcs-frozen-paper-ledger
+  cancel-in-progress: false
+jobs:
+  paper:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install numpy==2.3.5 pandas==2.3.3 requests==2.32.5
+      - run: python research/paper_core_test.py
+      - run: python -u research/paper_run.py
+      - name: Save paper state without resetting prior observations
+        run: |
+          git config user.name 'augustogjmm'
+          git config user.email '44848888+augustogjmm@users.noreply.github.com'
+          git add data/paper
+          git commit -m 'data: record prospective paper observations with frozen rules'
+          git pull --rebase origin main
+          git push origin HEAD:main
