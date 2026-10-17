@@ -1,0 +1,76 @@
+{
+  "version": 1,
+  "declaredAt": "2026-10-17",
+  "purpose": "Retrospective comparative review after PCS audit; not untouched out-of-sample validation",
+  "timeframe": "4h",
+  "assets": [
+    "BTCUSDT",
+    "ETHUSDT",
+    "SOLUSDT",
+    "BNBUSDT"
+  ],
+  "riskPerTrade": 0.01,
+  "maxExposure": 1,
+  "baseFeePerFill": 0.001,
+  "stressFeePlusSlippageEquivalent": 0.002,
+  "selection": "Choose one common model by highest minimum BTC/ETH Calmar on 2020-2022; do not reselect on later periods or per asset",
+  "windows": {
+    "IS": "2020-2022",
+    "VALIDATION": "2023-2024",
+    "RECENT": "2025-2026",
+    "OOS_REVIEW": "2023-2026"
+  },
+  "candidateGate": {
+    "OOS_REVIEW_both_BTC_ETH": {
+      "CAGR_min": 0.15,
+      "MaxDD_max": 0.12,
+      "PF_min": 1.5
+    },
+    "RECENT_both_BTC_ETH": {
+      "CAGR_min": 0.1,
+      "MaxDD_max": 0.15,
+      "PF_min": 1.2,
+      "trades_min": 20
+    },
+    "STRESS_both_BTC_ETH": {
+      "CAGR_min": 0.08,
+      "PF_min": 1.2
+    }
+  },
+  "models": [
+    {
+      "id": "PCS",
+      "definition": "Frozen PCS A or B; SL1.5 ATR; TP1 50%; BE; trail2.5 after TP1"
+    },
+    {
+      "id": "PCS_A",
+      "definition": "Only original door A; original PCS exits"
+    },
+    {
+      "id": "PCS_TRAIL",
+      "definition": "Original A or B, no TP1, trail2.5 ATR from entry; distinct research variant"
+    },
+    {
+      "id": "CARTER_RAW",
+      "definition": "Previous squeeze ON, current OFF, close>EMA20; SL1.4 ATR; trail2.2 ATR from entry. Explicit audit interpretation, not full Carter UI engine"
+    },
+    {
+      "id": "LATINO",
+      "definition": "Original B plus original regime; SL1.5 ATR; trail2.5 ATR from entry, no TP1"
+    },
+    {
+      "id": "DONCHIAN21",
+      "definition": "Original regime and close>prior highest high21; SL1.5 ATR, trail2.5 ATR from entry, no TP1"
+    },
+    {
+      "id": "EMA50_200",
+      "definition": "EMA50 crosses above EMA200; exit on reverse cross at next open; SL3 ATR, no TP, no time or trail"
+    }
+  ],
+  "limitations": [
+    "Prior aggregate OOS results have already been seen",
+    "No historical top-50 membership or survivor-free portfolio backtest",
+    "No rule changes or repeated tuning after viewing the result",
+    "Real future performance cannot be established by reusing past data"
+  ]
+}
