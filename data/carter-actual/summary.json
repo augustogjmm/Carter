@@ -1,9 +1,9 @@
 {
   "completed": true,
-  "generatedAt": "2026-10-17T14:29:37.076Z",
+  "generatedAt": "2026-10-17T14:31:53.727Z",
   "hashes": {
     "engine.js": "feb3d02584c67bdae01da9c13f41c79f57f7277f585ac4c28281923a3d8d7f7f",
-    "research.js": "c742545a16cb701e4a2329feba05a1434cf139539a2d169dfcde3c82577a96b5"
+    "research.js": "05d5f751105b7aa0b442cd488108b3e7bce9867f76c3f198932268b688cdc478"
   },
   "rows": [
     {
@@ -963,7 +963,8 @@
           "signalAt": 6281,
           "price": 16915.02
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "BTCUSDT",
@@ -1207,7 +1208,8 @@
           "signalAt": 6231,
           "price": 21108.54
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "BTCUSDT",
@@ -1230,7 +1232,11 @@
       "filled2": 0,
       "filled3": 0,
       "adequate": false,
-      "trades": []
+      "trades": [],
+      "rejectionReasons": {
+        "Sin resistencia": 2,
+        "R/R < 1.5 en primera resistencia": 18
+      }
     },
     {
       "symbol": "BTCUSDT",
@@ -1892,7 +1898,8 @@
           "signalAt": 10863,
           "price": 103252.96
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "BTCUSDT",
@@ -2092,7 +2099,8 @@
           "signalAt": 10693,
           "price": 90684.19
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "BTCUSDT",
@@ -2115,7 +2123,11 @@
       "filled2": 0,
       "filled3": 0,
       "adequate": false,
-      "trades": []
+      "trades": [],
+      "rejectionReasons": {
+        "R/R < 1.5 en primera resistencia": 15,
+        "Sin resistencia": 1
+      }
     },
     {
       "symbol": "BTCUSDT",
@@ -2656,7 +2668,8 @@
           "signalAt": 14796,
           "price": 86089.64
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "BTCUSDT",
@@ -2735,7 +2748,8 @@
           "signalAt": 14796,
           "price": 86089.64
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "BTCUSDT",
@@ -2758,7 +2772,10 @@
       "filled2": 0,
       "filled3": 0,
       "adequate": false,
-      "trades": []
+      "trades": [],
+      "rejectionReasons": {
+        "R/R < 1.5 en primera resistencia": 6
+      }
     },
     {
       "symbol": "BTCUSDT",
@@ -3937,7 +3954,8 @@
           "signalAt": 14796,
           "price": 86089.64
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "BTCUSDT",
@@ -4192,7 +4210,8 @@
           "signalAt": 14796,
           "price": 86089.64
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "BTCUSDT",
@@ -4215,7 +4234,11 @@
       "filled2": 0,
       "filled3": 0,
       "adequate": false,
-      "trades": []
+      "trades": [],
+      "rejectionReasons": {
+        "R/R < 1.5 en primera resistencia": 21,
+        "Sin resistencia": 1
+      }
     },
     {
       "symbol": "ETHUSDT",
@@ -5174,7 +5197,8 @@
           "signalAt": 6508,
           "price": 1216.95
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "ETHUSDT",
@@ -5363,7 +5387,8 @@
           "signalAt": 5703,
           "price": 1783.12
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "ETHUSDT",
@@ -5386,7 +5411,11 @@
       "filled2": 0,
       "filled3": 0,
       "adequate": false,
-      "trades": []
+      "trades": [],
+      "rejectionReasons": {
+        "R/R < 1.5 en primera resistencia": 15,
+        "Sin resistencia": 2
+      }
     },
     {
       "symbol": "ETHUSDT",
@@ -6114,7 +6143,8 @@
           "signalAt": 10919,
           "price": 3478.23
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "ETHUSDT",
@@ -6226,7 +6256,8 @@
           "signalAt": 10776,
           "price": 3702.32
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "ETHUSDT",
@@ -6249,7 +6280,10 @@
       "filled2": 0,
       "filled3": 0,
       "adequate": false,
-      "trades": []
+      "trades": [],
+      "rejectionReasons": {
+        "R/R < 1.5 en primera resistencia": 8
+      }
     },
     {
       "symbol": "ETHUSDT",
@@ -6845,7 +6879,8 @@
           "signalAt": 14856,
           "price": 2564.2
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "ETHUSDT",
@@ -6924,7 +6959,8 @@
           "signalAt": 13791,
           "price": 2427.92
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "ETHUSDT",
@@ -6947,7 +6983,11 @@
       "filled2": 0,
       "filled3": 0,
       "adequate": false,
-      "trades": []
+      "trades": [],
+      "rejectionReasons": {
+        "Sin resistencia": 2,
+        "R/R < 1.5 en primera resistencia": 3
+      }
     },
     {
       "symbol": "ETHUSDT",
@@ -8247,7 +8287,8 @@
           "signalAt": 14856,
           "price": 2564.2
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "ETHUSDT",
@@ -8414,7 +8455,8 @@
           "signalAt": 13791,
           "price": 2427.92
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "ETHUSDT",
@@ -8437,7 +8479,11 @@
       "filled2": 0,
       "filled3": 0,
       "adequate": false,
-      "trades": []
+      "trades": [],
+      "rejectionReasons": {
+        "R/R < 1.5 en primera resistencia": 11,
+        "Sin resistencia": 2
+      }
     },
     {
       "symbol": "SOLUSDT",
@@ -9033,7 +9079,8 @@
           "signalAt": 4225,
           "price": 14.14
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "SOLUSDT",
@@ -9134,7 +9181,8 @@
           "signalAt": 2706,
           "price": 106.84
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "SOLUSDT",
@@ -9157,7 +9205,11 @@
       "filled2": 0,
       "filled3": 0,
       "adequate": false,
-      "trades": []
+      "trades": [],
+      "rejectionReasons": {
+        "R/R < 1.5 en primera resistencia": 5,
+        "Sin resistencia": 2
+      }
     },
     {
       "symbol": "SOLUSDT",
@@ -9852,7 +9904,8 @@
           "signalAt": 8570,
           "price": 245.22
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "SOLUSDT",
@@ -10008,7 +10061,8 @@
           "signalAt": 8354,
           "price": 173.85
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "SOLUSDT",
@@ -10031,7 +10085,11 @@
       "filled2": 0,
       "filled3": 0,
       "adequate": false,
-      "trades": []
+      "trades": [],
+      "rejectionReasons": {
+        "R/R < 1.5 en primera resistencia": 11,
+        "Sin resistencia": 1
+      }
     },
     {
       "symbol": "SOLUSDT",
@@ -10517,7 +10575,8 @@
           "signalAt": 12614,
           "price": 121.24
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "SOLUSDT",
@@ -10574,7 +10633,8 @@
           "signalAt": 12372,
           "price": 101.61
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "SOLUSDT",
@@ -10597,7 +10657,10 @@
       "filled2": 0,
       "filled3": 0,
       "adequate": false,
-      "trades": []
+      "trades": [],
+      "rejectionReasons": {
+        "R/R < 1.5 en primera resistencia": 3
+      }
     },
     {
       "symbol": "SOLUSDT",
@@ -11754,7 +11817,8 @@
           "signalAt": 12614,
           "price": 121.24
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "SOLUSDT",
@@ -11943,7 +12007,8 @@
           "signalAt": 12372,
           "price": 101.61
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "SOLUSDT",
@@ -11966,7 +12031,11 @@
       "filled2": 0,
       "filled3": 0,
       "adequate": false,
-      "trades": []
+      "trades": [],
+      "rejectionReasons": {
+        "R/R < 1.5 en primera resistencia": 14,
+        "Sin resistencia": 1
+      }
     },
     {
       "symbol": "BNBUSDT",
@@ -12606,7 +12675,8 @@
           "signalAt": 4243,
           "price": 290.5
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "BNBUSDT",
@@ -12707,7 +12777,8 @@
           "signalAt": 4033,
           "price": 344.2
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "BNBUSDT",
@@ -12730,7 +12801,11 @@
       "filled2": 0,
       "filled3": 0,
       "adequate": false,
-      "trades": []
+      "trades": [],
+      "rejectionReasons": {
+        "Sin resistencia": 2,
+        "R/R < 1.5 en primera resistencia": 5
+      }
     },
     {
       "symbol": "BNBUSDT",
@@ -13326,7 +13401,8 @@
           "signalAt": 8718,
           "price": 692.7
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "BNBUSDT",
@@ -13405,7 +13481,8 @@
           "signalAt": 6908,
           "price": 389.7
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "BNBUSDT",
@@ -13428,7 +13505,10 @@
       "filled2": 0,
       "filled3": 0,
       "adequate": false,
-      "trades": []
+      "trades": [],
+      "rejectionReasons": {
+        "R/R < 1.5 en primera resistencia": 5
+      }
     },
     {
       "symbol": "BNBUSDT",
@@ -13991,7 +14071,8 @@
           "signalAt": 12611,
           "price": 786.88
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "BNBUSDT",
@@ -14070,7 +14151,8 @@
           "signalAt": 11729,
           "price": 649.76
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "BNBUSDT",
@@ -14093,7 +14175,10 @@
       "filled2": 0,
       "filled3": 0,
       "adequate": false,
-      "trades": []
+      "trades": [],
+      "rejectionReasons": {
+        "R/R < 1.5 en primera resistencia": 5
+      }
     },
     {
       "symbol": "BNBUSDT",
@@ -15228,7 +15313,8 @@
           "signalAt": 12611,
           "price": 786.88
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "BNBUSDT",
@@ -15362,7 +15448,8 @@
           "signalAt": 11729,
           "price": 649.76
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "BNBUSDT",
@@ -15385,7 +15472,10 @@
       "filled2": 0,
       "filled3": 0,
       "adequate": false,
-      "trades": []
+      "trades": [],
+      "rejectionReasons": {
+        "R/R < 1.5 en primera resistencia": 10
+      }
     },
     {
       "symbol": "XRPUSDT",
@@ -15904,7 +15994,8 @@
           "signalAt": 4332,
           "price": 0.3528
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "XRPUSDT",
@@ -16016,7 +16107,8 @@
           "signalAt": 3870,
           "price": 0.5256
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "XRPUSDT",
@@ -16039,7 +16131,10 @@
       "filled2": 0,
       "filled3": 0,
       "adequate": false,
-      "trades": []
+      "trades": [],
+      "rejectionReasons": {
+        "R/R < 1.5 en primera resistencia": 8
+      }
     },
     {
       "symbol": "XRPUSDT",
@@ -16734,7 +16829,8 @@
           "signalAt": 8712,
           "price": 2.2178
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "XRPUSDT",
@@ -16857,7 +16953,8 @@
           "signalAt": 8526,
           "price": 1.384
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "XRPUSDT",
@@ -16880,7 +16977,11 @@
       "filled2": 0,
       "filled3": 0,
       "adequate": false,
-      "trades": []
+      "trades": [],
+      "rejectionReasons": {
+        "R/R < 1.5 en primera resistencia": 8,
+        "Sin resistencia": 1
+      }
     },
     {
       "symbol": "XRPUSDT",
@@ -17366,7 +17467,8 @@
           "signalAt": 12657,
           "price": 1.4253
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "XRPUSDT",
@@ -17412,7 +17514,8 @@
           "signalAt": 9949,
           "price": 3.1553
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "XRPUSDT",
@@ -17435,7 +17538,10 @@
       "filled2": 0,
       "filled3": 0,
       "adequate": false,
-      "trades": []
+      "trades": [],
+      "rejectionReasons": {
+        "R/R < 1.5 en primera resistencia": 2
+      }
     },
     {
       "symbol": "XRPUSDT",
@@ -18592,7 +18698,8 @@
           "signalAt": 12657,
           "price": 1.4253
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "XRPUSDT",
@@ -18737,7 +18844,8 @@
           "signalAt": 9949,
           "price": 3.1553
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "XRPUSDT",
@@ -18760,7 +18868,11 @@
       "filled2": 0,
       "filled3": 0,
       "adequate": false,
-      "trades": []
+      "trades": [],
+      "rejectionReasons": {
+        "R/R < 1.5 en primera resistencia": 10,
+        "Sin resistencia": 1
+      }
     },
     {
       "symbol": "ADAUSDT",
@@ -19367,7 +19479,8 @@
           "signalAt": 4217,
           "price": 0.3222
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "ADAUSDT",
@@ -19424,7 +19537,8 @@
           "signalAt": 3505,
           "price": 0.54
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "ADAUSDT",
@@ -19447,7 +19561,10 @@
       "filled2": 0,
       "filled3": 0,
       "adequate": false,
-      "trades": []
+      "trades": [],
+      "rejectionReasons": {
+        "R/R < 1.5 en primera resistencia": 3
+      }
     },
     {
       "symbol": "ADAUSDT",
@@ -20054,7 +20171,8 @@
           "signalAt": 8590,
           "price": 1.2186
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "ADAUSDT",
@@ -20144,7 +20262,8 @@
           "signalAt": 8590,
           "price": 1.2186
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "ADAUSDT",
@@ -20167,7 +20286,11 @@
       "filled2": 0,
       "filled3": 0,
       "adequate": false,
-      "trades": []
+      "trades": [],
+      "rejectionReasons": {
+        "R/R < 1.5 en primera resistencia": 7,
+        "Sin resistencia": 2
+      }
     },
     {
       "symbol": "ADAUSDT",
@@ -20620,7 +20743,8 @@
           "signalAt": 12618,
           "price": 0.2688
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "ADAUSDT",
@@ -20666,7 +20790,8 @@
           "signalAt": 10291,
           "price": 0.8995
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "ADAUSDT",
@@ -20689,7 +20814,11 @@
       "filled2": 0,
       "filled3": 0,
       "adequate": false,
-      "trades": []
+      "trades": [],
+      "rejectionReasons": {
+        "R/R < 1.5 en primera resistencia": 4,
+        "Sin resistencia": 1
+      }
     },
     {
       "symbol": "ADAUSDT",
@@ -21725,7 +21854,8 @@
           "signalAt": 12618,
           "price": 0.2688
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "ADAUSDT",
@@ -21837,7 +21967,8 @@
           "signalAt": 10291,
           "price": 0.8995
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "ADAUSDT",
@@ -21860,7 +21991,11 @@
       "filled2": 0,
       "filled3": 0,
       "adequate": false,
-      "trades": []
+      "trades": [],
+      "rejectionReasons": {
+        "R/R < 1.5 en primera resistencia": 11,
+        "Sin resistencia": 3
+      }
     },
     {
       "symbol": "AVAXUSDT",
@@ -22456,7 +22591,8 @@
           "signalAt": 4209,
           "price": 13.6
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "AVAXUSDT",
@@ -22546,7 +22682,8 @@
           "signalAt": 4015,
           "price": 19.36
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "AVAXUSDT",
@@ -22569,7 +22706,11 @@
       "filled2": 0,
       "filled3": 0,
       "adequate": false,
-      "trades": []
+      "trades": [],
+      "rejectionReasons": {
+        "R/R < 1.5 en primera resistencia": 5,
+        "Sin resistencia": 1
+      }
     },
     {
       "symbol": "AVAXUSDT",
@@ -23209,7 +23350,8 @@
           "signalAt": 8722,
           "price": 40.89
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "AVAXUSDT",
@@ -23288,7 +23430,8 @@
           "signalAt": 8188,
           "price": 28.92
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "AVAXUSDT",
@@ -23311,7 +23454,10 @@
       "filled2": 0,
       "filled3": 0,
       "adequate": false,
-      "trades": []
+      "trades": [],
+      "rejectionReasons": {
+        "R/R < 1.5 en primera resistencia": 5
+      }
     },
     {
       "symbol": "AVAXUSDT",
@@ -23819,7 +23965,8 @@
           "signalAt": 12629,
           "price": 11.608
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "AVAXUSDT",
@@ -23909,7 +24056,8 @@
           "signalAt": 12584,
           "price": 11.842
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "AVAXUSDT",
@@ -23932,7 +24080,10 @@
       "filled2": 0,
       "filled3": 0,
       "adequate": false,
-      "trades": []
+      "trades": [],
+      "rejectionReasons": {
+        "R/R < 1.5 en primera resistencia": 6
+      }
     },
     {
       "symbol": "AVAXUSDT",
@@ -25056,7 +25207,8 @@
           "signalAt": 12629,
           "price": 11.608
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "AVAXUSDT",
@@ -25201,7 +25353,8 @@
           "signalAt": 12584,
           "price": 11.842
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "AVAXUSDT",
@@ -25224,7 +25377,10 @@
       "filled2": 0,
       "filled3": 0,
       "adequate": false,
-      "trades": []
+      "trades": [],
+      "rejectionReasons": {
+        "R/R < 1.5 en primera resistencia": 11
+      }
     },
     {
       "symbol": "LTCUSDT",
@@ -25798,7 +25954,8 @@
           "signalAt": 4320,
           "price": 65.49
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "LTCUSDT",
@@ -25899,7 +26056,8 @@
           "signalAt": 3393,
           "price": 60.97
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "LTCUSDT",
@@ -25922,7 +26080,10 @@
       "filled2": 0,
       "filled3": 0,
       "adequate": false,
-      "trades": []
+      "trades": [],
+      "rejectionReasons": {
+        "R/R < 1.5 en primera resistencia": 7
+      }
     },
     {
       "symbol": "LTCUSDT",
@@ -26540,7 +26701,8 @@
           "signalAt": 8714,
           "price": 102.34
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "LTCUSDT",
@@ -26641,7 +26803,8 @@
           "signalAt": 8607,
           "price": 143.8
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "LTCUSDT",
@@ -26664,7 +26827,10 @@
       "filled2": 0,
       "filled3": 0,
       "adequate": false,
-      "trades": []
+      "trades": [],
+      "rejectionReasons": {
+        "R/R < 1.5 en primera resistencia": 8
+      }
     },
     {
       "symbol": "LTCUSDT",
@@ -27249,7 +27415,8 @@
           "signalAt": 12605,
           "price": 69.9
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "LTCUSDT",
@@ -27295,7 +27462,8 @@
           "signalAt": 12148,
           "price": 46.88
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "LTCUSDT",
@@ -27318,7 +27486,10 @@
       "filled2": 0,
       "filled3": 0,
       "adequate": false,
-      "trades": []
+      "trades": [],
+      "rejectionReasons": {
+        "R/R < 1.5 en primera resistencia": 2
+      }
     },
     {
       "symbol": "LTCUSDT",
@@ -28497,7 +28668,8 @@
           "signalAt": 12605,
           "price": 69.9
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "LTCUSDT",
@@ -28620,7 +28792,8 @@
           "signalAt": 12148,
           "price": 46.88
         }
-      ]
+      ],
+      "rejectionReasons": {}
     },
     {
       "symbol": "LTCUSDT",
@@ -28643,7 +28816,10 @@
       "filled2": 0,
       "filled3": 0,
       "adequate": false,
-      "trades": []
+      "trades": [],
+      "rejectionReasons": {
+        "R/R < 1.5 en primera resistencia": 10
+      }
     }
   ],
   "causality": [
