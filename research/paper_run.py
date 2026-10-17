@@ -36,6 +36,7 @@ for sym in review.PROTOCOL['assets']:
    for event in state['events'][before:]:event['symbol']=sym
   price=current['o'] if current else float(d.c.iloc[-1])
   summary.append({'symbol':sym,'model':model,'markPrice':price,'markAt':current['t'] if current else int(d.t.iloc[-1])+BAR,**mark(acc,price)})
+assert all(event['time']>=START for event in state['events']),'Historical event leaked into prospective record'
 result={'generatedAt':review.a.NOW_UTC.isoformat(),'startAt':START,'protocolSha256':protocol_hash,'mode':'PAPER_ONLY','accounts':summary,'events':state['events'][-200:],'totalEvents':len(state['events']),'minimumMonths':3,'minimumClosedPerAsset':20,'promoted':False,'status':'RECOLECTANDO DATOS PROSPECTIVOS','notes':['No órdenes ni capital real','No reinicia el historial ni ajusta parámetros','Señales anteriores al inicio excluidas; historia previa solo calienta indicadores','Los fills en apertura son simulados con precio real; ejecuciones tardías se identifican como reconstruidas','Las posiciones abiertas se marcan a la apertura actual observada; no es cotización tick actual','Muestra mínima no implica aprobación automática']}
 path.write_text(json.dumps(state,ensure_ascii=False,allow_nan=False));(OUT/'summary.json').write_text(json.dumps(result,indent=2,ensure_ascii=False,allow_nan=False))
 print(json.dumps({'mode':result['mode'],'startAt':START,'accounts':len(summary),'events':len(state['events'])}),flush=True)

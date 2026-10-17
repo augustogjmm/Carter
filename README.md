@@ -2,6 +2,18 @@
 
 Entrada principal: https://carter-rust.vercel.app/pcs.html. Carter anterior se conserva en index.html.
 
+## Revisión y seguimiento prospectivo
+
+Comparación integrada: https://carter-rust.vercel.app/review.html. Siete modelos fijos, cuatro activos y seis tramos, más walk-forward no solapado, costos altos y bootstrap de 5.000 rutas por modelo/activo. B&H y DCA se muestran como referencias de exposición distinta.
+
+Donchian21 fue elegido por su peor Calmar entre BTC y ETH en 2020–2022. No superó los controles posteriores, especialmente en ETH. Ninguna alternativa cumplió todos los requisitos; no se promovió otro motor usando los mejores resultados de test. Las reglas se fijan en research/review_protocol.json. Esta revisión es retrospectiva y declara que los agregados OOS ya habían sido observados.
+
+La causalidad se verifica mediante 140 prefijos reales de los siete modelos. Se separa esa prueba de la sensibilidad a retardar entradas y de los huecos de datos; no se modifica el dictamen histórico del protocolo original.
+
+Registro prospectivo: 28 cuentas teóricas (7 modelos × BTC/ETH/SOL/BNB), con capital simulado independiente de 1.000 USDT, riesgo 1%, exposición máxima 1× y comisión 0,10% por fill. Inicio fijo 17/10/2026 13:37:07 UTC. El proceso programado corre cada cuatro horas a minuto 9, incluso con la página cerrada. No incorpora señales anteriores al inicio ni envía órdenes reales. Persiste estado y eventos sin reiniciar el historial; una modificación del protocolo bloquea el reinicio silencioso. Las reconstrucciones por demoras quedan identificadas.
+
+El ledger se prueba contra los siete backtests independientes antes de la liquidación terminal. La muestra prospectiva mínima indicada (tres meses y 20 operaciones cerradas por activo) no implica aprobación ni garantiza que se alcance una ventaja. No puede completarse con datos futuros que aún no existen.
+
 ## Actualización 17/10/2026
 
 - Radar y gráfico usan el mismo histórico desde 2020 o desde el listado del activo, el mismo motor y la misma caché por cierre. Se elimina la discrepancia de simular 1000 velas en el radar y todo el histórico en el detalle.
