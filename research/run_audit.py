@@ -55,7 +55,14 @@ rows.to_csv(out/'todas_las_pruebas.csv',index=False);mc.to_csv(out/'montecarlo.c
 report=audit.report_md(rows,mc,fps,criteria,details)
 report='# Dictamen final: '+verdict+'\n\nAuditoría ejecutada con datos reales. No equivale a aprobación de rentabilidad.\n\n'+report
 (out/'INFORME.md').write_text(report)
+spotrows=[]
+for sym in ['BTCUSDT','ETHUSDT']:
+ d=datasets[(sym,'4h')][0]
+ for label,a,b in [('FULL',audit.START_UTC,audit.END_UTC),('IS',audit.START_UTC,audit.SPLIT_UTC),('OOS',audit.SPLIT_UTC,audit.END_UTC)]:
+  spotrows.append(audit.outrow(sym,label,'PCS spot 1x',audit.run_engine(d,audit.Params(spot_only=True),a,b)))
+spot=pd.DataFrame(spotrows);spot.to_csv(out/'spot_1x.csv',index=False)
 summary={'completed':True,'generatedAt':audit.NOW_UTC.isoformat(),'verdict':verdict,'criteria':{k:bool(v) for k,v in criteria.items()},'experiments':len(rows),'datasets':len(fps),'dataQualityFailures':len(quality),'downloadFailures':failures,
+ 'spotBase':json.loads(spot.to_json(orient='records')),
  'base':json.loads(rows[rows.experiment=='PCS'].to_json(orient='records'))}
 (out/'summary.json').write_text(json.dumps(summary,indent=2,ensure_ascii=False))
 print('VERDICT',verdict,flush=True);print(json.dumps(summary,ensure_ascii=False),flush=True)

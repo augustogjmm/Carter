@@ -82,7 +82,7 @@ if(duplicated.has(c.symbol))return{status:'excluded',reason:'Símbolo ambiguo de
 if(!available.has(c.symbol))return{status:'missing',reason:'No existe par '+c.symbol+'USDT spot TRADING verificado en Binance'};
 return null;
 }
-async function candles(symbol){return (await window.PCSEngine.download(symbol+'USDT')).bars;}
+async function candles(symbol){return window.PCSEngine.download(symbol+'USDT');}
 function make(tag,className,content){
 let el=document.createElement(tag);if(className)el.className=className;if(content!==undefined)el.textContent=String(content);return el;
 }
@@ -98,7 +98,7 @@ function render(){
 const total=R.items.length,signals=R.items.filter(x=>x.status==='signal'),watched=R.items.filter(x=>x.status==='watch'),done=R.items.filter(x=>!['queued','scanning'].includes(x.status)),failed=R.items.filter(x=>x.status==='error');
 label('radarPositive',signals.length);label('radarWatch',watched.length);label('radarProgress',done.length+' / '+(total||50));
 label('radarStatus',R.problem?'Radar no disponible: '+R.problem:R.busy?'Analizando '+done.length+' de '+total+' · '+(signals.length?'hay señales PCS':'sin señales confirmadas hasta ahora'):(failed.length?'Escaneo parcial':'Escaneo finalizado')+' · '+done.length+' / '+(total||50));
-label('radarSource',R.source?(R.source+' · ranking '+time(R.marketAt)+' · 4H Binance'):'Ranking en espera');
+label('radarSource',R.source?(R.source+' · ranking '+time(R.marketAt)+' · 4H spot · fuente por activo'):'Ranking en espera');
 const bar=$('radarBar');bar.style.width=(total?done.length/total*100:0)+'%';
 let a=[...R.items];if(R.sortSignals){let priorities={signal:0,watch:1,position:1,blocked:2,scanning:3,queued:3,missing:4,excluded:4,error:5};a.sort((x,y)=>(priorities[x.status]??6)-(priorities[y.status]??6)||x.rank-y.rank);}else a.sort((x,y)=>x.rank-y.rank);
 if(R.view==='signal')a=a.filter(x=>x.status==='signal');
@@ -136,10 +136,10 @@ async function workItem(item,token){
 if(token!==R.token)return;
 item.status='scanning';item.reason='Consultando histórico PCS 4H…';render();
 try{
-const bars=await candles(item.symbol);
+const {bars,provider}=await candles(item.symbol);
 if(token!==R.token)return;
 const value=classify(bars);
-Object.assign(item,value,{status:value.positionOpen?'position':value.signal?'signal':value.regime?'watch':'blocked',available:true,reason:value.reason});
+Object.assign(item,value,{provider,status:value.positionOpen?'position':value.signal?'signal':value.regime?'watch':'blocked',available:true,reason:value.reason+' · '+provider});
 }catch(e){if(token!==R.token)return;item.status='error';item.available=false;item.reason=e.message||String(e);}
 render();
 }

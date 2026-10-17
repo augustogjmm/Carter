@@ -45,6 +45,13 @@ test('download failure invalidates cache and can be retried',async()=>{
  let failing=true;const rows=bars(400).map(x=>[x.t,x.o,x.h,x.l,x.c,x.v]);const {e}=engine({fetch:async()=>{if(failing)throw Error('offline');return {ok:true,json:async()=>rows};}});
  await assert.rejects(e.download('BTCUSDT'),/Sin datos/);failing=false;assert.equal((await e.download('BTCUSDT')).bars.length,400);
 });
+test('KuCoin fallback maps open/close correctly and keeps source explicit',async()=>{
+ const b=bars(400);const {e}=engine({fetch:async url=>{
+  if(String(url).includes('kucoin.com'))return {ok:true,json:async()=>({code:'200000',data:b.map(x=>[x.t/1000,100,100.5,101,99,123,12300])})};
+  throw Error('source unavailable');
+ }});
+ const r=await e.download('HYPEUSDT');assert.equal(r.provider,'KuCoin spot (respaldo)');assert.equal(r.bars.length,400);assert.equal(r.bars[0].o,100);assert.equal(r.bars[0].c,100.5);assert.equal(r.bars[0].v,123);
+});
 test('proxy rejects arbitrary endpoints and symbols before fetching',async()=>{
  const code=fs.readFileSync('api/market.js','utf8').replace('export default async function handler','async function handler');const ctx={URLSearchParams,AbortSignal};vm.createContext(ctx);vm.runInContext(code+';this.handler=handler',ctx);
  for(const query of [{path:'/api/v3/order'},{path:'/api/v3/klines',query:'symbol=BTCUSDT&interval=1m&limit=1000'},{path:'/api/v3/exchangeInfo',query:'host=bad'}]){

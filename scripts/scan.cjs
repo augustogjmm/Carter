@@ -22,7 +22,7 @@ async function run(){
    try{
     const {bars,provider,gaps}=await engine.download(item.symbol+'USDT');
     const value=core.classify(bars);
-    Object.assign(item,value,{provider,gaps,status:value.positionOpen?'position':value.signal?'signal':value.regime?'watch':'blocked'});
+    Object.assign(item,value,{provider,gaps,status:value.positionOpen?'position':value.signal?'signal':value.regime?'watch':'blocked',reason:value.reason+' · '+provider});
    }catch(e){Object.assign(item,{status:'error',available:false,reason:String(e.message||e)});}
    console.log(item.symbol,item.status);
   }

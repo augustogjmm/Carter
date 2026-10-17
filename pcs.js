@@ -4,7 +4,7 @@
 'use strict';
 const BAR=14400000, START=Date.UTC(2020,0,1), CUT=Date.UTC(2023,0,1);
 const FEE=0.001, $=id=>document.getElementById(id);
-const state={symbol:'BTCUSDT',candles:[],ind:null,back:null,provider:'',rangeComplete:false,gaps:0,busy:false,view:145,offset:0,drag:null,hover:-1,token:0};
+const state={symbol:'BTCUSDT',candles:[],ind:null,back:null,provider:'',rangeComplete:false,gaps:0,busy:false,view:145,offset:0,drag:null,hover:-1,token:0,audit:null};
 const num=x=>Number(x);
 const finite=Number.isFinite;
 const fmt=(x,n=2)=>finite(x)?x.toLocaleString('en-US',{minimumFractionDigits:n,maximumFractionDigits:n}):'—';
@@ -91,7 +91,7 @@ async function getJson(url){
  const urls=[url];
  if(typeof document!=='undefined'&&/^https:\/\//.test(url)){
   const parsed=new URL(url);
-  if(parsed.pathname==='/api/v3/klines'||parsed.pathname==='/api/v3/exchangeInfo'||parsed.pathname==='/v5/market/kline')urls.push('/api/market?'+new URLSearchParams({path:parsed.pathname,query:parsed.search.slice(1)}));
+  if(['/api/v3/klines','/api/v3/exchangeInfo','/v5/market/kline','/api/v1/market/candles'].includes(parsed.pathname))urls.push('/api/market?'+new URLSearchParams({path:parsed.pathname,query:parsed.search.slice(1)}));
  }
  let error;
  for(const target of urls){
@@ -127,6 +127,23 @@ for(let page=0;page<30;page++){
 }
 return dedup(rows).filter(x=>x.t>=START&&x.t+BAR<=Date.now());
 }
+async function kucoin(symbol){
+const pair=symbol.replace(/USDT$/,'-USDT');let rows=[],end=Math.floor(Date.now()/1000);
+for(let page=0;page<30;page++){
+ const start=Math.max(START/1000,end-1499*BAR/1000);
+ const u='https://api.kucoin.com/api/v1/market/candles?'+new URLSearchParams({symbol:pair,type:'4hour',startAt:String(start),endAt:String(end)});
+ const r=await getJson(u);
+ if(r.code!=='200000'||!Array.isArray(r.data))throw new Error('KuCoin: '+(r.msg||'datos inválidos'));
+ if(!r.data.length)break;
+ for(const z of r.data)rows.push({t:+z[0]*1000,o:+z[1],c:+z[2],h:+z[3],l:+z[4],v:+z[5]});
+ const earliest=Math.min(...r.data.map(z=>+z[0]));
+ updateProgress('KuCoin spot · '+symbol+' · '+rows.length+' velas descargadas');
+ if(earliest<=START/1000||r.data.length<1499)break;
+ if(earliest>=end)throw new Error('Paginación KuCoin no avanza');
+ end=earliest-1;
+}
+return dedup(rows).filter(x=>x.t>=START&&x.t+BAR<=Date.now());
+}
 async function fetchHistory(symbol){
 let errors=[],bars=[],provider='';
 for(let url of ['https://data-api.binance.vision','https://api.binance.com','https://api1.binance.com']){
@@ -137,7 +154,10 @@ if(!provider){
  updateProgress('Binance no respondió; intentando Bybit V5 spot…');
  try{bars=await bybit(symbol);if(bars.length<250)throw new Error('Muy pocas velas');provider='Bybit V5 Spot (respaldo)';}catch(e){errors.push(e.message);}
 }
-if(!provider)throw new Error('Sin datos suficientes: '+errors.join(' | '));
+ if(!provider){
+ try{bars=await kucoin(symbol);if(bars.length<250)throw new Error('KuCoin: menos de 250 velas');provider='KuCoin spot (respaldo)';}catch(e){errors.push(e.message);}
+ }
+ if(!provider)throw new Error('Sin datos suficientes: '+errors.join(' | '));
 let gaps=0;for(let i=1;i<bars.length;i++)if(bars[i].t-bars[i-1].t!==BAR)gaps++;
 return{bars,provider,gaps,complete:bars.length>250&&bars[0].t===START&&gaps===0};
 }
@@ -171,7 +191,7 @@ const fmtp=x=>fmt(x,!finite(x)?2:Math.abs(x)>=100?2:Math.abs(x)>=1?3:Math.abs(x)
 set('pcsSource',state.provider+' · 4H');set('pcsChartTitle',state.symbol+' · 4H · '+b.length.toLocaleString('es-AR')+' velas');
 set('pcsDataSpan','Desde '+iso(b[0].t)+' hasta '+iso(x.t)+' (aperturas UTC)');
 set('pcsCompleteness',state.rangeComplete?'COBERTURA 2020 · SIN GAPS':'HISTÓRICO INCOMPLETO · PRECAUCIÓN');
-set('pcsEvidence','BACKTEST LOCAL · NO AUDITADO');set('pcsPrice',fmtp(x.c));set('pcsPriceAt',local(x.t+BAR)+' · último cierre');
+set('pcsEvidence',state.audit?'AUDITORÍA FINAL · '+state.audit.verdict:'BACKTEST LOCAL · NO AUDITADO');set('pcsPrice',fmtp(x.c));set('pcsPriceAt',local(x.t+BAR)+' · último cierre');
 set('pcsRegime',q.regime?'ALCISTA':'SIN RÉGIMEN');set('pcsRegimeSub','EMA50 '+fmtp(s.ema50[last])+' · EMA200 '+fmtp(s.ema200[last]));
 set('pcsSqueeze',s.sq[last]?'EN COMPRESIÓN':'FUERA');set('pcsSqSub',q.squeeze?'ON en últimas 16 velas':'Sin ON reciente');
 set('pcsADX',fmt(s.adx[last],1));set('pcsADXSub','+DI '+fmt(s.plus[last],1)+' / −DI '+fmt(s.minus[last],1));
@@ -278,6 +298,10 @@ state.ind=indicators(r.bars);calcAndShow();set('pcsProgress','');set('pcsStatus'
 }catch(e){if(token!==state.token)return;set('pcsProgress','');set('pcsDecisionTitle','SIN DATOS · '+symbol);set('pcsDecisionDetail','No se habilita una entrada sin datos vigentes. Reintentá actualizar.');set('pcsStatus','SIN DATOS');$('pcsDot').className='dot err';set('pcsError',e.message);$('pcsError').classList.add('show');
 }finally{if(token===state.token){state.busy=false;$('pcsRefresh').disabled=false;}}
 }
+async function auditStatus(){
+ try{const r=await getJson('/data/audit/summary.json');if(r.completed){state.audit=r;set('pcsEvidence','AUDITORÍA FINAL · '+r.verdict);}}
+ catch(e){/* The local backtest remains explicitly uncertified. */}
+}
 function init(){
 for(let el of document.querySelectorAll('[data-symbol]'))el.addEventListener('click',()=>{for(let b of document.querySelectorAll('[data-symbol]'))b.classList.toggle('selected',b===el);load(el.dataset.symbol);});
 $('pcsRefresh').addEventListener('click',()=>load(state.symbol));
@@ -299,7 +323,7 @@ window.addEventListener('resize',draw);
 let lastSlot=Math.floor(Date.now()/BAR);
 const refreshIfDue=()=>{const slot=Math.floor((Date.now()-30000)/BAR);if(!state.busy&&slot>lastSlot){lastSlot=slot;load(state.symbol);}};
 setInterval(refreshIfDue,60000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshIfDue();});
-load(state.symbol);
+auditStatus();load(state.symbol);
 }
 window.PCSEngine={indicators,backtest,stats,dedup,download,getJson};
 window.PCSApp={loadSymbol(symbol){for(const el of document.querySelectorAll('[data-symbol]'))el.classList.toggle('selected',el.dataset.symbol===symbol);return load(symbol);},getSymbol(){return state.symbol;}};
