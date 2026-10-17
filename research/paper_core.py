@@ -9,7 +9,9 @@ def account(last_closed,capital=1000.):
 def step(state,bar,signal,signal_atr,atr,rule,events,recorded_at,entry_only=False,down=False):
  t=int(bar['t'])
  if not entry_only and t<=state['lastClosed']:return
- def event(kind,**values):events.append({'kind':kind,'time':t,'recordedAt':recorded_at,'reconstructed':recorded_at-t>BAR,'model':rule['id'],**values})
+ def event(kind,**values):
+  observable_at=t+BAR if kind=='EXIT' else t
+  events.append({'kind':kind,'time':t,'recordedAt':recorded_at,'reconstructed':recorded_at-observable_at>15*60000,'model':rule['id'],**values})
  def sell(qty,price,reason):
   pos=state['position'];pnl=qty*(price-pos['entry'])-qty*pos['entry']*FEE-qty*price*FEE
   state['cash']+=qty*price*(1-FEE);state['realized']+=pnl;pos['qty']-=qty;pos['pnl']+=pnl

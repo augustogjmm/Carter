@@ -13,7 +13,8 @@
   $('reviewReason').textContent=data.decision+'. PCS conserva sus reglas y su dictamen original.';
   $('reviewSelection').textContent='Elegido usando solo 2020–2022: '+data.selectedOnIS+'. Regla: mayor Calmar mínimo entre BTC y ETH. No se reelige por los resultados posteriores.';
   $('reviewCausal').textContent='Causalidad de los modelos: '+data.causality.filter(x=>x.prefixInvariant).length+'/'+data.causality.length+' prefijos reales invariantes. Esta prueba es distinta de la rentabilidad al retrasar una entrada.';
-  for(const [symbol,gates] of Object.entries(data.gates[data.selectedOnIS])){const p=document.createElement('p');p.textContent=symbol+' · '+Object.entries(gates).map(([k,v])=>k+': '+(v?'cumple':'no cumple')).join(' · ');$('reviewGates').append(p);}
+  const gateLabels={originalPerformance:'Revisión 2023–2026',recent:'Período reciente',costStress:'Costos altos'};
+  for(const [symbol,gates] of Object.entries(data.gates[data.selectedOnIS])){const p=document.createElement('p');p.textContent=symbol+' · '+Object.entries(gates).map(([k,v])=>gateLabels[k]+': '+(v?'cumple':'no cumple')).join(' · ');$('reviewGates').append(p);}
   for(const symbol of data.protocol.assets){const wf=data.rows.filter(x=>x.symbol===symbol&&x.experiment===data.selectedOnIS&&x.window==='WF'),rr=wf.map(x=>x.return_total).filter(Number.isFinite).sort((a,b)=>a-b),m=rr.length?rr.length%2?rr[(rr.length-1)/2]:(rr[rr.length/2-1]+rr[rr.length/2])/2:NaN,b=data.bootstrap.find(x=>x.symbol===symbol&&x.model===data.selectedOnIS);row($('reviewRobustness'),[symbol,rr.filter(x=>x>0).length+'/'+rr.length,pct(m),pct(rr[0]),pct(b?.p95DD),number(b?.p05Multiple)]);}
   for(const model of data.protocol.models){const p=document.createElement('p');p.textContent=model.id+': '+model.definition;$('reviewDefinitions').append(p);}
   $('reviewWindow').addEventListener('change',render);render();

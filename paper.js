@@ -9,7 +9,8 @@
  }
  try{
   const r=await fetch('data/paper/summary.json',{cache:'no-store',signal:AbortSignal.timeout(15000)});if(!r.ok)throw Error('Registro prospectivo no disponible');data=await r.json();if(data.mode!=='PAPER_ONLY')throw Error('Modo de registro inválido');
-  $('paperStatus').textContent=data.status+' · '+data.accounts.length+' cuentas teóricas · '+data.totalEvents+' eventos. Última actualización: '+new Date(data.generatedAt).toLocaleString('es-AR',{timeZone:'America/Argentina/Buenos_Aires'})+' ARG';
+  const stale=Date.now()-Date.parse(data.generatedAt)>8*3600000;
+  $('paperStatus').textContent=(stale?'REGISTRO SIN ACTUALIZACIÓN RECIENTE':data.status)+' · '+data.accounts.length+' cuentas teóricas · '+data.totalEvents+' eventos. Última actualización: '+new Date(data.generatedAt).toLocaleString('es-AR',{timeZone:'America/Argentina/Buenos_Aires'})+' ARG';
   $('paperStart').textContent='Inicio fijo: '+new Date(data.startAt).toLocaleString('es-AR',{timeZone:'America/Argentina/Buenos_Aires'})+' ARG. Las señales anteriores se excluyen.';
   for(const model of [...new Set(data.accounts.map(x=>x.model))]){const option=document.createElement('option');option.value=model;option.textContent=model;$('paperModel').append(option);}
   $('paperModel').addEventListener('change',render);render();

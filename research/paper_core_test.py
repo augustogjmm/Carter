@@ -22,4 +22,7 @@ class PaperTests(unittest.TestCase):
  def test_contado_limit_includes_fee(self):
   state=account(-BAR);events=[];step(state,bar(0),True,.001,1,RULE,events,0,entry_only=True)
   self.assertGreaterEqual(state['cash'],-1e-8);self.assertLessEqual(state['position']['qty']*100*1.001,1000+1e-8)
+ def test_closed_bar_exit_is_observed_after_close_not_reconstructed(self):
+  state=account(-BAR);events=[];step(state,bar(0,h=105,l=95),True,1,1,RULE,events,BAR+9*60000)
+  self.assertFalse(events[-1]['reconstructed'])
 if __name__=='__main__':unittest.main()
