@@ -57,10 +57,10 @@ async function radar(force=false){let seq=++state.radarSeq;state.rows=[];renderR
  }catch(e){if(seq===state.radarSeq){set('tlData','ERROR DE MERCADO');set('tlRadarMsg','No se pudo validar el universo: '+e.message);renderRadar();}}
 }
 async function loadCoin(symbol=state.active,period=state.period){symbol=String(symbol).toUpperCase().trim();if(!/^[A-Z0-9]{2,24}USDT$/.test(symbol)){set('tlProvider','Par inválido · usar BTCUSDT, ETHUSDT, etc.');return;}
- state.active=symbol;state.period=period;state.seq++;const seq=state.seq;clear();set('tlPair',symbol+' · '+period.toUpperCase());set('tlSymbol',symbol);$('tlTimeframe').value=period;
+ state.active=symbol;state.period=period;state.seq++;const seq=state.seq;clear();set('tlPair',symbol+' · '+period.toUpperCase());$('tlSymbol').value=symbol;$('tlTimeframe').value=period;
  set('tlDecision','CARGANDO…');set('tlWhy','Validando histórico y última vela cerrada…');set('tlProvider','Binance Spot · '+period+' · verificando cobertura');
  try{const downloaded=await D.history(symbol,period);if(seq!==state.seq)return;
- const ind=E.indicators(downloaded.bars),last=E.latest(downloaded.bars,ind,period);
+ const ind=E.indicators(downloaded.bars,period),last=E.latest(downloaded.bars,ind,period);
  if(last.status==='SIN DATOS')throw Error(last.reason);
  const back=E.backtest(downloaded.bars,ind),results=E.stats(back);
  state.bars=downloaded.bars;state.ind=ind;state.back=back;
@@ -122,7 +122,7 @@ function draw(){if(!state.bars.length)return;const b=state.bars,s=state.ind,n=b.
  }
 }
 async function multiTime(){let symbol=state.active,seq=state.seq;set('tlMatrix','Descargando 1H / 4H / 1D por separado…');const rows=[];
- for(const period of ['1h','4h','1d']){try{const r=await D.history(symbol,period);if(seq!==state.seq)return;const ind=E.indicators(r.bars),x=E.latest(r.bars,ind,period),k=r.bars.length-1;
+ for(const period of ['1h','4h','1d']){try{const r=await D.history(symbol,period);if(seq!==state.seq)return;const ind=E.indicators(r.bars,period),x=E.latest(r.bars,ind,period),k=r.bars.length-1;
  rows.push(period.toUpperCase()+' · '+x.status+' · EMA '+(ind.ema10[k]>ind.ema55[k]?'↑':'↓')+' · ADX '+fmt(ind.adx[k],1)+' · '+utc(r.bars[k].t+MS[period]));}
  catch(e){rows.push(period.toUpperCase()+' · SIN DATOS · '+e.message);}}
  if(seq===state.seq)set('tlMatrix',rows.join('  |  '));
