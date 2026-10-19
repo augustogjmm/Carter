@@ -21,7 +21,7 @@ function validate(raw,period='4h'){const ms=PERIOD[period];if(!ms)throw Error('I
  }
  return list;
 }
-function indicators(b){const n=b.length,cl=b.map(x=>x.c),sma20=sma(cl,20),ema10=ema(cl,10),ema55=ema(cl,55),ema200=ema(cl,200);
+function indicators(b,period='4h'){const expectedStep=PERIOD[period];if(!expectedStep)throw Error('Intervalo inválido');const n=b.length,cl=b.map(x=>x.c),sma20=sma(cl,20),ema10=ema(cl,10),ema55=ema(cl,55),ema200=ema(cl,200);
  const tr=Array(n).fill(0),pd=Array(n).fill(0),md=Array(n).fill(0);
  for(let i=0;i<n;i++){tr[i]=i?Math.max(b[i].h-b[i].l,Math.abs(b[i].h-b[i-1].c),Math.abs(b[i].l-b[i-1].c)):b[i].h-b[i].l;
  if(i){const up=b[i].h-b[i-1].h,down=b[i-1].l-b[i].l;pd[i]=up>down&&up>0?up:0;md[i]=down>up&&down>0?down:0;}}
@@ -44,7 +44,7 @@ function indicators(b){const n=b.length,cl=b.map(x=>x.c),sma20=sma(cl,20),ema10=
  const momentum=linReg(momSrc,20);
  let run=0;const valid=Array(n).fill(false),long=Array(n).fill(false),bear=Array(n).fill(false),parts=Array(n);
  for(let i=0;i<n;i++){
-  run=(i&&b[i].t-b[i-1].t!==b[1]?.t-b[0]?.t)?1:run+1;
+  run=(i&&b[i].t-b[i-1].t!==expectedStep)?1:run+1;
   valid[i]=i>=205&&run>=205&&[ema10[i],ema55[i],momentum[i],momentum[i-1],momentum[i-2],adx[i],adx[i-1],atr[i]].every(finite);
   const trend=valid[i]&&ema10[i]>ema55[i];
   const turn=valid[i]&&momentum[i]>momentum[i-1]&&momentum[i-1]<=momentum[i-2]&&momentum[i-1]<0;
@@ -57,7 +57,7 @@ function indicators(b){const n=b.length,cl=b.map(x=>x.c),sma20=sma(cl,20),ema10=
  return{ema10,ema55,ema200,atr,plus,minus,adx,bbU,bbL,kcU,kcL,squeeze,momentum,valid,long,bear,parts};
 }
 function latest(b,ind,period='4h',now=Date.now()){const last=b.length-1,ms=PERIOD[period];if(last<0||!ind.valid[last])return{status:'SIN DATOS',reason:'Indicadores incompletos o gaps cercanos'};
- const expected=Math.floor((now-1)/ms)*ms-ms; // last FULLY closed candle, including exact boundary
+ const expected=Math.floor(now/ms)*ms-ms; // last FULLY closed candle, including exact boundary
  if(b[last].t!==expected)return{status:'SIN DATOS',reason:'Última vela cerrada no coincide con el reloj UTC',expected,actual:b[last].t};
  const p=ind.parts[last];
  return{status:ind.long[last]?'LONG CONFIRMADO':ind.bear[last]?'DETERIORO':p.early?'VIGILAR':'SIN ENTRADA',
