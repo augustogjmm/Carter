@@ -18,7 +18,7 @@ export default async function handler(req,res){
  };
  if(!Object.hasOwn(allowed,path)||[...q.keys()].some(k=>!allowed[path].includes(k)))return res.status(400).json({error:'Consulta no permitida'});
  if(path!=='/api/v3/exchangeInfo'){
-  if(!/^[A-Z0-9]{2,24}USDT$/.test(q.get('symbol')||'')||!['4h','240'].includes(q.get('interval'))||q.get('limit')!=='1000')return res.status(400).json({error:'Par o intervalo inválido'});
+  if(!/^[A-Z0-9]{2,24}USDT$/.test(q.get('symbol')||'')||!['1h','4h','1d','240','60','D'].includes(q.get('interval'))||q.get('limit')!=='1000')return res.status(400).json({error:'Par o intervalo inválido'});
   for(const k of ['startTime','endTime','end'])if(q.has(k)&&!/^\d{10,16}$/.test(q.get(k)))return res.status(400).json({error:'Fecha inválida'});
   if(path.startsWith('/v5')&&q.get('category')!=='spot')return res.status(400).json({error:'Solo spot'});
  }
