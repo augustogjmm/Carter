@@ -55,7 +55,7 @@ async function history(symbol,period='4h',since=START){if(!/^[A-Z0-9]{2,24}USDT$
  })();
  cache.set(key,job);try{return await job;}catch(e){cache.delete(key);throw e;}
 }
-function classify(payload,period='4h'){const b=payload.bars,ind=engine.indicators(b),current=engine.latest(b,ind,period);
+function classify(payload,period='4h'){const b=payload.bars,ind=engine.indicators(b,period),current=engine.latest(b,ind,period);
  if(current.status==='SIN DATOS')return{status:'error',reason:current.reason,source:payload.source};
  const bt=engine.backtest(b,ind),s=engine.stats(bt);
  let status=bt.pos?'position':current.signal?'signal':current.status==='VIGILAR'?'watch':current.status==='DETERIORO'?'bear':'blocked';
