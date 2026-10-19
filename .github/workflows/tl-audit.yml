@@ -1,0 +1,25 @@
+name: Trading Latino — real-data independent audit
+on:
+  workflow_dispatch:
+  pull_request:
+    paths: ['tl-engine.js','tl-data.js','scripts/tl-audit.cjs','.github/workflows/tl-audit.yml']
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Quantitative research with REAL Binance historical candles
+        run: node scripts/tl-audit.cjs
+      - name: Preserve audit evidence as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trading-latino-independent-audit
+          path: data/tl-audit/summary.json
+          if-no-files-found: warn
