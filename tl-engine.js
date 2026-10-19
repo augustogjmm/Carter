@@ -64,9 +64,9 @@ function latest(b,ind,period='4h',now=Date.now()){const last=b.length-1,ms=PERIO
  signal:ind.long[last],price:b[last].c,at:b[last].t,adx:ind.adx[last],ema10:ind.ema10[last],ema55:ind.ema55[last],mom:ind.momentum[last],
  squeeze:ind.squeeze[last],reason:'EMA10>EMA55 '+(p.trend?'SÍ':'NO')+' · Giro MOM '+(p.turn?'SÍ':'NO')+' · ADX decreciente desde ≥23 '+(p.weakness?'SÍ':'NO')};
 }
-function backtest(b,ind,{capital=1000,fee=FEE,slip=SLIP,risk=.01}={}){
+function backtest(b,ind,{capital=1000,fee=FEE,slip=SLIP,risk=.01,from=-Infinity,to=Infinity}={}){
  let cash=capital,pos=null,orders=[],curve=[],pending=false,pendingExit=false,signalEntries=0;
- for(let i=0;i<b.length;i++){const x=b[i],atr=ind.atr[i-1];
+ for(let i=0;i<b.length;i++){const x=b[i];if(x.t>to)break;if(x.t<from){curve.push({t:x.t,equity:capital});continue;}const atr=ind.atr[i-1];
   if(pos&&pendingExit){const exit=x.o*(1-slip),pnl=pos.qty*(exit-pos.entry)-pos.entryFee-pos.qty*exit*fee;cash+=pos.qty*exit*(1-fee);
    orders.push({entryAt:pos.t,exitAt:x.t,entry:pos.entry,exit,pnl,why:'SEÑAL CONTRARIA'});pos=null;}
   pendingExit=false;
