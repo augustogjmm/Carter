@@ -30,6 +30,24 @@ function gate(c,available,duplicates){if(stable.test(c.symbol)||/stablecoin|stab
  if(duplicates.has(c.symbol))return'Símbolo ambiguo en top 50';
  if(!available.has(c.symbol))return'Sin par USDT spot activo en Binance';
  return null;}
+async function kucoin(symbol,period,since){
+ if(period!=='4h')throw Error('KuCoin respaldo solo disponible para 4h');
+ const ms=engine.PERIOD[period],lastOpen=Math.floor(Date.now()/ms)*ms-ms;
+ let end=Math.floor((lastOpen+ms-1)/1000),rows=[];
+ for(let page=0;page<30;page++){
+  const start=Math.max(Math.floor(since/1000),end-1499*ms/1000);
+  const u='https://api.kucoin.com/api/v1/market/candles?'+new URLSearchParams({symbol:symbol.replace(/USDT$/,'-USDT'),type:'4hour',startAt:String(start),endAt:String(end)});
+  const r=await getJson(u);if(r.code!=='200000'||!Array.isArray(r.data))throw Error('KuCoin Spot inválido');
+  if(!r.data.length)break;
+  for(const x of r.data){const t=+x[0]*1000;if(t<=lastOpen)rows.push({t,o:+x[1],c:+x[2],h:+x[3],l:+x[4],v:+x[5]});}
+  const earliest=Math.min(...r.data.map(z=>+z[0]));if(earliest*1000<=since||r.data.length<1499)break;
+  if(earliest>=end)throw Error('Paginación KuCoin no avanza');end=earliest-1;
+ }
+ // Binance and KuCoin histories are never mixed. A single provider owns the whole series.
+ rows=engine.validate(rows,period);if(rows.length<250||rows.at(-1).t!==lastOpen)throw Error('KuCoin sin cierre vigente');
+ let gaps=0;for(let i=1;i<rows.length;i++)if(rows[i].t-rows[i-1].t!==ms)gaps++;
+ return{bars:rows,source:'KuCoin Spot (respaldo explícito)',gaps,period,from:rows[0].t,until:rows.at(-1).t};
+}
 const cache=new Map();
 async function history(symbol,period='4h',since=START){if(!/^[A-Z0-9]{2,24}USDT$/.test(symbol)||!engine.PERIOD[period])throw Error('Par o intervalo inválido');
  const ms=engine.PERIOD[period],slot=Math.floor(Date.now()/ms),key=symbol+':'+period+':'+slot+':'+since;
@@ -51,6 +69,7 @@ async function history(symbol,period='4h',since=START){if(!/^[A-Z0-9]{2,24}USDT$
    let gaps=0;for(let i=1;i<bars.length;i++)if(bars[i].t-bars[i-1].t!==ms)gaps++;
    return{bars,source:'Binance Spot '+new URL(host).hostname,gaps,period,from:bars[0].t,until:bars.at(-1).t};
   }catch(e){error=e;}}
+  if(period==='4h')try{return await kucoin(symbol,period,since);}catch(e){error=Error(error.message+' | KuCoin: '+e.message);}
   throw Error('Descarga '+symbol+' '+period+': '+error.message);
  })();
  cache.set(key,job);try{return await job;}catch(e){cache.delete(key);throw e;}
