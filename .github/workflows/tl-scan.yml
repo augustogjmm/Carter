@@ -3,6 +3,8 @@ on:
   schedule:
     - cron: '11 */4 * * *'
   workflow_dispatch:
+  pull_request:
+    paths: ['tl-engine.js', 'tl-data.js', 'scripts/tl-scan.cjs', '.github/workflows/tl-scan.yml']
   push:
     branches: [main]
     paths: ['tl-engine.js','tl-data.js','scripts/tl-scan.cjs','.github/workflows/tl-scan.yml']
@@ -26,7 +28,14 @@ jobs:
         run: node --test tests/tl-engine.test.cjs
       - name: Refresh the true 50-ranked universe
         run: node scripts/tl-scan.cjs
+      - name: Verify 50-row scan artifact in a pull request
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: tl-top-50-real-snapshot
+          path: data/tl-radar.json
       - name: Publish separate TL snapshot
+        if: github.event_name != 'pull_request'
         run: |
           git config user.name 'Carter Scanner'
           git config user.email '44848888+augustogjmm@users.noreply.github.com'
