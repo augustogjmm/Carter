@@ -145,6 +145,9 @@ function init(){set('tlClock',new Date().toLocaleString('es-AR',{timeZone:'UTC'}
  draw();});
  window.addEventListener('resize',draw);
  let stamp=Math.floor(Date.now()/MS['4h']);setInterval(()=>{const x=Math.floor(Date.now()/MS['4h']);if(x!==stamp){stamp=x;radar();loadCoin();}},60000);
+ fetch('/data/tl-audit/summary.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(data=>{
+ if(data){set('tlAudit','AUDITORÍA TL · '+data.status+' · VER INFORME');set('tlVerdict',data.status);}
+ }).catch(()=>{set('tlAudit','AUDITORÍA TL · SIN INFORME PUBLICADO');});
  loadCoin('BTCUSDT','4h');radar();
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
