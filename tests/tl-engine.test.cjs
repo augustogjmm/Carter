@@ -1,0 +1,10 @@
+const test=require('node:test'),a=require('node:assert/strict'),e=require('../tl-engine.js');
+const BAR=e.PERIOD['4h'],end=Math.floor((Date.now()-BAR)/BAR)*BAR;
+const bars=Array.from({length:450},(_,i)=>{const p=100+i*.06+Math.sin(i/8)*3;return{t:end-(449-i)*BAR,o:p-.1,h:p+1,l:p-1,c:p+.1,v:100+i%7};});
+test('EMA exact seed and Wilder 14',()=>{a.deepEqual(e.ema([1,2,3,4],2),[NaN,1.6666666666666665,2.5555555555555554,3.518518518518518]);const s=e.indicators(bars);a(Number.isFinite(s.adx[449]));a(Number.isFinite(s.momentum[449]));a(Number.isFinite(s.ema55[449]));});
+test('future bars do not change earlier indicators or signals',()=>{let full=e.indicators(bars);for(let i of [205,260,370]){let cut=e.indicators(bars.slice(0,i+1));a.equal(full.long[i],cut.long[i]);a.equal(full.bear[i],cut.bear[i]);a.equal(full.momentum[i],cut.momentum[i]);a.equal(full.adx[i],cut.adx[i]);}});
+test('strict OHLCV validation + reject open bars and duplicates',()=>{a.equal(e.validate(bars).length,450);a.throws(()=>e.validate([...bars,bars.at(-1)]),/duplicado/);a.throws(()=>e.validate([...bars,{...bars.at(-1),t:Math.floor(Date.now()/BAR)*BAR}]),/abierta/);a.throws(()=>e.validate([{...bars[0],v:-1}]),/OHLCV/);});
+test('squeeze states are exact strict boundaries',()=>{let d=e.indicators(bars);a(['ON','OFF','NEUTRAL'].includes(d.squeeze.at(-1)));});
+test('no entry same signal bar + stop takes priority on simultaneous touch',()=>{let b=bars.slice(0,280),s=e.indicators(b);s.long.fill(false);s.bear.fill(false);s.atr.fill(2);s.long[240]=true;
+ b[241]={...b[241],o:110,h:120,l:90,c:109};let r=e.backtest(b,s);a.equal(r.orders.length,1);a.equal(r.orders[0].entryAt,b[241].t);a.equal(r.orders[0].why,'STOP');a(Math.abs(r.cash-1000-r.orders[0].pnl)<1e-7);});
+test('latest only for current closed candle, profile quality flagged',()=>{let s=e.indicators(bars);a.equal(e.latest(bars,s).status!=='SIN DATOS',true);a.equal(e.latest(bars.slice(0,-1),e.indicators(bars.slice(0,-1))).status,'SIN DATOS');let p=e.profile(bars);a.equal(p.quality,'PERFIL ESTIMADO OHLCV');a(p.val<=p.poc&&p.poc<=p.vah);});

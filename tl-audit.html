@@ -1,0 +1,20 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Auditoría Trading Latino · Carter</title><link rel="stylesheet" href="tl-style.css"></head>
+<body><div class="work"><header><div class="brand"><span class="mark">TL</span><div><b>TRADING LATINO / AUDITORÍA INDEPENDIENTE</b><small>BTC & ETH · Spot · 1H / 4H / 1D</small></div></div>
+<nav><a href="index.html">Carter</a><a href="pcs.html">PCS</a><a href="trading-latino.html">Trading Latino</a><a href="review.html">Comparación PCS</a><a href="tl-audit.html" class="on">Auditoría TL</a></nav></header>
+<main><div class="hero"><div><p class="eyebrow">NO CONFUNDIR VALIDACIÓN DE SOFTWARE CON VENTAJA ESTADÍSTICA</p><h1>Auditoría Trading Latino</h1><p>Pruebas de ventana cronológica separada, capital reiniciado para cada período, entrada en siguiente apertura, 1× spot, sin anticipación de datos, costo por ejecución y prioridad del stop. La estrategia base es una formalización experimental del proyecto, no una reproducción oficial certificada por Jaime.</p></div><div class="audit" id="auditState">CONSULTANDO DATOS REALES…</div></div>
+<section class="panel"><div class="heading"><div><p class="eyebrow">PERÍODO DE TEST · DESDE 2025-01-01 UTC</p><h2>Resultados económicos fuera de muestra</h2><small id="auditInfo">Fuente y ejecución…</small></div><a href="trading-latino.html">← Volver al radar</a></div>
+<div class="table-wrap"><table><thead><tr><th>ACTIVO</th><th>TF</th><th>OPS</th><th>WIN RATE</th><th>RETORNO NETO</th><th>PF</th><th>MAX DD</th><th>STRESS 2×</th><th>GAPS TOTALES</th><th>COBERTURA OOS</th><th>VEREDICTO</th></tr></thead><tbody id="auditRows"><tr><td colspan="11">Cargando informe…</td></tr></tbody></table></div></section>
+<section class="panel"><h2>Protocolo previo a la evaluación</h2><p>Se exige mínimo de 30 operaciones OOS por activo principal, PF neto mayor a 1,20, rentabilidad positiva, Maximum Drawdown menor a 25%, resultado positivo con costos duplicados, ninguna operación ganadora dominante y ausencia de lookahead. Los huecos anteriores a la ventana OOS se informan pero no invalidan por sí solos la muestra OOS cuando existe suficiente calentamiento posterior.</p><p id="auditDetails" class="fine">Los resultados se presentan sin seleccionar un ganador a posteriori.</p><p class="fine">La prueba económica de TL-BASE no equivale a validar PCS o Carter. No se han aprobado las variantes TL-EARLY, TL-VP, TL-MTF, TL-EMA200 ni E1/E2/E3. La ausencia de pruebas de dichas variantes no las convierte en ganadoras.</p></section>
+<footer><a id="auditRun" href="#" rel="noopener noreferrer">Evidencia de GitHub Actions</a> · Informe generado con datos reales Binance Spot, sin órdenes reales.</footer></main></div>
+<script>
+const $=id=>document.getElementById(id),fmt=(x,n=2)=>Number.isFinite(x)?x.toFixed(n):'—',pct=x=>Number.isFinite(x)?(x*100).toFixed(2)+'%':'—';
+fetch('/data/tl-audit/summary.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('No se publicó el informe');return r.json();}).then(s=>{
+ $('auditState').textContent='VEREDICTO PRINCIPAL · '+s.status;
+ $('auditInfo').textContent=s.source+' · '+new Date(s.executedAt).toLocaleString('es-AR')+' · '+s.records.length+' series';
+ const body=$('auditRows');body.replaceChildren();
+ for(const r of s.records){const t=r.windows?.TEST,st=r.stress,values=[r.symbol,r.period.toUpperCase(),t?.trades??'—',pct(t?.winRate),pct(t?.returnPct),fmt(t?.pf,3),pct(t?.drawdown),pct(st?.returnPct),r.gaps,r.testCoverage?'VÁLIDA':'INVÁLIDA',r.verdict];const tr=document.createElement('tr');
+ for(const v of values){const td=document.createElement('td');td.textContent=String(v);tr.append(td);}body.append(tr);}
+ $('auditDetails').textContent='Auditoría '+s.protocol+' · '+s.engine+' · '+s.criterion+'. Versionado con hash SHA-256 por dataset y pruebas causales con prefijos.';
+ $('auditRun').href=s.run;
+}).catch(e=>{$('auditState').textContent='SIN EVIDENCIA VALIDADA';$('auditInfo').textContent=e.message;$('auditRows').innerHTML='<tr><td colspan="11">Sin informe verificable. No se declara PASS.</td></tr>';});
+</script></body></html>

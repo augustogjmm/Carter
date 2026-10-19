@@ -1,0 +1,619 @@
+{
+  "protocol": "TL-AUDIT-1",
+  "run": "https://github.com/augustogjmm/Carter/actions/runs/39327934274",
+  "executedAt": "2026-10-19T21:30:19Z",
+  "engine": "TL-BASE-1.0",
+  "source": "Binance Spot data-api.binance.vision",
+  "criterion": "2025–2026 independent test with reset capital, 0.10% fee and 0.05% slippage",
+  "status": "EVIDENCIA INSUFICIENTE",
+  "records": [
+    {
+      "symbol": "BTCUSDT",
+      "period": "1h",
+      "provider": "Binance Spot data-api.binance.vision",
+      "candles": 59581,
+      "gaps": 15,
+      "gapDetails": [
+        {
+          "after": "2020-02-09T01:00:00.000Z",
+          "before": "2020-02-09T03:00:00.000Z",
+          "missing": 1
+        },
+        {
+          "after": "2020-02-19T11:00:00.000Z",
+          "before": "2020-02-19T17:00:00.000Z",
+          "missing": 5
+        },
+        {
+          "after": "2020-03-04T09:00:00.000Z",
+          "before": "2020-03-04T11:00:00.000Z",
+          "missing": 1
+        },
+        {
+          "after": "2020-04-25T01:00:00.000Z",
+          "before": "2020-04-25T04:00:00.000Z",
+          "missing": 2
+        },
+        {
+          "after": "2020-06-28T01:00:00.000Z",
+          "before": "2020-06-28T05:00:00.000Z",
+          "missing": 3
+        },
+        {
+          "after": "2020-11-30T05:00:00.000Z",
+          "before": "2020-11-30T07:00:00.000Z",
+          "missing": 1
+        },
+        {
+          "after": "2020-12-21T13:00:00.000Z",
+          "before": "2020-12-21T18:00:00.000Z",
+          "missing": 4
+        },
+        {
+          "after": "2020-12-25T01:00:00.000Z",
+          "before": "2020-12-25T03:00:00.000Z",
+          "missing": 1
+        },
+        {
+          "after": "2021-02-11T03:00:00.000Z",
+          "before": "2021-02-11T05:00:00.000Z",
+          "missing": 1
+        },
+        {
+          "after": "2021-03-06T01:00:00.000Z",
+          "before": "2021-03-06T03:00:00.000Z",
+          "missing": 1
+        },
+        {
+          "after": "2021-04-20T01:00:00.000Z",
+          "before": "2021-04-20T04:00:00.000Z",
+          "missing": 2
+        },
+        {
+          "after": "2021-04-25T04:00:00.000Z",
+          "before": "2021-04-25T08:00:00.000Z",
+          "missing": 3
+        },
+        {
+          "after": "2021-08-13T01:00:00.000Z",
+          "before": "2021-08-13T06:00:00.000Z",
+          "missing": 4
+        },
+        {
+          "after": "2021-09-29T06:00:00.000Z",
+          "before": "2021-09-29T09:00:00.000Z",
+          "missing": 2
+        },
+        {
+          "after": "2023-03-24T12:00:00.000Z",
+          "before": "2023-03-24T14:00:00.000Z",
+          "missing": 1
+        }
+      ],
+      "start": "2020-01-01T00:00:00.000Z",
+      "end": "2026-10-19T21:00:00.000Z",
+      "hash": "bbaef790a177bcab1205b003c1586dd764e3867c28ec81ce71af3c2223368517",
+      "causalPrefixes": 5,
+      "windows": {
+        "TRAIN": {
+          "trades": 89,
+          "winRate": 0.25842696629213485,
+          "pf": 0.5403135827191666,
+          "returnPct": -0.2792199999967052,
+          "drawdown": 0.2958499198884509,
+          "equity": 720.7800000032947,
+          "open": false,
+          "largestWinShare": 0.052129091122808266,
+          "capital": 1000,
+          "closed": 89
+        },
+        "VALIDATION": {
+          "trades": 85,
+          "winRate": 0.32941176470588235,
+          "pf": 0.6719586912360966,
+          "returnPct": -0.16831238316998032,
+          "drawdown": 0.17494442007999153,
+          "equity": 831.6876168300197,
+          "open": false,
+          "largestWinShare": 0.04651864963455875,
+          "capital": 1000,
+          "closed": 85
+        },
+        "TEST": {
+          "trades": 57,
+          "winRate": 0.40350877192982454,
+          "pf": 0.7191416208381782,
+          "returnPct": -0.09111726266458953,
+          "drawdown": 0.11915332343691529,
+          "equity": 908.8827373354105,
+          "open": false,
+          "largestWinShare": 0.06626525219810597,
+          "capital": 1000,
+          "closed": 57
+        }
+      },
+      "stress": {
+        "trades": 57,
+        "winRate": 0.3508771929824561,
+        "pf": 0.3908926801074038,
+        "returnPct": -0.21520142524187136,
+        "drawdown": 0.23335137404228481,
+        "equity": 784.7985747581287,
+        "open": false,
+        "largestWinShare": 0.08705692337309355,
+        "capital": 1000,
+        "closed": 57
+      },
+      "testCoverage": true,
+      "gates": {
+        "coverage": true,
+        "causal": true,
+        "sample": true,
+        "pf": false,
+        "return": false,
+        "drawdown": true,
+        "stress": false,
+        "notOneTrade": true
+      },
+      "verdict": "FAIL"
+    },
+    {
+      "symbol": "BTCUSDT",
+      "period": "4h",
+      "provider": "Binance Spot data-api.binance.vision",
+      "candles": 14902,
+      "gaps": 1,
+      "gapDetails": [
+        {
+          "after": "2020-02-19T08:00:00.000Z",
+          "before": "2020-02-19T16:00:00.000Z",
+          "missing": 1
+        }
+      ],
+      "start": "2020-01-01T00:00:00.000Z",
+      "end": "2026-10-19T20:00:00.000Z",
+      "hash": "f320dcd0407e459b447034ea9deda76cc84d7cc0608657692d16ba276a7304bc",
+      "causalPrefixes": 5,
+      "windows": {
+        "TRAIN": {
+          "trades": 20,
+          "winRate": 0.45,
+          "pf": 1.419398016261718,
+          "returnPct": 0.05051292613227809,
+          "drawdown": 0.05916774469627916,
+          "equity": 1050.5129261322782,
+          "open": false,
+          "largestWinShare": 0.12150791659503205,
+          "capital": 1000,
+          "closed": 20
+        },
+        "VALIDATION": {
+          "trades": 22,
+          "winRate": 0.3181818181818182,
+          "pf": 0.7684034871161529,
+          "returnPct": -0.034756814253157464,
+          "drawdown": 0.08927692209310098,
+          "equity": 965.2431857468425,
+          "open": false,
+          "largestWinShare": 0.15155467179307294,
+          "capital": 1000,
+          "closed": 22
+        },
+        "TEST": {
+          "trades": 11,
+          "winRate": 0.2727272727272727,
+          "pf": 0.5733939119706054,
+          "returnPct": -0.03439480880834678,
+          "drawdown": 0.048107782968647386,
+          "equity": 965.6051911916533,
+          "open": false,
+          "largestWinShare": 0.35014227514869195,
+          "capital": 1000,
+          "closed": 11
+        }
+      },
+      "stress": {
+        "trades": 11,
+        "winRate": 0.2727272727272727,
+        "pf": 0.45273811414951,
+        "returnPct": -0.04484739484915434,
+        "drawdown": 0.054881729779825444,
+        "equity": 955.1526051508456,
+        "open": false,
+        "largestWinShare": 0.36543154316717735,
+        "capital": 1000,
+        "closed": 11
+      },
+      "testCoverage": true,
+      "gates": {
+        "coverage": true,
+        "causal": true,
+        "sample": false,
+        "pf": false,
+        "return": false,
+        "drawdown": true,
+        "stress": false,
+        "notOneTrade": true
+      },
+      "verdict": "EVIDENCIA INSUFICIENTE"
+    },
+    {
+      "symbol": "BTCUSDT",
+      "period": "1d",
+      "provider": "Binance Spot data-api.binance.vision",
+      "candles": 2483,
+      "gaps": 0,
+      "gapDetails": [],
+      "start": "2020-01-01T00:00:00.000Z",
+      "end": "2026-10-19T00:00:00.000Z",
+      "hash": "0dba3bf2f1048030594cdb59d937887dd041ad3a6ed1729d4852ff109090d7ba",
+      "causalPrefixes": 5,
+      "windows": {
+        "TRAIN": {
+          "trades": 4,
+          "winRate": 0.25,
+          "pf": 0.6390302464711884,
+          "returnPct": -0.01093560627021728,
+          "drawdown": 0.021960975404057784,
+          "equity": 989.0643937297828,
+          "open": false,
+          "largestWinShare": 1,
+          "capital": 1000,
+          "closed": 4
+        },
+        "VALIDATION": {
+          "trades": 6,
+          "winRate": 0,
+          "pf": 0,
+          "returnPct": -0.05902584394795618,
+          "drawdown": 0.05902584394795622,
+          "equity": 940.9741560520438,
+          "open": false,
+          "largestWinShare": null,
+          "capital": 1000,
+          "closed": 6
+        },
+        "TEST": {
+          "trades": 1,
+          "winRate": 0,
+          "pf": 0,
+          "returnPct": -0.010078097914863027,
+          "drawdown": 0.01865062577950364,
+          "equity": 989.9219020851369,
+          "open": false,
+          "largestWinShare": null,
+          "capital": 1000,
+          "closed": 1
+        }
+      },
+      "stress": {
+        "trades": 1,
+        "winRate": 0,
+        "pf": 0,
+        "returnPct": -0.010151241511577203,
+        "drawdown": 0.018222413391607812,
+        "equity": 989.8487584884228,
+        "open": false,
+        "largestWinShare": null,
+        "capital": 1000,
+        "closed": 1
+      },
+      "testCoverage": true,
+      "gates": {
+        "coverage": true,
+        "causal": true,
+        "sample": false,
+        "pf": false,
+        "return": false,
+        "drawdown": true,
+        "stress": false,
+        "notOneTrade": false
+      },
+      "verdict": "EVIDENCIA INSUFICIENTE"
+    },
+    {
+      "symbol": "ETHUSDT",
+      "period": "1h",
+      "provider": "Binance Spot data-api.binance.vision",
+      "candles": 59581,
+      "gaps": 15,
+      "gapDetails": [
+        {
+          "after": "2020-02-09T01:00:00.000Z",
+          "before": "2020-02-09T03:00:00.000Z",
+          "missing": 1
+        },
+        {
+          "after": "2020-02-19T11:00:00.000Z",
+          "before": "2020-02-19T17:00:00.000Z",
+          "missing": 5
+        },
+        {
+          "after": "2020-03-04T09:00:00.000Z",
+          "before": "2020-03-04T11:00:00.000Z",
+          "missing": 1
+        },
+        {
+          "after": "2020-04-25T01:00:00.000Z",
+          "before": "2020-04-25T04:00:00.000Z",
+          "missing": 2
+        },
+        {
+          "after": "2020-06-28T01:00:00.000Z",
+          "before": "2020-06-28T05:00:00.000Z",
+          "missing": 3
+        },
+        {
+          "after": "2020-11-30T05:00:00.000Z",
+          "before": "2020-11-30T07:00:00.000Z",
+          "missing": 1
+        },
+        {
+          "after": "2020-12-21T13:00:00.000Z",
+          "before": "2020-12-21T18:00:00.000Z",
+          "missing": 4
+        },
+        {
+          "after": "2020-12-25T01:00:00.000Z",
+          "before": "2020-12-25T03:00:00.000Z",
+          "missing": 1
+        },
+        {
+          "after": "2021-02-11T03:00:00.000Z",
+          "before": "2021-02-11T05:00:00.000Z",
+          "missing": 1
+        },
+        {
+          "after": "2021-03-06T01:00:00.000Z",
+          "before": "2021-03-06T03:00:00.000Z",
+          "missing": 1
+        },
+        {
+          "after": "2021-04-20T01:00:00.000Z",
+          "before": "2021-04-20T04:00:00.000Z",
+          "missing": 2
+        },
+        {
+          "after": "2021-04-25T04:00:00.000Z",
+          "before": "2021-04-25T08:00:00.000Z",
+          "missing": 3
+        },
+        {
+          "after": "2021-08-13T01:00:00.000Z",
+          "before": "2021-08-13T06:00:00.000Z",
+          "missing": 4
+        },
+        {
+          "after": "2021-09-29T06:00:00.000Z",
+          "before": "2021-09-29T09:00:00.000Z",
+          "missing": 2
+        },
+        {
+          "after": "2023-03-24T12:00:00.000Z",
+          "before": "2023-03-24T14:00:00.000Z",
+          "missing": 1
+        }
+      ],
+      "start": "2020-01-01T00:00:00.000Z",
+      "end": "2026-10-19T21:00:00.000Z",
+      "hash": "c77e48363f8b70b27c67323b4a45319c11fcdd6ba336adabc949919287bf7e2e",
+      "causalPrefixes": 5,
+      "windows": {
+        "TRAIN": {
+          "trades": 107,
+          "winRate": 0.3925233644859813,
+          "pf": 1.0289383543888164,
+          "returnPct": 0.021765409017751702,
+          "drawdown": 0.20111250029156147,
+          "equity": 1021.7654090177516,
+          "open": false,
+          "largestWinShare": 0.029084834270344778,
+          "capital": 1000,
+          "closed": 107
+        },
+        "VALIDATION": {
+          "trades": 74,
+          "winRate": 0.44594594594594594,
+          "pf": 1.1591978956213123,
+          "returnPct": 0.06633721187311314,
+          "drawdown": 0.07044999047679763,
+          "equity": 1066.3372118731131,
+          "open": false,
+          "largestWinShare": 0.038204088475875926,
+          "capital": 1000,
+          "closed": 74
+        },
+        "TEST": {
+          "trades": 55,
+          "winRate": 0.21818181818181817,
+          "pf": 0.3786220339312177,
+          "returnPct": -0.24002431795270207,
+          "drawdown": 0.2438029774661124,
+          "equity": 759.9756820472979,
+          "open": false,
+          "largestWinShare": 0.11416779871153603,
+          "capital": 1000,
+          "closed": 55
+        }
+      },
+      "stress": {
+        "trades": 55,
+        "winRate": 0.21818181818181817,
+        "pf": 0.2856147794704339,
+        "returnPct": -0.2782373077958201,
+        "drawdown": 0.2805438480785536,
+        "equity": 721.7626922041799,
+        "open": false,
+        "largestWinShare": 0.1321236755896175,
+        "capital": 1000,
+        "closed": 55
+      },
+      "testCoverage": true,
+      "gates": {
+        "coverage": true,
+        "causal": true,
+        "sample": true,
+        "pf": false,
+        "return": false,
+        "drawdown": true,
+        "stress": false,
+        "notOneTrade": true
+      },
+      "verdict": "FAIL"
+    },
+    {
+      "symbol": "ETHUSDT",
+      "period": "4h",
+      "provider": "Binance Spot data-api.binance.vision",
+      "candles": 14902,
+      "gaps": 1,
+      "gapDetails": [
+        {
+          "after": "2020-02-19T08:00:00.000Z",
+          "before": "2020-02-19T16:00:00.000Z",
+          "missing": 1
+        }
+      ],
+      "start": "2020-01-01T00:00:00.000Z",
+      "end": "2026-10-19T20:00:00.000Z",
+      "hash": "f9483e3539e6cd8934e7773b02f76343367c7db313c0507edc38ab5e046c8474",
+      "causalPrefixes": 5,
+      "windows": {
+        "TRAIN": {
+          "trades": 28,
+          "winRate": 0.35714285714285715,
+          "pf": 0.999727490019567,
+          "returnPct": -0.000049834548021210345,
+          "drawdown": 0.06720797434204581,
+          "equity": 999.9501654519788,
+          "open": false,
+          "largestWinShare": 0.10153795955853136,
+          "capital": 1000,
+          "closed": 28
+        },
+        "VALIDATION": {
+          "trades": 15,
+          "winRate": 0.4666666666666667,
+          "pf": 1.5114325659095986,
+          "returnPct": 0.04222953065844437,
+          "drawdown": 0.03933228647914966,
+          "equity": 1042.2295306584444,
+          "open": false,
+          "largestWinShare": 0.15270301334622444,
+          "capital": 1000,
+          "closed": 15
+        },
+        "TEST": {
+          "trades": 12,
+          "winRate": 0.16666666666666666,
+          "pf": 0.34686482182046374,
+          "returnPct": -0.06499103582761656,
+          "drawdown": 0.06894871661911255,
+          "equity": 935.0089641723835,
+          "open": false,
+          "largestWinShare": 0.5063852935179812,
+          "capital": 1000,
+          "closed": 12
+        }
+      },
+      "stress": {
+        "trades": 12,
+        "winRate": 0.16666666666666666,
+        "pf": 0.30398719536825264,
+        "returnPct": -0.0700976633333964,
+        "drawdown": 0.07128046567002193,
+        "equity": 929.9023366666036,
+        "open": false,
+        "largestWinShare": 0.5100045072129512,
+        "capital": 1000,
+        "closed": 12
+      },
+      "testCoverage": true,
+      "gates": {
+        "coverage": true,
+        "causal": true,
+        "sample": false,
+        "pf": false,
+        "return": false,
+        "drawdown": true,
+        "stress": false,
+        "notOneTrade": false
+      },
+      "verdict": "EVIDENCIA INSUFICIENTE"
+    },
+    {
+      "symbol": "ETHUSDT",
+      "period": "1d",
+      "provider": "Binance Spot data-api.binance.vision",
+      "candles": 2483,
+      "gaps": 0,
+      "gapDetails": [],
+      "start": "2020-01-01T00:00:00.000Z",
+      "end": "2026-10-19T00:00:00.000Z",
+      "hash": "92a9358ae91703f7f5d9be37157c6f1037dd6eca7646e5cb07d83b1ecead4757",
+      "causalPrefixes": 5,
+      "windows": {
+        "TRAIN": {
+          "trades": 3,
+          "winRate": 0.6666666666666666,
+          "pf": 3.8643308301372423,
+          "returnPct": 0.02879803851249041,
+          "drawdown": 0.02341688513549475,
+          "equity": 1028.7980385124904,
+          "open": false,
+          "largestWinShare": 0.5078685274532778,
+          "capital": 1000,
+          "closed": 3
+        },
+        "VALIDATION": {
+          "trades": 5,
+          "winRate": 0,
+          "pf": 0,
+          "returnPct": -0.051505392831204144,
+          "drawdown": 0.05363276784101281,
+          "equity": 948.4946071687958,
+          "open": true,
+          "largestWinShare": null,
+          "capital": 1000,
+          "closed": 5
+        },
+        "TEST": {
+          "trades": 1,
+          "winRate": 0,
+          "pf": 0,
+          "returnPct": -0.010074067196788716,
+          "drawdown": 0.021777610499533695,
+          "equity": 989.9259328032113,
+          "open": false,
+          "largestWinShare": null,
+          "capital": 1000,
+          "closed": 1
+        }
+      },
+      "stress": {
+        "trades": 1,
+        "winRate": 0,
+        "pf": 0,
+        "returnPct": -0.010143660627649709,
+        "drawdown": 0.0212797191698277,
+        "equity": 989.8563393723502,
+        "open": false,
+        "largestWinShare": null,
+        "capital": 1000,
+        "closed": 1
+      },
+      "testCoverage": true,
+      "gates": {
+        "coverage": true,
+        "causal": true,
+        "sample": false,
+        "pf": false,
+        "return": false,
+        "drawdown": true,
+        "stress": false,
+        "notOneTrade": false
+      },
+      "verdict": "EVIDENCIA INSUFICIENTE"
+    }
+  ]
+}

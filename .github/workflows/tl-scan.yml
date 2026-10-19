@@ -1,0 +1,47 @@
+name: Trading Latino Top 50 — closed candle
+on:
+  schedule:
+    - cron: '11 */4 * * *'
+  workflow_dispatch:
+  pull_request:
+    paths: ['tl-engine.js', 'tl-data.js', 'scripts/tl-scan.cjs', '.github/workflows/tl-scan.yml']
+  push:
+    branches: [main]
+    paths: ['tl-engine.js','tl-data.js','scripts/tl-scan.cjs','.github/workflows/tl-scan.yml']
+concurrency:
+  group: trading-latino-scan
+  cancel-in-progress: false
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Confirm TL engine correctness
+        run: node --test tests/tl-engine.test.cjs
+      - name: Refresh the true 50-ranked universe
+        run: node scripts/tl-scan.cjs
+      - name: Verify 50-row scan artifact in a pull request
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: tl-top-50-real-snapshot
+          path: data/tl-radar.json
+      - name: Publish separate TL snapshot
+        if: github.event_name != 'pull_request'
+        run: |
+          git config user.name 'Carter Scanner'
+          git config user.email '44848888+augustogjmm@users.noreply.github.com'
+          git add data/tl-radar.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'data: refresh Trading Latino radar after 4H close'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi

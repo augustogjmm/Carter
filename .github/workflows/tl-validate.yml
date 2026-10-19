@@ -1,0 +1,40 @@
+name: Trading Latino — regression and causal math
+on:
+  pull_request:
+  push:
+    branches: [main]
+    paths: ['tl-*.js', 'trading-latino.html', 'tests/tl-*', '.github/workflows/tl-validate.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: JavaScript syntax
+        run: |
+          node --check tl-engine.js
+          node --check tl-data.js
+          node --check tl-app.js
+          node --check scripts/tl-scan.cjs
+          node --check api/market.js
+      - name: Trading Latino deterministic tests
+        run: node --test tests/tl-engine.test.cjs
+      - name: Existing PCS and Carter regressions
+        run: node --test tests/product.test.cjs tests/carter-actual.test.cjs
+      - name: UI and engine integration
+        run: |
+          node - <<'JS'
+          const fs=require('node:fs'),a=require('node:assert/strict');
+          const page=fs.readFileSync('trading-latino.html','utf8');
+          const script=fs.readFileSync('tl-app.js','utf8');
+          for(const m of script.matchAll(/\$\('([^']+)'\)/g))a(page.includes('id="'+m[1]+'"'),'Missing '+m[1]);
+          for(const name of ['tl-engine.js','tl-data.js','tl-app.js'])a(page.includes('src="'+name+'"'));
+          for(const p of ['index.html','pcs.html'])a(fs.readFileSync(p,'utf8').includes('href="trading-latino.html"'));
+          console.log('Navigation / element IDs OK');
+          JS

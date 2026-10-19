@@ -57,3 +57,13 @@ Las posiciones son teóricas, reconstruidas desde el histórico disponible; no e
 ### Diagnóstico del Carter real
 
 `research/carter_actual.py` ejecuta `engine.js` y `research.js` directamente mediante Node, sin reinterpretar sus señales. Publica estadísticas en R de los tres modelos históricos de la aplicación, ocho activos y ventanas de calendario, junto con operaciones y SHA-256 del código. Prueba invariancia por prefijos de cinco campos causales. No selecciona un ganador ni aprueba el sistema: el simulador original excluye slippage y gaps de ejecución y no calcula una cartera comparable al estudio PCS. La vista está en `review.html#carter-actual`.
+
+## Estrategia Trading Latino — módulo aislado (implementación 19/10/2026)
+
+Ruta nueva: `/trading-latino.html`. Mantiene los motores Carter (`engine.js`) y PCS (`pcs.js`) sin modificaciones de sus reglas.
+
+`tl-engine.js`: EMA10/55 y EMA200 opcional, Squeeze Momentum LazyBear (SMA BB/KC + LinReg20), Wilder ADX14 (+DI/−DI), señales TL-BASE long/bear al cierre, backtest de solo largos spot 1x y volumen aproximado OHLCV. `tl-data.js`: Top 50 real CoinGecko, mercados Binance Spot USDT, descarga paginada desde 2020 y chequeos de continuidad. `tl-app.js`: radar y velas 1H/4H/1D, perfil, ADX, momentum, estado, simulación y contexto multi-timeframe. `scripts/tl-scan.cjs` y `.github/workflows/tl-scan.yml`: escaneo remoto independiente después del cierre 4H, a minuto 11 (puede sufrir demoras del scheduler).
+
+**Regla long del proyecto (NO atribuible directamente a Jaime):** EMA10>EMA55, MOM[t]>MOM[t-1], MOM[t-1]<=MOM[t-2], MOM[t-1]<0, ADX[t]<ADX[t-1], ADX[t-1]>=23, todos los datos confirmados. No exige squeeze ON. Entrada teórica al siguiente open; stop −1,5 ATR14, TP +2R, 1% de riesgo como objetivo, 100% exposición máxima, comisión 0,10% y slippage 0,05% por ejecución. Si SL y TP se tocan en la misma vela, prevalece SL. Señal bajista permite salida al open siguiente. Una operación por activo; E2/E3 aún no implementadas.
+
+**Importante:** este módulo todavía no tiene un informe auditado independiente de rendimiento fuera de muestra ni una certificación de ventaja estadística. El backtest completo que muestra la UI es exploratorio, no PASS. Solo el resultado de las pruebas en CI y la validación de datos en producción pueden determinar qué componentes se consideran operativos. Ningún estado verde debe interpretarse como orden de mercado; la apertura posterior al cierre de la señal puede haber sucedido.
