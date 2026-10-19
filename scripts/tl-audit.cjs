@@ -22,7 +22,9 @@ async function main(){
  for(const symbol of ['BTCUSDT','ETHUSDT'])for(const period of ['1h','4h','1d']){
   const row={symbol,period};
   try{const raw=await D.history(symbol,period),b=raw.bars,s=E.indicators(b,period);
-   row.provider=raw.source;row.candles=b.length;row.gaps=raw.gaps;row.start=new Date(b[0].t).toISOString();
+   row.provider=raw.source;row.candles=b.length;row.gaps=raw.gaps;
+   row.gapDetails=[];for(let i=1;i<b.length;i++)if(b[i].t-b[i-1].t!==E.PERIOD[period])row.gapDetails.push({after:new Date(b[i-1].t).toISOString(),before:new Date(b[i].t).toISOString(),missing:(b[i].t-b[i-1].t)/E.PERIOD[period]-1});
+   row.start=new Date(b[0].t).toISOString();
    row.end=new Date(b.at(-1).t+E.PERIOD[period]).toISOString();
    row.hash=crypto.createHash('sha256').update(JSON.stringify(b)).digest('hex');
    row.causalPrefixes=checkCausal(b,period);
@@ -30,7 +32,9 @@ async function main(){
    for(const [label,start,end] of ranges)row.windows[label]=evaluate(b,s,start,end);
    row.stress=evaluate(b,s,ranges[2][1],Infinity,.002,.001);
    const m=row.windows.TEST;
-   row.gates={coverage:raw.gaps===0,causal:row.causalPrefixes>=3,sample:m.trades>=minTrades,
+   const testWarmup=ranges[2][1]-205*E.PERIOD[period];
+   row.testCoverage=row.gapDetails.every(g=>Date.parse(g.before)<testWarmup);
+   row.gates={coverage:row.testCoverage,causal:row.causalPrefixes>=3,sample:m.trades>=minTrades,
     pf:m.pf>passPF,return:m.returnPct>0,drawdown:m.drawdown<maxDD,stress:row.stress.returnPct>0,
     notOneTrade:m.largestWinShare!==null&&m.largestWinShare<.5};
    row.verdict=!row.gates.coverage?'DATOS INVÁLIDOS':!row.gates.causal?'FAIL':
