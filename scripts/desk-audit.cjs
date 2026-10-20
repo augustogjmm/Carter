@@ -7,8 +7,8 @@ const START=Date.UTC(2020,0,1),windows=[
  {name:'VALIDATION',from:Date.UTC(2023,0,1),to:Date.UTC(2025,0,1)},
  {name:'TEST',from:Date.UTC(2025,0,1),to:null}
 ];
-function compact(s){const {model,from,to,fee,slip,trades,signals,eligible,denied,winRate,pf,returnPct,maxDrawdown,totalNetClosed,openPosition,causal,limitations,samples}=s;
- return {model,from,to,fee,slip,trades,signals,eligible,denied,winRate,pf,returnPct,maxDrawdown,totalNetClosed,openPosition,causal,limitations,samples};}
+function compact(s){const {model,from,to,fee,slip,trades,signals,eligible,denied,vetoCounts,winRate,pf,returnPct,maxDrawdown,totalNetClosed,openPosition,causal,limitations,samples}=s;
+ return {model,from,to,fee,slip,trades,signals,eligible,denied,vetoCounts,winRate,pf,returnPct,maxDrawdown,totalNetClosed,openPosition,causal,limitations,samples};}
 async function audit(){
  const now=Date.now(),until=Math.floor(now/E.PERIOD['4h'])*E.PERIOD['4h'];
  const result={protocol:'CARTER-DESK-REPLAY-1',engine:'TL-BASE-MTF-VP-EXPERIMENTAL',
