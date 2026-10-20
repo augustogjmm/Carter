@@ -6,7 +6,7 @@ function bars(ms,end,n=250){
  return Array.from({length:n},(_,i)=>({t:end-(n-i)*ms,o:100,h:101,l:99,c:100,v:1000}));
 }
 const four=bars(H4,close);
-const day=bars(DAY,Math.floor(close/DAY)*DAY);
+const day=bars(DAY,Math.floor(close/DAY)*DAY);day.forEach(b=>{b.o=110;b.h=111;b.l=109;b.c=110;});
 const profile={poc:100,val:97,vah:108,quality:'PERFIL ESTIMADO OHLCV'};
 const q={bid:100.15,ask:100.2,asOf:now,quoteVolume24h:30000000,
  filters:{trading:true,tickSize:.01,stepSize:.001,minQty:.001,minNotional:5,maxQty:100000}};
