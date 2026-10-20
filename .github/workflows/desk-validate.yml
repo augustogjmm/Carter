@@ -1,0 +1,26 @@
+name: Carter Desk — CI
+on:
+  push:
+    branches: [main]
+    paths: ['desk-*.js','desk.html','desk.css','api/desk-quote.js','tests/desk.test.cjs','.github/workflows/desk-validate.yml']
+  pull_request:
+    paths: ['desk-*.js','desk.html','desk.css','api/desk-quote.js','tests/desk.test.cjs','.github/workflows/desk-validate.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test tests/desk.test.cjs tests/tl-engine.test.cjs
+      - run: |
+          node --check desk-engine.js
+          node --check desk-ledger.js
+          node --check api/desk-quote.js
+          if test -f desk-app.js; then node --check desk-app.js; fi
+          test -f desk.html
