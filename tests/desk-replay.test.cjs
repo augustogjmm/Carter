@@ -32,3 +32,17 @@ test('real-indicator replay is deterministic and fail closed for sparse evidence
  assert.equal(verdict.verdict,'NO_APROBADA_PARA_EJECUCION_REAL');
  assert(verdict.reasons.includes('Menos de 30 operaciones cerradas fuera de muestra'));
 });
+
+test('exploratory volume variants never alter baseline default results',()=>{
+ const base={from:four[220].t,to:four.at(-1).t+H4};
+ const frozen=R.replay(four,days,base);
+ assert.deepEqual(frozen,R.replay(four,days,{...base,volumePolicy:'strict',profileBars:360}));
+ for(const mode of ['strict','buffer','observe'])
+  for(const period of [120,240,360]){
+   const out=R.replay(four,days,{...base,profileBars:period,volumePolicy:mode});
+   assert.equal(out.volumePolicy,mode);
+   assert.equal(out.profileBars,period);
+   assert.equal(out.causal,true);
+  }
+ assert.throws(()=>R.replay(four,days,{...base,volumePolicy:'unofficial'}),/volumen inválida/);
+});
