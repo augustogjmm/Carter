@@ -2,7 +2,7 @@
   "engine": "CTD-ELIGIBILITY-1.0",
   "strategy": "TL-BASE-MTF-VP-EXPERIMENTAL",
   "audited": false,
-  "generatedAt": "2026-10-20T19:19:21.283Z",
+  "generatedAt": "2026-10-20T19:52:18.516Z",
   "lastCandle": 1792497600000,
   "rankCount": 50,
   "eligibleChecked": 0,
@@ -138,14 +138,6 @@
     },
     {
       "rank": 17,
-      "symbol": "LEO",
-      "name": "LEO Token",
-      "lastCandle": null,
-      "status": "SIN_PAR",
-      "reason": "Sin par USDT spot activo en Binance"
-    },
-    {
-      "rank": 18,
       "symbol": "ADA",
       "name": "Cardano",
       "lastCandle": 1792497600000,
@@ -153,7 +145,23 @@
       "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 SÍ"
     },
     {
+      "rank": 18,
+      "symbol": "LEO",
+      "name": "LEO Token",
+      "lastCandle": null,
+      "status": "SIN_PAR",
+      "reason": "Sin par USDT spot activo en Binance"
+    },
+    {
       "rank": 19,
+      "symbol": "RAIN",
+      "name": "Rain",
+      "lastCandle": null,
+      "status": "SIN_PAR",
+      "reason": "Sin par USDT spot activo en Binance"
+    },
+    {
+      "rank": 20,
       "symbol": "NEAR",
       "name": "NEAR Protocol",
       "lastCandle": 1792497600000,
@@ -161,20 +169,12 @@
       "reason": "EMA10>EMA55 NO · Giro MOM SÍ · ADX decreciente desde ≥23 NO"
     },
     {
-      "rank": 20,
+      "rank": 21,
       "symbol": "XLM",
       "name": "Stellar",
       "lastCandle": 1792497600000,
       "status": "ESPERAR",
       "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 SÍ"
-    },
-    {
-      "rank": 21,
-      "symbol": "RAIN",
-      "name": "Rain",
-      "lastCandle": null,
-      "status": "SIN_PAR",
-      "reason": "Sin par USDT spot activo en Binance"
     },
     {
       "rank": 22,
@@ -226,19 +226,19 @@
     },
     {
       "rank": 28,
-      "symbol": "CC",
-      "name": "Canton",
-      "lastCandle": null,
-      "status": "SIN_PAR",
-      "reason": "Sin par USDT spot activo en Binance"
-    },
-    {
-      "rank": 29,
       "symbol": "SUI",
       "name": "Sui",
       "lastCandle": 1792497600000,
       "status": "ESPERAR",
       "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 SÍ"
+    },
+    {
+      "rank": 29,
+      "symbol": "CC",
+      "name": "Canton",
+      "lastCandle": null,
+      "status": "SIN_PAR",
+      "reason": "Sin par USDT spot activo en Binance"
     },
     {
       "rank": 30,
@@ -322,14 +322,6 @@
     },
     {
       "rank": 40,
-      "symbol": "BTW",
-      "name": "Bitway",
-      "lastCandle": null,
-      "status": "SIN_PAR",
-      "reason": "Sin par USDT spot activo en Binance"
-    },
-    {
-      "rank": 41,
       "symbol": "ENA",
       "name": "Ethena",
       "lastCandle": 1792497600000,
@@ -337,20 +329,28 @@
       "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 SÍ"
     },
     {
-      "rank": 42,
-      "symbol": "RLUSD",
-      "name": "Ripple USD",
+      "rank": 41,
+      "symbol": "BTW",
+      "name": "Bitway",
       "lastCandle": null,
-      "status": "EXCLUIDO",
-      "reason": "Stablecoin / activo estable"
+      "status": "SIN_PAR",
+      "reason": "Sin par USDT spot activo en Binance"
     },
     {
-      "rank": 43,
+      "rank": 42,
       "symbol": "OKB",
       "name": "OKB",
       "lastCandle": null,
       "status": "SIN_PAR",
       "reason": "Sin par USDT spot activo en Binance"
+    },
+    {
+      "rank": 43,
+      "symbol": "RLUSD",
+      "name": "Ripple USD",
+      "lastCandle": null,
+      "status": "EXCLUIDO",
+      "reason": "Stablecoin / activo estable"
     },
     {
       "rank": 44,
@@ -386,19 +386,19 @@
     },
     {
       "rank": 48,
-      "symbol": "BUIDL",
-      "name": "BlackRock USD Institutional Digital Liquidity Fund",
-      "lastCandle": null,
-      "status": "SIN_PAR",
-      "reason": "Sin par USDT spot activo en Binance"
-    },
-    {
-      "rank": 49,
       "symbol": "ONDO",
       "name": "Ondo",
       "lastCandle": 1792497600000,
       "status": "ESPERAR",
       "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 SÍ"
+    },
+    {
+      "rank": 49,
+      "symbol": "BUIDL",
+      "name": "BlackRock USD Institutional Digital Liquidity Fund",
+      "lastCandle": null,
+      "status": "SIN_PAR",
+      "reason": "Sin par USDT spot activo en Binance"
     },
     {
       "rank": 50,
