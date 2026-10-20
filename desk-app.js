@@ -6,19 +6,27 @@ const $=id=>document.getElementById(id),fmt=(n,p=2)=>Number.isFinite(n)?n.toLoca
 const price=n=>fmt(n,Number.isFinite(n)&&n<1?7:n<100?4:2);
 const utc=n=>Number.isFinite(n)?new Date(n).toISOString().slice(0,16).replace('T',' ')+' UTC':'—';
 const DAY=86400000,H4=14400000;
-const state={symbol:'BTCUSDT',bars:[],ind:null,profile:null,decision:null,quote:null,rows:[],candidates:[],seq:0,quotes:new Map(),journal:null,alertKeys:new Set()};
+const state={symbol:'BTCUSDT',bars:[],daily:[],ind:null,profile:null,decision:null,quote:null,rows:[],candidates:[],seq:0,quotes:new Map(),journal:null,alertKeys:new Set()};
 const set=(id,v)=>{const el=$(id);if(el)el.textContent=String(v);};
 function message(msg){set('message',msg);}
 function holder(el,content){el.replaceChildren();if(content){const p=document.createElement('p');p.className='placeholder';p.textContent=content;el.append(p);}}
 function btn(label,symbol,cls=''){const b=document.createElement('button');b.type='button';b.textContent=label;b.className=cls;b.onclick=()=>load(symbol);return b;}
 function validSymbol(s){return/^[A-Z0-9]{2,24}USDT$/.test(s);}
 function capital(){const n=Number($('capital').value);return Number.isFinite(n)&&n>=20?n:NaN;}
-function exposure(symbol){const p=state.journal.positions().find(x=>x.symbol===symbol);return p?p.basis:0;}
-function portfolioRisk(){const current=state.journal.positions();
- return state.journal.orders().reduce((sum,o)=>{
- const p=current.find(x=>x.symbol===o.symbol);if(!p||p.quantity<=0||!o.filledQty)return sum;
- return sum+(o.ticket?.riskUSDT||0)*Math.min(1,o.filledQty/o.qty);
- },0);}
+function exposure(symbol){
+ const p=state.journal.positions().find(x=>x.symbol===symbol);
+ return (p?.basis||0)+state.journal.pending().filter(x=>x.symbol===symbol).reduce((s,x)=>s+x.notional,0);
+}
+function portfolioExposure(){return state.journal.positions().reduce((s,p)=>s+p.basis,0)+state.journal.pending().reduce((s,p)=>s+p.notional,0);}
+function portfolioRisk(){
+ const orders=state.journal.orders(),positions=state.journal.positions();
+ const held=positions.reduce((sum,p)=>{
+  if(p.quantity<=0)return sum;
+  const perUnit=Math.max(0,...orders.filter(o=>o.symbol===p.symbol&&o.filledQty>0).map(o=>(o.ticket?.riskUSDT||0)/o.qty));
+  return sum+p.quantity*perUnit;
+ },0);
+ return held+state.journal.pending().reduce((sum,p)=>sum+p.risk,0);
+}
 function notifyIfNew(symbol,key,msg){
  const eventKey=symbol+':'+key;
  if(state.alertKeys.has(eventKey))return;
@@ -130,7 +138,7 @@ async function load(input){
  const symbol=String(input||'').toUpperCase().trim();
  if(!validSymbol(symbol)){message('Símbolo USDT inválido');return;}
  state.symbol=symbol;set('assetTitle',symbol);$('symbolInput').value=symbol;
- const seq=++state.seq;state.bars=[];state.ind=null;state.profile=null;state.decision=null;state.quote=null;
+ const seq=++state.seq;state.bars=[];state.daily=[];state.ind=null;state.profile=null;state.decision=null;state.quote=null;
  set('decision','CARGANDO…');set('decisionWhy','Descargando velas 4H y 1D independientes, luego cotización y reglas del exchange');
  set('assetSource','Binance spot · esperando validación');set('dailyTrend','—');set('momentum','—');set('adx','—');set('volume','—');
  set('ticketStatus','BLOQUEADO');$('ticketBody').hidden=true;$('ticketEmpty').hidden=false;set('ticketEmpty','No hay ticket hasta completar los controles');
@@ -142,10 +150,10 @@ async function load(input){
    getQuote(symbol)
   ]);
   if(seq!==state.seq)return;
-  const bars=h4.bars;state.bars=bars;state.ind=E.indicators(bars,'4h');state.quote=q;
+  const bars=h4.bars;state.bars=bars;state.daily=d1.bars;state.ind=E.indicators(bars,'4h');state.quote=q;
   state.profile=E.profile(bars.slice(-360),64);
   const result=G.decide({bars4h:bars,bars1d:d1.bars,quote:q,profile:state.profile,
-   capital:capital(),openExposure:exposure(symbol),portfolioExposure:state.journal.positions().reduce((sum,p)=>sum+p.basis,0),openRisk:portfolioRisk(),engine:E});
+   capital:capital(),openExposure:exposure(symbol),portfolioExposure:portfolioExposure(),openRisk:portfolioRisk(),engine:E});
   set('assetSource',h4.source+' · 4H '+bars.length+' velas · 1D '+d1.bars.length+' velas · quote '+utc(q.asOf));
   set('sourceLabel','Última cotización '+utc(q.asOf));set('dataHealth','COTIZACIÓN OK');
   const k=bars.length-1;
@@ -224,12 +232,23 @@ function attach(){
  $('capital').onchange=()=>load(state.symbol);
  $('search').oninput=showRadar;$('radarFilter').onchange=showRadar;
  $('copyTicket').onclick=async()=>{try{await navigator.clipboard.writeText(ticketText());message('Plan copiado, no se envió ninguna orden');}catch(e){message('No se pudo copiar: '+e.message);}};
- $('prepareTicket').onclick=()=>{
-  const t=state.decision?.ticket;
-  if(!t){message('No existe ticket vigente');return;}
-  if(Date.now()>t.expiresAt||Date.now()-t.quoteAt>90000){message('Reanalizá: ticket o cotización vencidos');showDecision({status:'CADUCADA',reason:'Ticket o precio caducado'});return;}
-  try{const id=state.journal.prepared(t,state.symbol);message('Preparado '+id+'. Esto NO crea una posición ni envía una orden.');renderJournal();}
-  catch(e){message(e.message);}
+ $('prepareTicket').onclick=async()=>{
+  const btn=$('prepareTicket'),symbol=state.symbol,at=state.decision?.ticket;
+  if(!at||!state.bars.length||!state.daily.length){message('No existe ticket vigente');return;}
+  if(Date.now()>at.expiresAt){message('Ticket vencido. Debe reanalizarse.');showDecision({status:'CADUCADA',reason:'Ticket caducado'});return;}
+  btn.disabled=true;
+  try{
+   state.journal.expire();
+   const q=await getQuote(symbol);
+   if(symbol!==state.symbol)throw Error('El activo cambió durante la preparación');
+   const current=G.decide({bars4h:state.bars,bars1d:state.daily,quote:q,profile:state.profile,
+      capital:capital(),openExposure:exposure(symbol),portfolioExposure:portfolioExposure(),openRisk:portfolioRisk(),engine:E});
+   if(current.status!=='CANDIDATO') {showDecision(current);throw Error('El ticket ya no es ejecutable: '+current.reason);}
+   showDecision(current);
+   const id=state.journal.prepared(current.ticket,symbol);
+   message('Preparado '+id+' con cotización y riesgo revalidados. Esto NO envía órdenes.');renderJournal();
+  }catch(e){message('No se preparó: '+e.message);}
+  finally{btn.disabled=false;}
  };
  $('buyForm').onsubmit=e=>{
   e.preventDefault();try{
