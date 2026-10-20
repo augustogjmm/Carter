@@ -1,47 +1,61 @@
-name: Trading Latino Top 50 — closed candle
+name: Carter — Unified Top 50 scan
 on:
   schedule:
     - cron: '11 */4 * * *'
   workflow_dispatch:
-  pull_request:
-    paths: ['tl-engine.js', 'tl-data.js', 'scripts/tl-scan.cjs', '.github/workflows/tl-scan.yml']
-  push:
-    branches: [main]
-    paths: ['tl-engine.js','tl-data.js','scripts/tl-scan.cjs','.github/workflows/tl-scan.yml']
 concurrency:
-  group: trading-latino-scan
+  group: carter-unified-market-scan
   cancel-in-progress: false
+permissions:
+  contents: write
 jobs:
   scan:
     runs-on: ubuntu-latest
     timeout-minutes: 55
-    permissions:
-      contents: write
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           persist-credentials: true
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Confirm TL engine correctness
-        run: node --test tests/tl-engine.test.cjs
-      - name: Refresh the true 50-ranked universe
+      - name: Validate Trading Latino and Desk engines
+        run: node --test tests/tl-engine.test.cjs tests/desk.test.cjs
+      - name: Rebuild ranked Top 50 after confirmed 4H candle
         run: node scripts/tl-scan.cjs
-      - name: Verify 50-row scan artifact in a pull request
-        if: github.event_name == 'pull_request'
-        uses: actions/upload-artifact@v4
-        with:
-          name: tl-top-50-real-snapshot
-          path: data/tl-radar.json
-      - name: Publish separate TL snapshot
-        if: github.event_name != 'pull_request'
+      - name: Derive execution eligibility from exactly this Top 50 snapshot
+        run: node scripts/desk-scan.cjs
+      - name: Verify matching and complete snapshots
         run: |
+          node -e "const fs=require('fs');const tl=JSON.parse(fs.readFileSync('data/tl-radar.json'));const desk=JSON.parse(fs.readFileSync('data/desk-opportunities.json'));if(tl.items?.length!==50||desk.items?.length!==50||tl.lastCandle!==desk.lastCandle||tl.analyzed<1||desk.rankCount!==50)process.exit(1);console.log('Validated matching 50-row snapshots',tl.lastCandle);"
+      - name: Publish both snapshots atomically with conflict retries
+        run: |
+          set -eu
           git config user.name 'Carter Scanner'
           git config user.email '44848888+augustogjmm@users.noreply.github.com'
-          git add data/tl-radar.json
-          if ! git diff --cached --quiet; then
-            git commit -m 'data: refresh Trading Latino radar after 4H close'
-            git pull --rebase origin main
-            git push origin HEAD:main
-          fi
+          cp data/tl-radar.json "$RUNNER_TEMP/tl-radar.json"
+          cp data/desk-opportunities.json "$RUNNER_TEMP/desk-opportunities.json"
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            if node -e 'const fs=require("fs");const paths=["data/tl-radar.json","data/desk-opportunities.json"];const generated=[process.env.RUNNER_TEMP+"/tl-radar.json",process.env.RUNNER_TEMP+"/desk-opportunities.json"];let newer=true;for(let i=0;i<2;i++){if(!fs.existsSync(paths[i])){newer=false;break;}const current=JSON.parse(fs.readFileSync(paths[i],"utf8"));const incoming=JSON.parse(fs.readFileSync(generated[i],"utf8"));if(!(current.lastCandle>incoming.lastCandle||(current.lastCandle===incoming.lastCandle&&Date.parse(current.generatedAt)>=Date.parse(incoming.generatedAt))))newer=false;}process.exit(newer?0:1)'; then
+              echo "Equal or newer pair already published; no overwrite"
+              exit 0
+            fi
+            cp "$RUNNER_TEMP/tl-radar.json" data/tl-radar.json
+            cp "$RUNNER_TEMP/desk-opportunities.json" data/desk-opportunities.json
+            git add data/tl-radar.json data/desk-opportunities.json
+            if git diff --cached --quiet; then
+              echo "No changes"
+              exit 0
+            fi
+            git commit -m 'data: publish synchronized Trading Latino and Desk radar'
+            if git push origin HEAD:main; then
+              echo "Both snapshots published together"
+              exit 0
+            fi
+            echo "Concurrent update: retry $attempt"
+            sleep 2
+          done
+          echo "Publication could not be completed safely" >&2
+          exit 1
