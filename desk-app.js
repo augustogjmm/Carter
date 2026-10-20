@@ -1,12 +1,12 @@
 /* Carter Trading Desk — real-data interface. No exchange order submission. */
 (function(){
 "use strict";
-const E=window.TLEngine,D=window.TLData,G=window.CarterDeskEngine,J=window.CarterJournal;
+const E=window.TLEngine,D=window.TLData,G=window.CarterDeskEngine,J=window.CarterJournal,M=window.CarterPositionMonitor;
 const $=id=>document.getElementById(id),fmt=(n,p=2)=>Number.isFinite(n)?n.toLocaleString('en-US',{maximumFractionDigits:p}):'—';
 const price=n=>fmt(n,Number.isFinite(n)&&n<1?7:n<100?4:2);
 const utc=n=>Number.isFinite(n)?new Date(n).toISOString().slice(0,16).replace('T',' ')+' UTC':'—';
 const DAY=86400000,H4=14400000;
-const state={symbol:'BTCUSDT',bars:[],daily:[],ind:null,profile:null,decision:null,quote:null,rows:[],candidates:[],seq:0,quotes:new Map(),journal:null,alertKeys:new Set()};
+const state={symbol:'BTCUSDT',bars:[],daily:[],ind:null,profile:null,decision:null,quote:null,rows:[],candidates:[],seq:0,quotes:new Map(),monitors:new Map(),journal:null,alertKeys:new Set()};
 const set=(id,v)=>{const el=$(id);if(el)el.textContent=String(v);};
 function message(msg){set('message',msg);}
 function holder(el,content){el.replaceChildren();if(content){const p=document.createElement('p');p.className='placeholder';p.textContent=content;el.append(p);}}
@@ -65,8 +65,21 @@ async function getQuote(symbol){
  state.quotes.set(symbol,q);return q;
 }
 async function refreshPositionQuotes(){
- const symbols=state.journal.positions().filter(p=>p.quantity>1e-10).map(p=>p.symbol);
- await Promise.allSettled(symbols.map(x=>getQuote(x)));renderPositions();
+ const holdings=state.journal.positions().filter(p=>p.quantity>1e-10),symbols=holdings.map(p=>p.symbol);
+ let next=0;
+ async function worker(){
+  while(next<symbols.length){
+   const symbol=symbols[next++],position=holdings.find(p=>p.symbol===symbol);
+   let quote=state.quotes.get(symbol),bars4h=null;
+   try{quote=await getQuote(symbol);}catch(e){if(!quote||Date.now()-quote.asOf>90000)quote=null;}
+   try{const h=await D.history(symbol,'4h',Math.floor(Date.now()/H4)*H4-200*DAY);bars4h=h.bars;}catch(e){}
+   const op=state.journal.orders().filter(o=>o.symbol===symbol&&o.filledQty>0);
+   const stops=op.map(o=>o.ticket?.stop).filter(Number.isFinite),targets=op.map(o=>o.ticket?.target).filter(Number.isFinite);
+   state.monitors.set(symbol,M.watch({position,quote,bars4h,engine:E,
+    levels:{stop:stops.length?Math.max(...stops):null,target:targets.length?Math.min(...targets):null}}));
+  }
+ }
+ await Promise.allSettled(Array.from({length:Math.min(3,symbols.length)},worker));renderPositions();
 }
 function renderPositions(){
  const all=state.journal.positions().filter(x=>x.quantity>1e-10),container=$('positionList');container.replaceChildren();
@@ -77,16 +90,18 @@ function renderPositions(){
   const op=state.journal.orders().filter(x=>x.symbol===p.symbol&&x.filledQty>0);
   const stops=op.map(x=>x.ticket?.stop).filter(Number.isFinite),targets=op.map(x=>x.ticket?.target).filter(Number.isFinite);
   const stop=stops.length?Math.max(...stops):null,target=targets.length?Math.min(...targets):null;
-  const warning=fresh&&stop&&q.bid<=stop?'INVALIDACIÓN / REVISAR':fresh&&target&&q.bid>=target?'OBJETIVO / REVISAR':'';
-  if(!warning){for(const key of state.alertKeys)if(key.startsWith(p.symbol+':'))state.alertKeys.delete(key);}
-  if(warning)notifyIfNew(p.symbol,warning,'ATENCIÓN '+p.symbol+': '+warning+'; comprobar mercado y ejecución');
+  const assessment=state.monitors.get(p.symbol);
+  const warning=assessment?.status?.startsWith('REVISAR_')?assessment.status:'';
+  if(!warning){for(const key of state.alertKeys)if(key.startsWith(p.symbol+':REVISAR_'))state.alertKeys.delete(key);}
+  if(warning)notifyIfNew(p.symbol,warning,'ATENCIÓN '+p.symbol+': '+assessment.reason);
   const box=document.createElement('article');box.className='position';
   const head=document.createElement('div');head.className='head';const title=document.createElement('strong');title.textContent=p.symbol;
-  const chip=document.createElement('span');chip.className='chip '+(warning?'red':'');chip.textContent=warning||'REGISTRADA';head.append(title,chip);box.append(head);
+  const chip=document.createElement('span');chip.className='chip '+(warning?'red':assessment?.priority===3?'warn':'');chip.textContent=warning||assessment?.status||'REGISTRADA';head.append(title,chip);box.append(head);
   for(const line of [
    'Tenencia: '+fmt(p.quantity,8)+' · costo medio '+price(p.avgPrice),
    fresh?'Bid actual '+price(q.bid)+' · '+utc(q.asOf):'COTIZACIÓN NO VERIFICADA · resultado no calculable',
    'Stop de referencia '+(stop?price(stop):'—')+' · objetivo '+(target?price(target):'—'),
+   'Seguimiento técnico: '+(assessment?.reason||'Pendiente de actualización'),
    'PnL realizado (historial): '+fmt(p.realized)+' USDT'
   ]){const el=document.createElement('p');el.textContent=line;box.append(el);}
   const pnl=document.createElement('div');pnl.className='pnl '+(unreal>=0?'profit':'loss');pnl.textContent=Number.isFinite(unreal)?(unreal>=0?'+':'')+fmt(unreal)+' USDT':'PnL sin cotización';box.append(pnl);container.append(box);
@@ -291,7 +306,7 @@ function attach(){
  document.addEventListener('visibilitychange',()=>{if(!document.hidden){refreshPositionQuotes();loadRadar();load(state.symbol);}});
 }
 function init(){
- if(!E||!D||!G||!J){set('dataHealth','ERROR MOTOR');message('Faltan módulos de cálculo');return;}
+ if(!E||!D||!G||!J||!M){set('dataHealth','ERROR MOTOR');message('Faltan módulos de cálculo');return;}
  try{state.journal=J.create(localStorage);}catch(e){set('dataHealth','SIN ALMACENAMIENTO');message('Bitácora local indisponible: '+e.message);return;}
  attach();renderJournal();loadRadar();load('BTCUSDT');refreshPositionQuotes();
 }
