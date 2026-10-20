@@ -23,6 +23,7 @@ function notifyIfNew(symbol,key,msg){
  const eventKey=symbol+':'+key;
  if(state.alertKeys.has(eventKey))return;
  state.alertKeys.add(eventKey);message(msg);
+ if('Notification' in window&&Notification.permission==='granted'){try{new Notification('Carter Trading Desk',{body:msg,tag:eventKey});}catch(e){}}
 }
 function renderJournal(){
  state.journal.expire();
@@ -177,6 +178,7 @@ function showCandidates(){
  set('nCandidates',candidates.length);set('nowCount',String(candidates.length));
  if(!candidates.length)holder(nowBox,'0 entradas habilitadas. Ninguna oportunidad vigente pasó todos los controles del escáner.');
  for(const x of candidates){
+  notifyIfNew(x.symbol,'OPORTUNIDAD-'+x.ticket.signalAt,'Ticket experimental '+x.symbol+' · límite '+price(x.ticket.entry)+' · vence '+utc(x.ticket.expiresAt));
   const b=btn(x.symbol+' · Entrada '+price(x.ticket.entry)+' · Stop '+price(x.ticket.stop)+' · '+fmt(x.ticket.netR,2)+'R',x.symbol);
   b.className='opportunity';nowBox.append(b);
  }
@@ -215,6 +217,7 @@ function ticketText(){
  ].join('\n');
 }
 function attach(){
+ $('enableNotifications').onclick=async()=>{if(!('Notification' in window)){message('Este navegador no admite notificaciones');return;}try{const permission=await Notification.requestPermission();message(permission==='granted'?'Avisos habilitados mientras esta página esté abierta.':'Permiso no otorgado.');}catch(e){message('Avisos: '+e.message);}};
  const clock=()=>set('deskClock',utc(Date.now()));clock();setInterval(clock,30000);
  $('analyze').onclick=()=>load($('symbolInput').value);$('symbolInput').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();load(e.target.value);}};
  $('capital').onchange=()=>load(state.symbol);
