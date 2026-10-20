@@ -37,6 +37,39 @@ export function normalize(book,day,info,depth){
   throw Error('Mercado o condiciones de ejecución incompletas');
  return quote;
 }
+/* Fallback is indicative ONLY. OKX data cannot authorize Binance executions
+   because the strategy candles and exchange filters refer to Binance Spot. */
+async function indicativeOKX(symbol){
+ const inst=symbol.slice(0,-4)+"-USDT",c=new AbortController(),timer=setTimeout(()=>c.abort(),6800);
+ async function read(path){
+  const r=await fetch("https://www.okx.com"+path,{signal:c.signal,headers:{accept:"application/json"}});
+  if(!r.ok)throw Error("OKX HTTP "+r.status);
+  const o=await r.json();if(o.code!=="0"||!Array.isArray(o.data)||!o.data.length)throw Error("OKX sin datos");
+  return o.data[0];
+ }
+ try{
+  const [ticker,depth,info]=await Promise.all([
+   read("/api/v5/market/ticker?instId="+inst),
+   read("/api/v5/market/books?instId="+inst+"&sz=100"),
+   read("/api/v5/public/instruments?instType=SPOT&instId="+inst)]);
+  if(info.instId!==inst||info.instType!=="SPOT"||info.state!=="live")throw Error("OKX spot no activo");
+  const bid=Number(ticker.bidPx),ask=Number(ticker.askPx);
+  const sum=(rows,low,hi)=>Array.isArray(rows)?rows.filter(a=>Array.isArray(a)&&
+   a.length>=2&&Number.isFinite(+a[0])&&Number.isFinite(+a[1])&&+a[0]>=low&&+a[0]<=hi)
+   .reduce((acc,a)=>acc+(+a[0])*(+a[1]),0):NaN;
+  const out={symbol,bid,ask,quoteVolume24h:Number(ticker.volCcy24h),
+   depthAskUSDT:sum(depth.asks,ask,ask*1.0035),depthBidUSDT:sum(depth.bids,bid*.9965,bid),
+   asOf:Date.now(),indicative:true,venue:"OKX_SPOT",source:"OKX Spot · SOLO INDICATIVO / NO BINANCE",
+   filters:{trading:false,tickSize:Number(info.tickSz),stepSize:Number(info.lotSz),
+    minQty:Number(info.minSz),maxQty:0,minNotional:0,status:"INDICATIVE_ONLY",
+    baseAsset:info.baseCcy,quoteAsset:info.quoteCcy}};
+  if(!(bid>0&&ask>=bid)||!Object.values({
+   v:out.quoteVolume24h,a:out.depthAskUSDT,b:out.depthBidUSDT,
+   tick:out.filters.tickSize,step:out.filters.stepSize,min:out.filters.minQty
+  }).every(Number.isFinite))throw Error("OKX libro incompleto");
+  return out;
+ }finally{clearTimeout(timer);}
+}
 export async function onRequest({request}){
  if(request.method!=='GET')return out(405,{error:'Solo GET'});
  const u=new URL(request.url),symbol=(u.searchParams.get('symbol')||'').toUpperCase();
@@ -56,6 +89,11 @@ export async function onRequest({request}){
    return out(200,result,'public, s-maxage=4');
   }catch(e){last=e;}finally{clearTimeout(t);}
  }
- return out(503,{error:'No fue posible verificar precio, spread, filtros y profundidad',
-  detail:String(last?.message||'Sin proveedor')});
+ try{
+  const indicative=await indicativeOKX(symbol);
+  return out(200,indicative,'no-store');
+ }catch(e){
+  return out(503,{error:'No fue posible verificar precio, spread, filtros y profundidad',
+   detail:'Binance: '+String(last?.message||'Sin proveedor')+'; OKX: '+String(e.message||e)});
+ }
 }

@@ -49,11 +49,28 @@ async function kucoin(symbol,period,since){
  return{bars:rows,source:'KuCoin Spot (respaldo explícito)',gaps,period,from:rows[0].t,until:rows.at(-1).t};
 }
 const cache=new Map();
+async function staticHistory(symbol,period){
+ if(!browser||!['4h','1d'].includes(period))return null;
+ const response=await fetch('/data/market/'+symbol+'-'+period+'.json',{cache:'no-store'});
+ if(!response.ok)throw Error('Snapshot 4H/1D no publicado: '+response.status);
+ const record=await response.json(),bars=engine.validate(record.bars,period);
+ const ms=engine.PERIOD[period],lastOpen=Math.floor(Date.now()/ms)*ms-ms;
+ if(record.version!==1||record.symbol!==symbol||record.period!==period||
+  !String(record.source).startsWith('Binance Spot')||bars.length<250||
+  record.lastCandle!==lastOpen||bars.at(-1).t!==lastOpen||
+  bars.slice(-240).some((b,i,a)=>i>0&&b.t-a[i-1].t!==ms))
+  throw Error('Snapshot no validado o anterior al último cierre');
+ return{bars,source:record.source+' · snapshot GitHub/Cloudflare ('+record.generatedAt+')',gaps:0,
+  period,from:bars[0].t,until:bars.at(-1).t};
+}
 async function history(symbol,period='4h',since=START){if(!/^[A-Z0-9]{2,24}USDT$/.test(symbol)||!engine.PERIOD[period])throw Error('Par o intervalo inválido');
  const ms=engine.PERIOD[period],slot=Math.floor(Date.now()/ms),key=symbol+':'+period+':'+slot+':'+since;
  if(cache.has(key))return cache.get(key);
  const job=(async()=>{
   let error;
+  // Always attempt the same-exchange, CLOSED, independently published candles first.
+  // Their age is checked against the actual last closed candle, not system wall-clock.
+  try{const snapshot=await staticHistory(symbol,period);if(snapshot)return snapshot;}catch(e){error=e;}
   for(const host of BINANCE){try{
    let cursor=since,bars=[],lastOpen=Math.floor(Date.now()/ms)*ms-ms,pages=Math.ceil((lastOpen-since)/ms/1000)+2;
    if(pages>100)throw Error('Histórico fuera de capacidad');

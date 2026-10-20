@@ -60,10 +60,15 @@ test('Cloudflare Top50 proxy strictly validates complete ranking',async()=>{
  const rows=Array.from({length:50},(_,i)=>({
   id:'coin-'+i,symbol:'c'+i,name:'Coin '+i,market_cap_rank:i+1,
   market_cap:50-i,current_price:100,price_change_percentage_24h:1}));
- await withFetch(async()=>new Response(JSON.stringify(rows),{status:200}),async()=>{
-  const r=await top50(req('/api/top50'));assert.equal(r.status,200);
-  const x=await r.json();assert.equal(x.items.length,50);assert.equal(x.items[0].symbol,'C0');
- });
+ const last=Math.floor(Date.now()/14400000)*14400000-14400000;
+ const snap={items:rows.map(x=>({id:x.id,symbol:x.symbol.toUpperCase(),name:x.name,
+ rank:x.market_cap_rank,marketCap:x.market_cap,price:x.current_price,change:x.price_change_percentage_24h})),
+ lastCandle:last,marketAt:new Date().toISOString(),generatedAt:new Date().toISOString()};
+ const env={ASSETS:{fetch:async()=>Response.json(snap)}};
+ const r=await top50({...req('/api/top50'),env});assert.equal(r.status,200);
+ const x=await r.json();assert.equal(x.items.length,50);assert.equal(x.items[0].symbol,'C0');
+ const stale=await top50({...req('/api/top50'),env:{ASSETS:{fetch:async()=>Response.json({...snap,lastCandle:last-14400000})}}});
+ assert.equal(stale.status,503);
  assert.equal((await top50(req('/api/top50','POST'))).status,405);
 });
 test('Cloudflare quote preserves Binance filters, live bid/ask and real near-book depth',async()=>{

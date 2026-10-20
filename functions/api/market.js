@@ -17,7 +17,23 @@ async function fetchJson(url,timeout=10000){
   return r.json();
  }finally{clearTimeout(timer);}
 }
-export async function onRequest({request}){
+async function staticCandles(request,env,path,query){
+ if(path!=="/api/v3/klines"||!["4h","1d"].includes(query.get("interval"))||!env?.ASSETS?.fetch)
+  return null;
+ const symbol=query.get("symbol"),period=query.get("interval"),url=new URL("/data/market/"+symbol+"-"+period+".json",request.url);
+ const response=await env.ASSETS.fetch(new Request(url.toString()));
+ if(!response.ok)throw Error("Histórico Binance no publicado: "+response.status);
+ const snap=await response.json(),ms=period==="4h"?14400000:86400000,
+   expected=Math.floor(Date.now()/ms)*ms-ms,rows=snap.bars;
+ if(snap.version!==1||snap.symbol!==symbol||snap.period!==period||
+  !String(snap.source).startsWith("Binance Spot")||snap.lastCandle!==expected||
+  !Array.isArray(rows)||rows.length<250||rows.at(-1).t!==expected)
+  throw Error("Histórico Binance almacenado no vigente o inválido");
+ const start=Number(query.get("startTime")||0),end=Number(query.get("endTime")||Number.MAX_SAFE_INTEGER);
+ return rows.filter(x=>x.t>=start&&x.t<=end).slice(0,Number(query.get("limit")||1000))
+  .map(x=>[x.t,String(x.o),String(x.h),String(x.l),String(x.c),String(x.v),x.t+ms-1,"0",0,"0","0","0"]);
+}
+export async function onRequest({request,env}){
  if(request.method!=='GET')return json(405,{error:'Solo GET'});
  const url=new URL(request.url),path=url.searchParams.get('path')||'';
  const query=new URLSearchParams(url.searchParams.get('query')||'');
@@ -53,5 +69,8 @@ export async function onRequest({request}){
    return json(200,result,'public, s-maxage=30');
   }catch(e){latest=e;}
  }
+ try{const fallback=await staticCandles(request,env,path,query);
+  if(fallback)return json(200,fallback,'public, s-maxage=30');
+ }catch(e){latest=e;}
  return json(503,{error:'No fue posible verificar los datos de mercado: '+(latest?.message||'Sin proveedor')});
 }

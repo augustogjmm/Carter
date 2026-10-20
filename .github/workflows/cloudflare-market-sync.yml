@@ -38,6 +38,8 @@ jobs:
         run: node scripts/tl-scan.cjs
       - name: Build Desk eligibility from this SAME 4H closed candle
         run: node scripts/desk-scan.cjs
+      - name: Publish cached closed 4H and 1D Binance candles for every tradable Top50 member
+        run: node scripts/desk-public-snapshots.cjs
       - name: Update frozen paper portfolio with market history
         run: python -u research/paper_run.py
       - name: Validate complete, matching and causal snapshots
@@ -52,7 +54,12 @@ jobs:
           if(desk.engine===undefined||desk.rankCount!==50||tl.analyzed<1||
             paper.mode!=='PAPER_ONLY'||!Array.isArray(paper.accounts)||!Array.isArray(paper.events))
             throw Error('Snapshot de motor o ledger sin los campos requeridos');
-          console.log('PCS + TL + Desk + paper consistent for last candle',new Date(expected).toISOString());
+          const market=get('data/market/index.json');
+          if(market.lastCandle!==expected||market.published<2||
+             !market.symbols.some(x=>x.symbol==='BTCUSDT'&&x.ready)||
+             !market.symbols.some(x=>x.symbol==='ETHUSDT'&&x.ready))
+            throw Error('Publicación de historial BTC/ETH no verificada');
+          console.log('PCS + TL + Desk + paper + '+market.published+' historical charts synchronized',new Date(expected).toISOString());
           NODE
       - name: Publish all three radars and paper as ONE atomic Git commit
         run: |
@@ -63,6 +70,7 @@ jobs:
           for path in data/radar.json data/tl-radar.json data/desk-opportunities.json data/paper/summary.json data/paper/state.json; do
             cp "$path" "$RUNNER_TEMP/carter-4h/$(basename "$path" | sed 's/^summary.json$/paper-summary.json/;s/^state.json$/paper-state.json/')"
           done
+          cp -R data/market "$RUNNER_TEMP/carter-4h/market"
           for attempt in 1 2 3 4 5; do
             git fetch origin main
             git reset --hard origin/main
@@ -82,13 +90,14 @@ jobs:
               echo "Existing market snapshots are newer: not overwriting"
               exit 0
             fi
-            mkdir -p data/paper
+            mkdir -p data/paper data/market
+            cp -R "$RUNNER_TEMP/carter-4h/market/." data/market/
             cp "$RUNNER_TEMP/carter-4h/radar.json" data/radar.json
             cp "$RUNNER_TEMP/carter-4h/tl-radar.json" data/tl-radar.json
             cp "$RUNNER_TEMP/carter-4h/desk-opportunities.json" data/desk-opportunities.json
             cp "$RUNNER_TEMP/carter-4h/paper-summary.json" data/paper/summary.json
             cp "$RUNNER_TEMP/carter-4h/paper-state.json" data/paper/state.json
-            git add data/radar.json data/tl-radar.json data/desk-opportunities.json data/paper/summary.json data/paper/state.json
+            git add data/radar.json data/tl-radar.json data/desk-opportunities.json data/paper/summary.json data/paper/state.json data/market/
             if git diff --cached --quiet; then
               echo "No new closed candle"; exit 0
             fi

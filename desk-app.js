@@ -1,7 +1,7 @@
 /* Carter Trading Desk — real-data interface. No exchange order submission. */
 (function(){
 "use strict";
-const E=window.TLEngine,D=window.TLData,G=window.CarterDeskEngine,J=window.CarterJournal,M=window.CarterPositionMonitor,S=window.CarterScenario,P=window.CarterPaper,C=window.CarterChart,H=window.CarterHoldingLevels;
+const E=window.TLEngine,D=window.TLData,G=window.CarterDeskEngine,J=window.CarterJournal,M=window.CarterPositionMonitor,S=window.CarterScenario,P=window.CarterPaper,C=window.CarterChart,H=window.CarterHoldingLevels,BQ=window.CarterBrowserQuote;
 const $=id=>document.getElementById(id),fmt=(n,p=2)=>Number.isFinite(n)?n.toLocaleString('en-US',{maximumFractionDigits:p}):'—';
 const price=n=>fmt(n,Number.isFinite(n)&&n<1?7:n<100?4:2);
 const utc=n=>Number.isFinite(n)?new Date(n).toISOString().slice(0,16).replace('T',' ')+' UTC':'—';
@@ -60,8 +60,20 @@ function renderJournal(){
  set('nPositions',positions.length);renderPositions();if(state.bars.length&&state.ind)drawChart();
 }
 async function getQuote(symbol){
- const r=await fetch('/api/desk-quote?symbol='+encodeURIComponent(symbol),{cache:'no-store'});
- const q=await r.json();if(!r.ok)throw Error(q.error||'Sin cotización');
+ // Browser in Argentina may reach Binance when Cloudflare receives HTTP 451.
+ // Never replace an execution quote with a candle close or a different venue.
+ const [direct,edge]=await Promise.allSettled([
+  BQ.quote(symbol,{timeout:5000}),
+  (async()=>{
+   const r=await fetch('/api/desk-quote?symbol='+encodeURIComponent(symbol),{
+    cache:'no-store',signal:AbortSignal.timeout(11500)});
+   const q=await r.json();if(!r.ok)throw Error(q.detail||q.error||'Sin cotización');
+   return q;
+  })()
+ ]);
+ const q=direct.status==='fulfilled'?direct.value:edge.status==='fulfilled'?edge.value:null;
+ if(!q)throw Error('Sin cotización Binance: navegador '+String(direct.reason?.message||'falló')+
+  '; servidor '+String(edge.reason?.message||'falló'));
  state.quotes.set(symbol,q);return q;
 }
 async function refreshPositionQuotes(){
@@ -455,7 +467,7 @@ function attach(){
  document.addEventListener('visibilitychange',()=>{if(!document.hidden){refreshPositionQuotes();loadRadar();load(state.symbol);loadPaper();}});
 }
 function init(){
- if(!E||!D||!G||!J||!M||!S||!P||!C||!H){set('dataHealth','ERROR MOTOR');message('Faltan módulos de cálculo');return;}
+ if(!E||!D||!G||!J||!M||!S||!P||!C||!H||!BQ){set('dataHealth','ERROR MOTOR');message('Faltan módulos de cálculo');return;}
  try{state.journal=J.create(localStorage);}catch(e){set('dataHealth','SIN ALMACENAMIENTO');message('Bitácora local indisponible: '+e.message);return;}
  attach();renderJournal();loadRadar();loadDeskAudit().then(loadDeskVariants);load('BTCUSDT');refreshPositionQuotes();loadPaper();
  try{window.CarterCloudUI?.mount({journal:state.journal,onRestore:()=>{renderJournal();refreshPositionQuotes();load(state.symbol);}});}
