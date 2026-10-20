@@ -4,15 +4,16 @@
 'use strict';
 const E=require('./tl-engine.js'),G=require('./desk-engine.js'),H4=14400000,DAY=86400000;
 const safe=x=>Number.isFinite(x),withDefault=(v,d)=>v===undefined?d:v;
-function planAt(b4,d1,i,ind4,ind1,why=null){
+function planAt(b4,d1,i,ind4,ind1,why=null,profileBars=360){
+ if(!Number.isInteger(profileBars)||profileBars<60||profileBars>600)throw Error('Ventana de perfil inválida');
  const reject=reason=>{if(why)why.reason=reason;return null;};
  const closeAt=b4[i].t+H4;
- if(!ind4.valid[i]||!ind4.long[i]||i<359)return reject('NO_CONFIRMADA_4H');
+ if(!ind4.valid[i]||!ind4.long[i]||i<profileBars-1)return reject('NO_CONFIRMADA_4H');
  let j=-1;for(let n=0;n<d1.length&&d1[n].t+DAY<=closeAt;n++)j=n;
  if(j<205||!ind1.valid[j])return reject('DIARIO_INCOMPLETO');
  if(d1[j].c<=ind1.ema55[j]||ind1.ema10[j]<=ind1.ema55[j])return reject('TENDENCIA_DIARIA');
  if(d1[j].t+DAY>closeAt)throw Error('LOOKAHEAD_DAILY');
- const slice=b4.slice(i-359,i+1);
+ const slice=b4.slice(i-profileBars+1,i+1);
  for(let n=1;n<slice.length;n++)if(slice[n].t-slice[n-1].t!==H4)return reject('HUECOS_4H');
  const profile=E.profile(slice,64),atr=ind4.atr[i];
  if(!profile||!safe(atr)||atr<=0)return reject('SIN_PERFIL_O_ATR');
@@ -21,9 +22,11 @@ function planAt(b4,d1,i,ind4,ind1,why=null){
  return{signalAt:closeAt,technicalSignalAt:b4[i].t,dailyKnownAt:d1[j].t+DAY,
   stop,atr,maxChase:b4[i].c+.45*atr,profile,snapshotPrice:b4[i].c,signature:'TL-BASE-MTF-VP-CARTER'};
 }
-function replay(b4,d1,{from,to,capital=1000,fee=.001,slip=.0005}={}){
+function replay(b4,d1,{from,to,capital=1000,fee=.001,slip=.0005,profileBars=360,volumePolicy='strict'}={}){
  if(!Array.isArray(b4)||!Array.isArray(d1)||b4.length<420||d1.length<220)throw Error('Datos históricos insuficientes');
  if(!safe(from)||!safe(to)||from>=to||!safe(capital)||capital<=0||fee<0||slip<0)throw Error('Parámetros de auditoría inválidos');
+ if(!['strict','buffer','observe'].includes(volumePolicy))throw Error('Política de volumen inválida');
+ if(!Number.isInteger(profileBars)||profileBars<60||profileBars>600)throw Error('Ventana de perfil inválida');
  const i4=E.indicators(b4,'4h'),i1=E.indicators(d1,'1d');
  let cash=capital,pos=null,pending=null,curve=[],trades=[],signals=0,eligible=0,denied=0;
  const vetoCounts={};const veto=code=>{denied++;vetoCounts[code]=(vetoCounts[code]||0)+1;};
@@ -33,8 +36,11 @@ function replay(b4,d1,{from,to,capital=1000,fee=.001,slip=.0005}={}){
   if(pending){
    const plan=pending;pending=null;
    const entry=b.o*(1+slip),stop=plan.stop;
+   const low=volumePolicy==='strict'?plan.profile.val-plan.atr:plan.profile.val-2*plan.atr;
+   const high=volumePolicy==='strict'?plan.profile.vah+1.5*plan.atr:plan.profile.vah+4*plan.atr;
+   const volumeBlocked=volumePolicy!=='observe'&&(entry<low||entry>high);
    const reason=entry<stop?'ENTRADA_BAJO_STOP':entry>plan.maxChase?'PRECIO_PERSEGUIDO':
-     entry<plan.profile.val-plan.atr||entry>plan.profile.vah+1.5*plan.atr?'FUERA_ZONA_VOLUMEN':
+     volumeBlocked?'FUERA_ZONA_VOLUMEN':
      (entry-stop)/entry>.08?'STOP_DEMASIADO_LEJOS':null;
    if(reason){veto(reason);}
    else{
@@ -67,7 +73,7 @@ function replay(b4,d1,{from,to,capital=1000,fee=.001,slip=.0005}={}){
    }
   }
   if(!pos&&i<b4.length-1&&b4[i+1].t<to&&i4.long[i]){
-   signals++;const why={};const candidate=planAt(b4,d1,i,i4,i1,why);
+   signals++;const why={};const candidate=planAt(b4,d1,i,i4,i1,why,profileBars);
    if(candidate)pending=candidate;else veto(why.reason||'SIN_PLAN');
   }
   curve.push(cash+(pos?pos.qty*b.c:0));
@@ -78,7 +84,7 @@ function replay(b4,d1,{from,to,capital=1000,fee=.001,slip=.0005}={}){
  for(const value of curve){peak=Math.max(peak,value);dd=Math.max(dd,(peak-value)/peak);}
  const total=trades.reduce((s,t)=>s+t.net,0);
  return{
-  model:'DESK_MARKET_ONLY_REPLAY',from:new Date(from).toISOString(),to:new Date(to).toISOString(),
+  model:'DESK_MARKET_ONLY_REPLAY',profileBars,volumePolicy,from:new Date(from).toISOString(),to:new Date(to).toISOString(),
   fee,slip,trades:trades.length,signals,eligible,denied,
   vetoCounts,winRate:trades.length?positive.length/trades.length:null,pf:grossLoss>0?grossWin/grossLoss:null,
   returnPct:eq/capital-1,maxDrawdown:dd,totalNetClosed:total,
