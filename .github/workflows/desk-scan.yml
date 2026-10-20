@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ['desk-engine.js','api/desk-quote.js','scripts/desk-scan.cjs','.github/workflows/desk-scan.yml']
+    paths: ['desk-engine.js','api/desk-quote.js','scripts/desk-scan.cjs','tests/desk.test.cjs','.github/workflows/desk-scan.yml']
 concurrency:
   group: carter-desk-eligibility
   cancel-in-progress: false
