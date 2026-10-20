@@ -190,15 +190,16 @@ async function loadRadar(){
  try{
   const r=await fetch('/data/tl-radar.json?'+Date.now(),{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);
   const snap=await r.json(),expected=Math.floor(Date.now()/H4)*H4-H4;
-  if(snap.items?.length!==50||snap.lastCandle!==expected||snap.version!==E.version)throw Error('Snapshot obsoleto o incompleto');
+  if(snap.items?.length!==50||snap.version!==E.version)throw Error('Snapshot incompleto o incompatible');
+  const isCurrent=snap.lastCandle===expected;
   state.rows=snap.items;
-  set('nScanned',snap.analyzed+' / 50');set('radarAge','Cierre '+utc(snap.lastCandle+H4));showRadar();
+  set('nScanned',snap.analyzed+' / 50');set('radarAge',(isCurrent?'Cierre ':'ANTERIOR · cierre ')+utc(snap.lastCandle+H4));showRadar();
   let desk;
   try{const d=await fetch('/data/desk-opportunities.json?'+Date.now(),{cache:'no-store'});if(d.ok)desk=await d.json();}catch(e){}
-  if(desk?.engine===G.version&&desk.lastCandle===expected&&desk.items?.length===50&&Date.now()-Date.parse(desk.generatedAt)<H4+1200000){
+  if(isCurrent&&desk?.engine===G.version&&desk.lastCandle===expected&&desk.items?.length===50&&Date.now()-Date.parse(desk.generatedAt)<H4+1200000){
    state.candidates=desk.items.filter(x=>x.status==='CANDIDATO');
    set('radarNote','Escaneo Carter Desk '+utc(Date.parse(desk.generatedAt))+' · siempre recotizar antes de preparar ticket');
-  }else{state.candidates=[];set('radarNote','No existe un escaneo completo y vigente de elegibilidad. El análisis individual sigue disponible.');}
+  }else{state.candidates=[];set('radarNote',isCurrent?'No existe un escaneo completo y vigente de elegibilidad. El análisis individual sigue disponible.':'El radar mostrado es histórico: los 50 activos siguen navegables, pero NO habilitan tickets hasta nuevo cierre validado.');}
   showCandidates();
  }catch(e){state.candidates=[];state.rows=[];set('nScanned','SIN DATOS');set('radarAge',String(e.message||e));holder($('nowList'),'No hay oportunidades publicables: radar incompleto u obsoleto');holder($('watchList'),'Radar no disponible');set('nCandidates',0);set('nowCount',0);holder($('radarRows'),'');message('Radar: '+e.message);}
 }
