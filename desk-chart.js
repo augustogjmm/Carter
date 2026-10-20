@@ -6,7 +6,7 @@
  if(root)root.CarterChart=mod;})(typeof window!=="undefined"?window:globalThis,function(){
 "use strict";
 const H4=14400000,finite=Number.isFinite;
-function build({bars,ind,engine,decision,scenario,quote,lookback=96,now=Date.now()}={}){
+function build({bars,ind,engine,decision,scenario,quote,position,lookback=96,now=Date.now()}={}){
  if(!Array.isArray(bars)||bars.length<48||!ind||typeof engine?.profile!=="function")
   throw Error("Faltan velas o indicadores para el gráfico");
  if(![48,96,168].includes(lookback))throw Error("Escala temporal inválida");
@@ -24,8 +24,13 @@ function build({bars,ind,engine,decision,scenario,quote,lookback=96,now=Date.now
  .sort((a,b)=>b.vol-a.vol).slice(0,3).sort((a,b)=>a.price-b.price);
  const levels=[];
  const ticket=decision?.status==="CANDIDATO"&&decision.ticket;
- const condition=!ticket&&scenario?.status==="ESCENARIO_CONDICIONAL"&&scenario.canBuyNow===false;
- if(ticket&&[ticket.entry,ticket.stop,ticket.target].every(x=>finite(x)&&x>0)&&ticket.stop<ticket.entry&&ticket.target>ticket.entry){
+ const held=position?.quantity>0&&finite(position.avgPrice)&&position.avgPrice>0;
+ const condition=!ticket&&!held&&scenario?.status==="ESCENARIO_CONDICIONAL"&&scenario.canBuyNow===false;
+ if(held){
+  levels.push({type:"entry",value:position.avgPrice,label:"COSTO MEDIO · REGISTRADO",active:true,holding:true});
+  if(finite(position.stop)&&position.stop>0)levels.push({type:"stop",value:position.stop,label:"INVALIDACIÓN REGISTRADA",active:true,holding:true});
+  if(finite(position.target)&&position.target>0)levels.push({type:"target",value:position.target,label:"SALIDA DE REFERENCIA",active:true,holding:true});
+ }else if(ticket&&[ticket.entry,ticket.stop,ticket.target].every(x=>finite(x)&&x>0)&&ticket.stop<ticket.entry&&ticket.target>ticket.entry){
   levels.push({type:"entry",value:ticket.entry,label:"ENTRADA LÍMITE",active:true},
    {type:"stop",value:ticket.stop,label:"INVALIDACIÓN",active:true},
    {type:"target",value:ticket.target,label:"SALIDA OBJETIVO",active:true});
@@ -42,7 +47,7 @@ function build({bars,ind,engine,decision,scenario,quote,lookback=96,now=Date.now
  const setup=ind.parts?.[bars.length-1],k=bars.length-1;
  const currentQuote=quote&&finite(quote.bid)&&finite(quote.asOf)&&now-quote.asOf<=90000&&quote.asOf<=now+5000?quote:null;
  return{visible,offset,lookback,lastClose:last.t+H4,profile:{...vp,hvn,pocBin},
-  levels,signalMarkers,ind,decision,scenario,quote:currentQuote,
+  levels,signalMarkers,ind,decision,scenario,position,quote:currentQuote,
   setup:{
    state:decision?.status||"SIN_DATOS",
    reason:decision?.reason||"No hay decisión del motor",
@@ -53,7 +58,7 @@ function build({bars,ind,engine,decision,scenario,quote,lookback=96,now=Date.now
    momentum:ind.momentum?.[k],momentumPrevious:ind.momentum?.[k-1],
    ema10:ind.ema10?.[k],ema55:ind.ema55?.[k],ema200:ind.ema200?.[k],
    last:last.c,volume:vp.quality,profilePoc:vp.poc,profileVal:vp.val,profileVah:vp.vah,
-   outcome:ticket?"TICKET EXPERIMENTAL · RECOTIZAR ANTES DE PREPARAR":condition?
+   outcome:held?"TENENCIA REGISTRADA MANUALMENTE · SIN SINCRONIZAR BROKER":ticket?"TICKET EXPERIMENTAL · RECOTIZAR ANTES DE PREPARAR":condition?
     "GATILLO CONDICIONAL · REQUIERE CIERRE Y NUEVA EVALUACIÓN":"NO HAY ORDEN HABILITADA"
   }};
 }
@@ -150,7 +155,7 @@ function render(canvas,model){
  if(entry&&target&&target.value>entry.value&&target.value<=hi&&entry.value>=lo)
   rect(pxR-12,y(target.value),12,y(entry.value)-y(target.value),entry.active?"rgba(60,218,170,.27)":"rgba(60,218,170,.11)");
  for(const lv of model.levels){
-  const title=lv.type==="entry"?(lv.active?"E1":"GATILLO*"):lv.type==="stop"?"SL*":"TP*";
+  const title=lv.type==="entry"?(lv.holding?"COSTO":lv.active?"E1":"GATILLO*"):lv.type==="stop"?(lv.holding?"INVAL.":"SL*"):(lv.holding?"SALIDA":"TP*");
   linePrice(lv.value,lv.type==="entry"?clr.entry:lv.type==="stop"?clr.stop:clr.target,title,!lv.active);
  }
  if(model.quote)linePrice(model.quote.bid,"#8dcbfd","BID",true);
