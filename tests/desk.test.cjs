@@ -77,3 +77,17 @@ test('quote proxy normalization rejects non-USDT and computes filters',()=>{
  const q=normalize(book,day,mk('USDT'));a.equal(q.filters.tickSize,.01);a.equal(q.filters.trading,true);
  a.throws(()=>normalize(book,day,mk('USDC')),/no válidas/);
 });
+
+test('journal refuses malformed persisted state instead of silently destroying it',()=>{
+ const bad={getItem:()=>'{broken',setItem:()=>{throw Error('MUST NOT WRITE')}};
+ a.throws(()=>J.create(bad),/dañada/);
+ const foreign={getItem:()=>JSON.stringify({schema:77,orders:[],fills:[]}),setItem:()=>{throw Error('MUST NOT WRITE')}};
+ a.throws(()=>J.create(foreign),/desconocido/);
+});
+test('unfilled prepared order expires and cannot later be confirmed',()=>{
+ let val=null;const store={getItem:()=>val,setItem:(k,v)=>{val=v;}},j=J.create(store);
+ const time=Date.now(),id=j.prepared({type:'LIMIT',quantity:1,entry:10,signalAt:time-10000,strategy:'TEST',validFrom:time-10000,expiresAt:time+60000},'BTCUSDT');
+ a.equal(j.expire(time+65000),true);
+ a.equal(j.orders()[0].status,'EXPIRED');
+ a.throws(()=>j.buy({orderId:id,quantity:1,price:10,fee:0}),/cerrada/);
+});
