@@ -27,6 +27,23 @@ function notifyIfNew(symbol,key,msg){
 function renderJournal(){
  state.journal.expire();
  const os=state.journal.orders().filter(o=>['PREPARED','SUBMITTED','PARTIAL'].includes(o.status)),sel=$('orderSelect');
+ const overview=$('orderOverview');overview.replaceChildren();
+ for(const o of os){
+  const row=document.createElement('div');row.className='watch-item';
+  const label=document.createElement('span');label.textContent=o.symbol+' · '+o.status+' · '+fmt(o.qty-o.filledQty,8)+' por confirmar';
+  row.append(label);
+  const actions=document.createElement('div');actions.className='selectline';
+  if(o.status==='PREPARED'){
+   const submit=document.createElement('button');submit.type='button';submit.textContent='Marcar enviada';
+   submit.onclick=()=>{try{state.journal.setSubmitted(o.id);message('Estado manual ENVIADA. No se transmitió ninguna orden.');renderJournal();}catch(e){message(e.message);}};
+   actions.append(submit);
+  }
+  const cancel=document.createElement('button');cancel.type='button';cancel.textContent='Registrar cancelación';
+  cancel.onclick=()=>{if(!window.confirm('¿Confirmás que la orden '+o.id+' está cancelada externamente? Carter no puede verificarlo.'))return;
+   try{state.journal.cancel(o.id);message('Cancelación registrada manualmente.');renderJournal();}catch(e){message(e.message);}};
+  actions.append(cancel);row.append(actions);overview.append(row);
+ }
+ if(!os.length){const p=document.createElement('p');p.className='support';p.textContent='Sin órdenes pendientes. Preparar un ticket no envía nada a Binance.';overview.append(p);}
  sel.replaceChildren();let opt=document.createElement('option');opt.value='';opt.textContent=os.length?'Elegir orden…':'Sin órdenes preparadas';sel.append(opt);
  for(const o of os){opt=document.createElement('option');opt.value=o.id;opt.textContent=o.symbol+' · '+o.status+' · '+fmt(o.qty-o.filledQty,6)+' pendientes';sel.append(opt);}
  const positions=state.journal.positions().filter(x=>x.quantity>1e-10),sell=$('sellSymbol');sell.replaceChildren();opt=document.createElement('option');opt.value='';opt.textContent=positions.length?'Elegir posición…':'Sin posiciones';sell.append(opt);
