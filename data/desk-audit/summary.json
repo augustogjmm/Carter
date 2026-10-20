@@ -1,0 +1,283 @@
+{
+  "protocol": "CARTER-DESK-REPLAY-1",
+  "engine": "TL-BASE-MTF-VP-EXPERIMENTAL",
+  "status": "NO_APROBADA_PARA_EJECUCION_REAL",
+  "generatedAt": "2026-10-20T16:37:25.127Z",
+  "source": "Binance Spot 4H + 1D closed candles; public OHLCV only",
+  "params": {
+    "capital": 1000,
+    "fee": 0.001,
+    "slip": 0.0005,
+    "risk": 0.01,
+    "maxAssetExposure": 0.2,
+    "minR": 1.5,
+    "maxStopDistance": 0.08,
+    "maxEntryChaseATR": 0.45,
+    "profileBars": 360,
+    "profileBins": 64
+  },
+  "limitations": [
+    "No historical L2 order book, spread, minNotional history or provider latency",
+    "Projected volume profile from OHLCV is not a true tick/trade price profile",
+    "Next-bar-open fills approximate a live LIMIT entry and do not prove execution"
+  ],
+  "records": [
+    {
+      "symbol": "BTCUSDT",
+      "source4h": "Binance Spot data-api.binance.vision",
+      "source1d": "Binance Spot data-api.binance.vision",
+      "candles4h": 14907,
+      "candles1d": 2484,
+      "gaps4h": 1,
+      "gaps1d": 0,
+      "windows": {
+        "TRAIN": {
+          "model": "DESK_MARKET_ONLY_REPLAY",
+          "from": "2020-01-01T00:00:00.000Z",
+          "to": "2023-01-01T00:00:00.000Z",
+          "fee": 0.001,
+          "slip": 0.0005,
+          "trades": 0,
+          "signals": 25,
+          "eligible": 0,
+          "denied": 25,
+          "winRate": null,
+          "pf": null,
+          "returnPct": 0,
+          "maxDrawdown": 0,
+          "totalNetClosed": 0,
+          "openPosition": false,
+          "causal": true,
+          "limitations": [
+            "No historical Binance order book or quote timestamp",
+            "OHLCV-derived volume profile is an approximation",
+            "Market-order next 4H open proxy differs from live LIMIT at bid/ask",
+            "No historic exchange-specific filters or partial fills"
+          ],
+          "samples": []
+        },
+        "VALIDATION": {
+          "model": "DESK_MARKET_ONLY_REPLAY",
+          "from": "2023-01-01T00:00:00.000Z",
+          "to": "2025-01-01T00:00:00.000Z",
+          "fee": 0.001,
+          "slip": 0.0005,
+          "trades": 1,
+          "signals": 29,
+          "eligible": 1,
+          "denied": 28,
+          "winRate": 0,
+          "pf": 0,
+          "returnPct": -0.004137634033904325,
+          "maxDrawdown": 0.0071214631707587185,
+          "totalNetClosed": -4.13763403390434,
+          "openPosition": false,
+          "causal": true,
+          "limitations": [
+            "No historical Binance order book or quote timestamp",
+            "OHLCV-derived volume profile is an approximation",
+            "Market-order next 4H open proxy differs from live LIMIT at bid/ask",
+            "No historic exchange-specific filters or partial fills"
+          ],
+          "samples": [
+            {
+              "entryAt": 1696492800000,
+              "exitAt": 1696982400000,
+              "signalAt": 1696492800000,
+              "dailyKnownAt": 1696464000000,
+              "entry": 27621.783989999996,
+              "exit": 27104.494656908442,
+              "qty": 0.007233428509633343,
+              "net": -4.13763403390434,
+              "why": "STOP"
+            }
+          ]
+        },
+        "TEST": {
+          "model": "DESK_MARKET_ONLY_REPLAY",
+          "from": "2025-01-01T00:00:00.000Z",
+          "to": "2026-10-20T16:00:00.000Z",
+          "fee": 0.001,
+          "slip": 0.0005,
+          "trades": 0,
+          "signals": 14,
+          "eligible": 0,
+          "denied": 14,
+          "winRate": null,
+          "pf": null,
+          "returnPct": 0,
+          "maxDrawdown": 0,
+          "totalNetClosed": 0,
+          "openPosition": false,
+          "causal": true,
+          "limitations": [
+            "No historical Binance order book or quote timestamp",
+            "OHLCV-derived volume profile is an approximation",
+            "Market-order next 4H open proxy differs from live LIMIT at bid/ask",
+            "No historic exchange-specific filters or partial fills"
+          ],
+          "samples": []
+        }
+      },
+      "stress": {
+        "model": "DESK_MARKET_ONLY_REPLAY",
+        "from": "2025-01-01T00:00:00.000Z",
+        "to": "2026-10-20T16:00:00.000Z",
+        "fee": 0.002,
+        "slip": 0.001,
+        "trades": 0,
+        "signals": 14,
+        "eligible": 0,
+        "denied": 14,
+        "winRate": null,
+        "pf": null,
+        "returnPct": 0,
+        "maxDrawdown": 0,
+        "totalNetClosed": 0,
+        "openPosition": false,
+        "causal": true,
+        "limitations": [
+          "No historical Binance order book or quote timestamp",
+          "OHLCV-derived volume profile is an approximation",
+          "Market-order next 4H open proxy differs from live LIMIT at bid/ask",
+          "No historic exchange-specific filters or partial fills"
+        ],
+        "samples": []
+      },
+      "verdict": {
+        "verdict": "NO_APROBADA_PARA_EJECUCION_REAL",
+        "requirementsPassed": false,
+        "reasons": [
+          "Menos de 30 operaciones cerradas fuera de muestra",
+          "Profit factor neto no supera 1,20",
+          "Rentabilidad neta no positiva",
+          "No supera costos duplicados",
+          "Sin históricos del libro de órdenes: solo auditoría parcial de mercado"
+        ]
+      }
+    },
+    {
+      "symbol": "ETHUSDT",
+      "source4h": "Binance Spot data-api.binance.vision",
+      "source1d": "Binance Spot data-api.binance.vision",
+      "candles4h": 14907,
+      "candles1d": 2484,
+      "gaps4h": 1,
+      "gaps1d": 0,
+      "windows": {
+        "TRAIN": {
+          "model": "DESK_MARKET_ONLY_REPLAY",
+          "from": "2020-01-01T00:00:00.000Z",
+          "to": "2023-01-01T00:00:00.000Z",
+          "fee": 0.001,
+          "slip": 0.0005,
+          "trades": 0,
+          "signals": 31,
+          "eligible": 0,
+          "denied": 31,
+          "winRate": null,
+          "pf": null,
+          "returnPct": 0,
+          "maxDrawdown": 0,
+          "totalNetClosed": 0,
+          "openPosition": false,
+          "causal": true,
+          "limitations": [
+            "No historical Binance order book or quote timestamp",
+            "OHLCV-derived volume profile is an approximation",
+            "Market-order next 4H open proxy differs from live LIMIT at bid/ask",
+            "No historic exchange-specific filters or partial fills"
+          ],
+          "samples": []
+        },
+        "VALIDATION": {
+          "model": "DESK_MARKET_ONLY_REPLAY",
+          "from": "2023-01-01T00:00:00.000Z",
+          "to": "2025-01-01T00:00:00.000Z",
+          "fee": 0.001,
+          "slip": 0.0005,
+          "trades": 0,
+          "signals": 18,
+          "eligible": 0,
+          "denied": 18,
+          "winRate": null,
+          "pf": null,
+          "returnPct": 0,
+          "maxDrawdown": 0,
+          "totalNetClosed": 0,
+          "openPosition": false,
+          "causal": true,
+          "limitations": [
+            "No historical Binance order book or quote timestamp",
+            "OHLCV-derived volume profile is an approximation",
+            "Market-order next 4H open proxy differs from live LIMIT at bid/ask",
+            "No historic exchange-specific filters or partial fills"
+          ],
+          "samples": []
+        },
+        "TEST": {
+          "model": "DESK_MARKET_ONLY_REPLAY",
+          "from": "2025-01-01T00:00:00.000Z",
+          "to": "2026-10-20T16:00:00.000Z",
+          "fee": 0.001,
+          "slip": 0.0005,
+          "trades": 0,
+          "signals": 12,
+          "eligible": 0,
+          "denied": 12,
+          "winRate": null,
+          "pf": null,
+          "returnPct": 0,
+          "maxDrawdown": 0,
+          "totalNetClosed": 0,
+          "openPosition": false,
+          "causal": true,
+          "limitations": [
+            "No historical Binance order book or quote timestamp",
+            "OHLCV-derived volume profile is an approximation",
+            "Market-order next 4H open proxy differs from live LIMIT at bid/ask",
+            "No historic exchange-specific filters or partial fills"
+          ],
+          "samples": []
+        }
+      },
+      "stress": {
+        "model": "DESK_MARKET_ONLY_REPLAY",
+        "from": "2025-01-01T00:00:00.000Z",
+        "to": "2026-10-20T16:00:00.000Z",
+        "fee": 0.002,
+        "slip": 0.001,
+        "trades": 0,
+        "signals": 12,
+        "eligible": 0,
+        "denied": 12,
+        "winRate": null,
+        "pf": null,
+        "returnPct": 0,
+        "maxDrawdown": 0,
+        "totalNetClosed": 0,
+        "openPosition": false,
+        "causal": true,
+        "limitations": [
+          "No historical Binance order book or quote timestamp",
+          "OHLCV-derived volume profile is an approximation",
+          "Market-order next 4H open proxy differs from live LIMIT at bid/ask",
+          "No historic exchange-specific filters or partial fills"
+        ],
+        "samples": []
+      },
+      "verdict": {
+        "verdict": "NO_APROBADA_PARA_EJECUCION_REAL",
+        "requirementsPassed": false,
+        "reasons": [
+          "Menos de 30 operaciones cerradas fuera de muestra",
+          "Profit factor neto no supera 1,20",
+          "Rentabilidad neta no positiva",
+          "No supera costos duplicados",
+          "Sin históricos del libro de órdenes: solo auditoría parcial de mercado"
+        ]
+      }
+    }
+  ],
+  "error": null
+}
