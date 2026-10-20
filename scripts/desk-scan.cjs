@@ -8,8 +8,8 @@ async function quote(symbol){
  let last;
  for(const host of hosts){
   const ac=new AbortController(),timer=setTimeout(()=>ac.abort(),9000),qs='symbol='+encodeURIComponent(symbol);
-  try{const paths=['/api/v3/ticker/bookTicker?','/api/v3/ticker/24hr?','/api/v3/exchangeInfo?'];
-   const result=await Promise.all(paths.map(async p=>{const r=await fetch(host+p+qs,{signal:ac.signal});if(!r.ok)throw Error('Binance '+r.status);return r.json();}));
+  try{const paths=['/api/v3/ticker/bookTicker?','/api/v3/ticker/24hr?','/api/v3/exchangeInfo?','/api/v3/depth?'];
+   const result=await Promise.all(paths.map(async p=>{const r=await fetch(host+p+qs+(p.includes('/depth?')?'&limit=100':''),{signal:ac.signal});if(!r.ok)throw Error('Binance '+r.status);return r.json();}));
    return normalize(...result);
   }catch(e){last=e;}finally{clearTimeout(timer);}
  }
