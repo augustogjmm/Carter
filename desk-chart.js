@@ -137,6 +137,8 @@ function render(canvas,model){
   rect(x(i)-candleW/2,Math.min(y(b.o),y(b.c)),candleW,Math.max(1,Math.abs(y(b.c)-y(b.o))),color);
  }
  // Use full indicator series, never reinitialize EMA at the zoomed-in window.
+ // Clip long EMAs to their OWN price pane so they do not paint over ADX/volume.
+ g.save();g.beginPath();g.rect(left,priceTop,plotW,priceBottom-priceTop);g.clip();
  for(const [data,color,weight] of [[model.ind.ema10,clr.ema10,1.6],[model.ind.ema55,clr.ema55,1.6],[model.ind.ema200,clr.ema200,1.3]]){
   if(!data)continue;g.strokeStyle=color;g.lineWidth=weight;g.beginPath();let started=false;
   for(let i=0;i<last;i++){const v=data[n+i];
@@ -144,6 +146,7 @@ function render(canvas,model){
    if(!started){g.moveTo(x(i),y(v));started=true;}else g.lineTo(x(i),y(v));
   }g.stroke();
  }
+ g.restore();
  // Confirmed historical TL-BASE 4H triggers (not a claim of actual past fills).
  for(const item of model.signalMarkers.slice(-12)){const xx=x(item.i),yy=Math.max(priceTop+15,y(item.price)-11);
   rect(xx-5,yy-9,10,10,"#28584f");label("S",xx-3,yy-1,"#91f5d7",8);
@@ -170,9 +173,9 @@ function render(canvas,model){
  for(let i=0;i<last;i++){const v=mm[n+i];if(!finite(v))continue;
   rect(x(i)-candleW/2,Math.min(my(v),my(0)),candleW,Math.max(1,Math.abs(my(v)-my(0))),v>=0?clr.momentPos:clr.momentNeg);
  }
- const adx=model.ind.adx||[],ay=v=>adxBottom-(v/65)*(adxBottom-adxTop);
+ const adx=model.ind.adx||[],ay=v=>adxBottom-(Math.min(100,Math.max(0,v))/100)*(adxBottom-adxTop);
  g.strokeStyle=clr.grid;line(left,ay(23),pxR,ay(23));
- g.save();g.strokeStyle=clr.adx;g.lineWidth=1.6;g.beginPath();let started=false;
+ g.save();g.beginPath();g.rect(left,adxTop,plotW,adxBottom-adxTop);g.clip();g.strokeStyle=clr.adx;g.lineWidth=1.6;g.beginPath();let started=false;
  for(let i=0;i<last;i++){const v=adx[n+i];if(!finite(v)){started=false;continue;}
   if(!started){g.moveTo(x(i),ay(v));started=true;}else g.lineTo(x(i),ay(v));}g.stroke();g.restore();
  label("VOL / VELAS",left+6,volTop+12,clr.text,9);

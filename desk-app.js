@@ -1,7 +1,7 @@
 /* Carter Trading Desk — real-data interface. No exchange order submission. */
 (function(){
 "use strict";
-const E=window.TLEngine,D=window.TLData,G=window.CarterDeskEngine,J=window.CarterJournal,M=window.CarterPositionMonitor,S=window.CarterScenario,P=window.CarterPaper,C=window.CarterChart;
+const E=window.TLEngine,D=window.TLData,G=window.CarterDeskEngine,J=window.CarterJournal,M=window.CarterPositionMonitor,S=window.CarterScenario,P=window.CarterPaper,C=window.CarterChart,H=window.CarterHoldingLevels;
 const $=id=>document.getElementById(id),fmt=(n,p=2)=>Number.isFinite(n)?n.toLocaleString('en-US',{maximumFractionDigits:p}):'—';
 const price=n=>fmt(n,Number.isFinite(n)&&n<1?7:n<100?4:2);
 const utc=n=>Number.isFinite(n)?new Date(n).toISOString().slice(0,16).replace('T',' ')+' UTC':'—';
@@ -73,10 +73,9 @@ async function refreshPositionQuotes(){
    let quote=state.quotes.get(symbol),bars4h=null;
    try{quote=await getQuote(symbol);}catch(e){if(!quote||Date.now()-quote.asOf>90000)quote=null;}
    try{const h=await D.history(symbol,'4h',Math.floor(Date.now()/H4)*H4-200*DAY);bars4h=h.bars;}catch(e){}
-   const op=state.journal.orders().filter(o=>o.symbol===symbol&&o.filledQty>0);
-   const stops=op.map(o=>o.ticket?.stop).filter(Number.isFinite),targets=op.map(o=>o.ticket?.target).filter(Number.isFinite);
+   const linked=H.current(symbol,holdings,state.journal.orders(),state.journal.fills());
    state.monitors.set(symbol,M.watch({position,quote,bars4h,engine:E,
-    levels:{stop:stops.length?Math.max(...stops):null,target:targets.length?Math.min(...targets):null}}));
+    levels:{stop:linked?.stop??null,target:linked?.target??null}}));
   }
  }
  await Promise.allSettled(Array.from({length:Math.min(3,symbols.length)},worker));renderPositions();
@@ -133,9 +132,8 @@ function renderPositions(){
  set('monitorState','PÁGINA ABIERTA · COTIZACIÓN PÚBLICA');
  for(const p of all){
   const q=state.quotes.get(p.symbol),fresh=q&&Date.now()-q.asOf<=90000,unreal=fresh?p.quantity*q.bid*(1-.001)-p.basis:NaN;
-  const op=state.journal.orders().filter(x=>x.symbol===p.symbol&&x.filledQty>0);
-  const stops=op.map(x=>x.ticket?.stop).filter(Number.isFinite),targets=op.map(x=>x.ticket?.target).filter(Number.isFinite);
-  const stop=stops.length?Math.max(...stops):null,target=targets.length?Math.min(...targets):null;
+  const associated=H.current(p.symbol,all,state.journal.orders(),state.journal.fills());
+  const stop=associated?.stop??null,target=associated?.target??null;
   const assessment=state.monitors.get(p.symbol);
   const warning=assessment?.status?.startsWith('REVISAR_')?assessment.status:'';
   if(!warning){for(const key of state.alertKeys)if(key.startsWith(p.symbol+':REVISAR_'))state.alertKeys.delete(key);}
@@ -154,11 +152,8 @@ function renderPositions(){
  }
 }
 function recordedHolding(symbol){
- const p=state.journal?.positions().find(x=>x.symbol===symbol&&x.quantity>0);
- if(!p)return null;
- const orders=state.journal.orders().filter(x=>x.symbol===symbol&&x.filledQty>0);
- const stops=orders.map(x=>x.ticket?.stop).filter(Number.isFinite),targets=orders.map(x=>x.ticket?.target).filter(Number.isFinite);
- return{...p,stop:stops.length?Math.max(...stops):null,target:targets.length?Math.min(...targets):null};
+ if(!state.journal)return null;
+ return H.current(symbol,state.journal.positions(),state.journal.orders(),state.journal.fills());
 }
 function renderOperatingPlan(model){
  const ticket=state.decision?.status==='CANDIDATO'?state.decision.ticket:null,
@@ -196,7 +191,7 @@ function renderOperatingPlan(model){
   ['Squeeze · '+(state.ind?.squeeze?.[k]||'—')+' (informativo)',null],
   ['Volumen · POC / VAH / VAL visibles',model?.profile?.bins?.length>0?true:null],
   ['Señal nueva TL-BASE',state.ind?.valid?.[k]===true?!!state.ind?.long?.[k]:null],
-  ['Ejecución · liquidez y riesgo',ticket?true:state.decision?.status==='SIN_DATOS'?null:false]
+  ['Ejecución · liquidez y riesgo',ticket?true:['CAPITAL','QUOTE','PROFILE','EXPIRED','CHASE','VOLUME_ZONE','STOP','STOP_TOO_FAR','RESISTANCE','LOW_R','SIZE','MAX_QTY','DEPTH'].includes(state.decision?.code)?false:null]
  ];
  for(const [name,value] of rows){
   const line=document.createElement('span');line.className='setup-check '+(value===true?'pass':value===false?'fail':'unknown');
@@ -232,6 +227,10 @@ function showDecision(r){
  set('decision',names[r.status]||r.status);set('decisionWhy',r.reason);
  if(r.status==='CANDIDATO')banner.classList.add('good');if(['SIN_DATOS','NO_OPERABLE','CADUCADA'].includes(r.status))banner.classList.add('bad');
  set('signalTime',r.context?'Señal: '+utc(r.context.signalAt):'—');
+ // A re-quote can block the ticket without reloading the asset. Invalidate its
+ // visible E1/SL/TP immediately, not one minute later.
+ if(r.status==='CADUCADA')state.scenario=null;
+ if(state.bars?.length&&state.ind)drawChart();else renderOperatingPlan(null);
  const ticket=r.ticket;set('ticketStatus',ticket?'CANDIDATO':'BLOQUEADO');$('ticketBody').hidden=!ticket;$('ticketEmpty').hidden=!!ticket;
  if(!ticket){set('ticketEmpty',r.reason);return;}
  for(const [id,v] of [
@@ -456,7 +455,7 @@ function attach(){
  document.addEventListener('visibilitychange',()=>{if(!document.hidden){refreshPositionQuotes();loadRadar();load(state.symbol);loadPaper();}});
 }
 function init(){
- if(!E||!D||!G||!J||!M||!S||!P||!C){set('dataHealth','ERROR MOTOR');message('Faltan módulos de cálculo');return;}
+ if(!E||!D||!G||!J||!M||!S||!P||!C||!H){set('dataHealth','ERROR MOTOR');message('Faltan módulos de cálculo');return;}
  try{state.journal=J.create(localStorage);}catch(e){set('dataHealth','SIN ALMACENAMIENTO');message('Bitácora local indisponible: '+e.message);return;}
  attach();renderJournal();loadRadar();loadDeskAudit().then(loadDeskVariants);load('BTCUSDT');refreshPositionQuotes();loadPaper();
  try{window.CarterCloudUI?.mount({journal:state.journal,onRestore:()=>{renderJournal();refreshPositionQuotes();load(state.symbol);}});}
