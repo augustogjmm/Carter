@@ -258,23 +258,40 @@ async function load(input){
  set('ticketStatus','BLOQUEADO');$('ticketBody').hidden=true;$('ticketEmpty').hidden=false;set('ticketEmpty','No hay ticket hasta completar los controles');
  const cv=$('deskChart'),g=cv.getContext('2d');g.clearRect(0,0,cv.width,cv.height);
  try{
-  const [h4,d1,q]=await Promise.all([
+  // A current executable quote is essential to enter a trade, NOT to display
+  // causally confirmed market history. Keep these two evidence classes separate.
+  const [h4Response,d1Response,qResponse]=await Promise.allSettled([
    D.history(symbol,'4h',Math.floor(Date.now()/H4)*H4-200*DAY),
    D.history(symbol,'1d',Math.floor(Date.now()/DAY)*DAY-900*DAY),
    getQuote(symbol)
   ]);
   if(seq!==state.seq)return;
+  if(h4Response.status!=='fulfilled'||d1Response.status!=='fulfilled')
+   throw Error('Sin histórico confirmado: 4H '+(h4Response.reason?.message||'OK')+
+    ' · diario '+(d1Response.reason?.message||'OK'));
+  const h4=h4Response.value,d1=d1Response.value,
+    q=qResponse.status==='fulfilled'?qResponse.value:null;
   const bars=h4.bars;state.bars=bars;state.daily=d1.bars;state.ind=E.indicators(bars,'4h');state.quote=q;
   state.profile=E.profile(bars.slice(-360),64);
-  const result=G.decide({bars4h:bars,bars1d:d1.bars,quote:q,profile:state.profile,
-   capital:capital(),openExposure:exposure(symbol),portfolioExposure:portfolioExposure(),openRisk:portfolioRisk(),engine:E});
-  set('assetSource',h4.source+' · 4H '+bars.length+' velas · 1D '+d1.bars.length+' velas · quote '+utc(q.asOf));
-  set('sourceLabel','Última cotización '+utc(q.asOf));set('dataHealth','COTIZACIÓN OK');
-  const k=bars.length-1;
-  set('dailyTrend',result.context?.dailyBull?'ALCISTA CONFIRMADA':result.context?'NO ALCISTA':'NO VERIFICADA');
+  let result;
+  if(q)try{
+   result=G.decide({bars4h:bars,bars1d:d1.bars,quote:q,profile:state.profile,
+    capital:capital(),openExposure:exposure(symbol),portfolioExposure:portfolioExposure(),openRisk:portfolioRisk(),engine:E});
+  }catch(e){result={status:'SIN_DATOS',reason:'Sin decisión ejecutable: '+e.message};}
+  else result={status:'SIN_DATOS',reason:'NO OPERAR: datos de velas confirmados pero sin bid/ask y profundidad Binance verificables. '+
+    String(qResponse.reason?.message||'Proveedor de cotización no disponible')};
+  set('assetSource',h4.source+' · 4H '+bars.length+' velas · 1D '+d1.bars.length+
+   (q?' · quote '+utc(q.asOf):' · precio actual NO VERIFICABLE'));
+  set('sourceLabel',q?'Última cotización '+utc(q.asOf):'SIN COTIZACIÓN VIGENTE');
+  set('dataHealth',q?'COTIZACIÓN OK':'VELAS OK · ORDEN BLOQUEADA');
+  const k=bars.length-1,dailyInd=E.indicators(d1.bars,'1d'),j=d1.bars.length-1,
+   dailyBull=dailyInd.ema10?.[j]>dailyInd.ema55?.[j]&&d1.bars[j].c>dailyInd.ema55[j];
+  set('dailyTrend',result.context?.dailyBull||(!result.context&&dailyBull)?'ALCISTA CONFIRMADA':
+   result.context||dailyInd.valid?.[j]?'NO ALCISTA':'NO VERIFICADA');
   set('momentum',fmt(state.ind.momentum[k],4));set('adx',fmt(state.ind.adx[k],1));
   set('volume',state.profile?'POC '+price(state.profile.poc)+' · VAH '+price(state.profile.vah):'NO DISPONIBLE');
-  showDecision(result);state.scenario=S.project({bars4h:bars,bars1d:d1.bars,engine:E,profile:state.profile,quote:q});renderScenario(state.scenario);drawChart();
+  showDecision(result);state.scenario=S.project({bars4h:bars,bars1d:d1.bars,engine:E,profile:state.profile,quote:q});
+  renderScenario(state.scenario);drawChart();
  }catch(e){
   if(seq!==state.seq)return;
   set('dataHealth','SIN DATOS');set('assetSource','Falló validación: '+String(e.message||e));

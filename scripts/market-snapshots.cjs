@@ -13,7 +13,7 @@ async function worker(){
  while(next<items.length){
   const item=items[next++],symbol=item.symbol+'USDT',results=[];
   try{
-   for(const [period,days] of [['4h',270],['1d',480]]){
+   for(const [period,days] of [['4h',270],['1d',960]]){
     const candle=E.PERIOD[period],since=Math.floor((NOW-days*DAY)/candle)*candle;
     const result=await D.history(symbol,period,since);
     if(!result.source.startsWith('Binance Spot')||result.bars.at(-1).t!==(Math.floor(NOW/candle)-1)*candle||
