@@ -1,0 +1,55 @@
+name: Carter Desk — Fixed volume variants research
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/desk-variants.yml']
+permissions:
+  contents: write
+concurrency:
+  group: carter-desk-research-variants
+  cancel-in-progress: false
+jobs:
+  variants:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify unmodified default and lookahead invariants
+        run: node --test tests/desk-replay.test.cjs tests/desk.test.cjs
+      - name: Compare training/validation variants using Binance Spot
+        run: node scripts/desk-variants.cjs
+      - name: Confirm all nine variants and no production promotion
+        run: |
+          node -e "const fs=require('fs'),r=JSON.parse(fs.readFileSync('data/desk-variants/summary.json'));if(r.records.length!==9||r.records.some(x=>!x.results.BTCUSDT||!x.results.ETHUSDT)||!r.knownTestDisclosure)process.exit(1);console.log(r.status);"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: desk-fixed-volume-variants
+          path: data/desk-variants/summary.json
+      - name: Publish research-only report with safe rebase-free retry
+        run: |
+          set -eu
+          git config user.name 'Carter Research'
+          git config user.email '44848888+augustogjmm@users.noreply.github.com'
+          cp data/desk-variants/summary.json "$RUNNER_TEMP/desk-variants.json"
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            if git ls-files --error-unmatch data/desk-variants/summary.json >/dev/null 2>&1 && node -e 'const fs=require("fs");const p=JSON.parse(fs.readFileSync("data/desk-variants/summary.json"));const q=JSON.parse(fs.readFileSync(process.argv[1]));process.exit(Date.parse(p.generatedAt)>=Date.parse(q.generatedAt)?0:1)' "$RUNNER_TEMP/desk-variants.json"; then
+              echo "Newer report already tracked"
+              exit 0
+            fi
+            mkdir -p data/desk-variants
+            cp "$RUNNER_TEMP/desk-variants.json" data/desk-variants/summary.json
+            git add data/desk-variants/summary.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'research: document fixed-volume variants; no live model change'
+            if git push origin HEAD:main; then exit 0; fi
+            sleep 2
+          done
+          exit 1
