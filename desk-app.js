@@ -137,8 +137,8 @@ async function load(input){
  const cv=$('deskChart'),g=cv.getContext('2d');g.clearRect(0,0,cv.width,cv.height);
  try{
   const [h4,d1,q]=await Promise.all([
-   D.history(symbol,'4h',Date.now()-200*DAY),
-   D.history(symbol,'1d',Date.now()-900*DAY),
+   D.history(symbol,'4h',Math.floor(Date.now()/H4)*H4-200*DAY),
+   D.history(symbol,'1d',Math.floor(Date.now()/DAY)*DAY-900*DAY),
    getQuote(symbol)
   ]);
   if(seq!==state.seq)return;
