@@ -32,3 +32,41 @@
 #cloudLogin,#cloudOperations{border-top:1px solid #24374b;padding-top:12px;margin-top:11px}
 #cloudLogin label,#cloudOperations label{display:block;margin-bottom:2px}
 #cloudInfo{min-height:18px;overflow-wrap:anywhere}
+
+/* Carter 4H operator display. Chart stays on-screen with setups and volume levels. */
+.trade-plan{background:linear-gradient(155deg,#102c30,#0d1d30);border:1px solid #32635f;
+ padding:17px;margin:15px 0 17px;border-radius:10px}
+.trade-plan .section-head{margin-bottom:6px}
+.trade-plan .section-head h2{font-size:18px;line-height:1.2}
+.setup-levels{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:15px 0 12px}
+.setup-levels>div{border:1px solid #365368;padding:12px;border-radius:8px;background:#101f2e;min-width:0}
+.setup-levels span{color:#91a8bd;font-size:9px;font-weight:780;letter-spacing:.6px;display:block}
+.setup-levels strong{display:block;font-size:clamp(14px,1.4vw,22px);color:#e9f2ff;letter-spacing:-.4px;overflow-wrap:anywhere;
+ font-variant-numeric:tabular-nums;margin:4px 0}
+.setup-levels small{color:#9baec3;font-size:10px;display:block;line-height:1.4}
+.setup-levels>div:first-child{border-color:#337763}.setup-levels>div:first-child strong{color:#8debd4}
+.setup-levels>div:nth-child(2) strong{color:#ff9eb1}
+.setup-levels>div:nth-child(3) strong{color:#f1d098}
+.setup-checks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.setup-check{border:1px solid #33485d;border-radius:7px;padding:8px;color:#becce0;font-size:11px;display:flex;align-items:center;gap:7px;min-width:0}
+.setup-check::before{content:"●";font-size:9px;color:#eac279}
+.setup-check.pass{border-color:#255d51;color:#b8f0dd}.setup-check.pass::before{color:#59d4ae}
+.setup-check.fail{border-color:#604357;color:#f8c1c9}.setup-check.fail::before{color:#ee8198}
+.setup-check.unknown::before{color:#99aec1}
+.chart-heading{margin-top:10px;align-items:center;gap:12px}
+.chart-controls{display:flex;gap:4px;align-items:center}
+.chart-controls button{font-size:11px;padding:5px 9px;border-radius:5px}
+.chart-controls button.active{background:#174c40;border-color:#3b9a81;color:#b3f7db}
+.chart-legend{display:flex;flex-wrap:wrap;gap:7px 13px;padding:8px 1px;font-size:10px;color:#a9c2d8}
+.chart-legend span{display:inline-flex;align-items:center;gap:5px}
+.chart-legend .key{width:17px;height:3px;display:inline-block;border-radius:2px}
+.key.ema10{background:#61d8f1}.key.ema55{background:#efc57e}.key.ema200{background:#a88bfc}
+.key.vp{background:#ffe1a2}.key.entry{background:#55f0c2}.key.risk{background:#ff7893}.key.target{background:#edc378}
+.premium-chart{width:100%;overflow:hidden;border:1px solid #355067}
+.premium-chart canvas{height:650px!important;width:100%;display:block;background:#081725}
+.chart-footnote{font-size:10px;line-height:1.55;color:#91a7be;margin-top:10px}
+@media(max-width:1100px){.setup-levels{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){.trade-plan{padding:12px}.setup-checks{grid-template-columns:1fr 1fr}
+ .setup-levels{grid-template-columns:repeat(2,minmax(0,1fr))}.premium-chart canvas{height:580px!important}
+ .chart-controls button{padding:5px 7px}}
+[hidden]{display:none!important}

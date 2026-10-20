@@ -30,8 +30,33 @@
     <div class="section-head main-head"><div><p class="eyebrow">INVESTIGAR · 1D TENDENCIA / 4H EJECUCIÓN</p><h2 id="assetTitle">BTCUSDT</h2><p class="support" id="assetSource">Binance Spot · datos y cotización en verificación</p></div>
      <div class="selectline"><input id="symbolInput" aria-label="Par USDT" value="BTCUSDT" maxlength="28" spellcheck="false"><button id="analyze" class="primary" type="button">Analizar</button></div></div>
     <div class="signal-banner" id="signalBanner"><div><span class="eyebrow">DECISIÓN VIGENTE</span><strong id="decision">CARGANDO…</strong><p id="decisionWhy">Verificando indicadores y calidad de datos.</p></div><span class="time" id="signalTime">—</span></div>
-    <div class="chart-heading"><b>PRECIO · EMA10 / EMA55 · PERFIL ESTIMADO</b><span id="chartLabel">4H · últimos 95 cierres</span></div>
-    <div class="chart-container"><canvas id="deskChart" height="300" aria-label="Velas y medias móviles verificadas"></canvas></div>
+    <section class="trade-plan" aria-label="Setup y niveles del activo">
+      <div class="section-head"><div><p class="eyebrow">SETUP EN VELA 4H CERRADA</p><h2 id="setupName">TL-BASE · evaluando</h2></div><span class="chip" id="setupVerdict">VERIFICANDO</span></div>
+      <p class="support" id="setupSummary">Sin confirmar una entrada hasta validar señal y controles de mercado.</p>
+      <div class="setup-levels">
+        <div><span>ENTRADA / ACTIVACIÓN</span><strong id="opEntry">—</strong><small id="opEntryNote">No habilitada</small></div>
+        <div><span>INVALIDACIÓN</span><strong id="opStop">—</strong><small id="opStopNote">Sin nivel confirmado</small></div>
+        <div><span>SALIDA / OBJETIVO</span><strong id="opTarget">—</strong><small id="opTargetNote">Sin nivel confirmado</small></div>
+        <div><span>RECORRIDO / R</span><strong id="opReward">—</strong><small id="opRewardNote">Sin riesgo-beneficio válido</small></div>
+      </div>
+      <div id="setupChecks" class="setup-checks" aria-label="Condiciones del setup"><span class="placeholder">Verificando condiciones…</span></div>
+      <p class="micro" id="setupMethod">Los niveles condicionales no son órdenes: exigen confirmación de cierre y recotización.</p>
+    </section>
+    <div class="chart-heading">
+      <div><b>PRECIO 4H · EMA10 / 55 / 200 · VP POR PRECIO</b><div class="micro" id="chartLabel">96 velas cerradas · perfil visible estimado</div></div>
+      <div class="chart-controls" role="group" aria-label="Ventana del gráfico">
+        <button type="button" data-zoom="48">48</button>
+        <button type="button" data-zoom="96" class="active" aria-pressed="true">96</button>
+        <button type="button" data-zoom="168">168</button>
+      </div>
+    </div>
+    <div class="chart-legend" aria-label="Leyenda de gráfico">
+      <span><i class="key ema10"></i>EMA 10</span><span><i class="key ema55"></i>EMA 55</span><span><i class="key ema200"></i>EMA 200</span>
+      <span><i class="key vp"></i>POC / VAH / VAL</span><span><i class="key entry"></i>Entrada / gatillo</span>
+      <span><i class="key risk"></i>Invalidación</span><span><i class="key target"></i>Salida</span>
+    </div>
+    <div class="chart-container premium-chart"><canvas id="deskChart" height="650" role="img" aria-label="Gráfico operativo de velas 4 horas con perfil de volumen horizontal, medias, señales históricas, volumen, momentum y ADX"></canvas></div>
+    <p class="chart-footnote" id="chartFootnote">VP visible = estimación de volumen por precio distribuido entre máximo y mínimo de cada vela 4H, NO volumen real negociado por nivel de precio. Los niveles del plan se calculan por separado y no se convierten en órdenes.</p>
     <div class="technical-grid">
        <div><span>CONTEXTO 1D</span><strong id="dailyTrend">—</strong></div>
        <div><span>MOMENTUM 4H</span><strong id="momentum">—</strong></div>
@@ -133,5 +158,5 @@
 </section>
 <footer>© Carter · Trading Desk experimental. Un ticket preparado no es una orden enviada. <a href="/tl-audit.html">Consultar auditoría y límites del motor</a></footer>
 </div>
-<script src="/tl-engine.js"></script><script src="/tl-data.js"></script><script src="/desk-engine.js"></script><script src="/desk-ledger.js"></script><script src="/desk-monitor.js"></script><script src="/desk-scenario.js"></script><script src="/desk-paper.js"></script><script src="/desk-cloud.js"></script><script src="/desk-cloud-ui.js"></script><script src="/desk-app.js"></script>
+<script src="/tl-engine.js"></script><script src="/tl-data.js"></script><script src="/desk-engine.js"></script><script src="/desk-ledger.js"></script><script src="/desk-monitor.js"></script><script src="/desk-chart.js"></script><script src="/desk-scenario.js"></script><script src="/desk-paper.js"></script><script src="/desk-cloud.js"></script><script src="/desk-cloud-ui.js"></script><script src="/desk-app.js"></script>
 </body></html>
