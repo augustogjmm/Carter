@@ -78,7 +78,11 @@
     <label>Comisión USDT<input id="sellFee" required type="number" min="0" step="any" value="0"></label>
     <button type="submit" class="secondary wide">Registrar salida / parcial</button>
    </form>
-   <button id="exportJournal" class="text-button" type="button">Exportar bitácora JSON ↗</button>
+   <div class="journal-backup">
+     <button id="exportJournal" class="text-button" type="button">Exportar copia de seguridad JSON ↗</button>
+     <label for="restoreJournal" class="support">Restaurar bitácora desde una copia exportada por Carter (reemplaza los datos de este navegador)</label>
+     <input id="restoreJournal" type="file" accept=".json,application/json" aria-label="Restaurar copia de seguridad JSON">
+   </div>
    <div class="toast" id="message" role="status" aria-live="polite"></div>
   </section>
  </aside>
