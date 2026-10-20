@@ -244,7 +244,7 @@ async function loadRadar(){
   if(snap.items?.length!==50||snap.version!==E.version)throw Error('Snapshot incompleto o incompatible');
   const isCurrent=snap.lastCandle===expected;
   state.rows=snap.items;
-  set('nScanned',snap.analyzed+' / 50');set('radarAge',(isCurrent?'Cierre ':'ANTERIOR · cierre ')+utc(snap.lastCandle+H4));showRadar();
+  set('nScanned','50 / 50');set('radarAge',snap.analyzed+' activos analizables · '+(isCurrent?'cierre ':'CIERRE ANTERIOR ')+utc(snap.lastCandle+H4));showRadar();
   let desk;
   try{const d=await fetch('/data/desk-opportunities.json?'+Date.now(),{cache:'no-store'});if(d.ok)desk=await d.json();}catch(e){}
   if(isCurrent&&desk?.engine===G.version&&desk.lastCandle===expected&&desk.items?.length===50&&Date.now()-Date.parse(desk.generatedAt)<H4+1200000){
