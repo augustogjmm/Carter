@@ -8,7 +8,7 @@ async function json(url,signal){
  if(!response.ok)throw Error('Binance HTTP '+response.status);
  return response.json();
 }
-function normalize(book,day,info){
+function normalize(book,day,info,depth){
  const x=info?.symbols?.[0];if(!x)throw Error('Símbolo spot no encontrado');
  const fl=Object.fromEntries((x.filters||[]).map(v=>[v.filterType,v]));
  const tick=Number(fl.PRICE_FILTER?.tickSize),lot=fl.LOT_SIZE||{},notional=fl.NOTIONAL||fl.MIN_NOTIONAL||{};
@@ -17,9 +17,12 @@ function normalize(book,day,info){
  tickSize:tick,stepSize:Number(lot.stepSize),minQty:Number(lot.minQty),
  maxQty:Number(lot.maxQty),minNotional:Number(notional.minNotional??notional.minNotionalValue??0),
  status:x.status,baseAsset:x.baseAsset,quoteAsset:x.quoteAsset};
- const output={symbol:x.symbol,bid:Number(book.bidPrice),ask:Number(book.askPrice),
+ const calc=(rows,test)=>Array.isArray(rows)?rows.filter(z=>Array.isArray(z)&&z.length>=2&&test(Number(z[0]))).reduce((a,z)=>a+Number(z[0])*Number(z[1]),0):NaN;
+ const nearAsk=calc(depth?.asks,p=>p>=Number(book.askPrice)&&p<=Number(book.askPrice)*1.0035);
+ const nearBid=calc(depth?.bids,p=>p<=Number(book.bidPrice)&&p>=Number(book.bidPrice)*.9965);
+ const output={symbol:x.symbol,bid:Number(book.bidPrice),ask:Number(book.askPrice),depthAskUSDT:nearAsk,depthBidUSDT:nearBid,
  quoteVolume24h:Number(day.quoteVolume),filters,asOf:Date.now(),source:'Binance Spot REST'};
- if(x.quoteAsset!=='USDT'||![output.bid,output.ask,output.quoteVolume24h,tick,filters.stepSize,filters.minNotional].every(Number.isFinite))
+ if(x.quoteAsset!=='USDT'||![output.bid,output.ask,output.quoteVolume24h,output.depthAskUSDT,output.depthBidUSDT,tick,filters.stepSize,filters.minNotional].every(Number.isFinite))
    throw Error('Cotización o restricciones no válidas');
  return output;
 }
@@ -35,12 +38,13 @@ module.exports=async function handler(req,res){
   const ac=new AbortController(),timer=setTimeout(()=>ac.abort(),9000);
   try{
    const params='symbol='+encodeURIComponent(symbol);
-   const [book,day,info]=await Promise.all([
+   const [book,day,info,depth]=await Promise.all([
     json(h+'/api/v3/ticker/bookTicker?'+params,ac.signal),
     json(h+'/api/v3/ticker/24hr?'+params,ac.signal),
-    json(h+'/api/v3/exchangeInfo?'+params,ac.signal)
+    json(h+'/api/v3/exchangeInfo?'+params,ac.signal),
+    json(h+'/api/v3/depth?'+params+'&limit=100',ac.signal)
    ]);
-   const result=normalize(book,day,info);cache.set(symbol,result);
+   const result=normalize(book,day,info,depth);cache.set(symbol,result);
    return res.status(200).json(result);
   }catch(e){error=e;}finally{clearTimeout(timer);}
  }
