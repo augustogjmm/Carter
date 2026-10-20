@@ -142,3 +142,11 @@ test('risk monitor detects dual confirmed deterioration, not single indicator al
  a.equal(M.watch({position,quote:q,bars4h:four,engine:sideways,now}).status,'VIGILAR_TENDENCIA');
  a.equal(M.watch({position,quote:q,bars4h:four,engine:fake,now}).status,'SEGUIMIENTO');
 });
+
+test('stablecoins and wrapped assets remain excluded even if spot USDT market does not exist',()=>{
+ const f=require('../scripts/tl-scan.cjs').classifyGate;
+ a.equal(f('Stablecoin / activo estable'),'excluded');
+ a.equal(f('Activo envuelto, puenteado o staking'),'excluded');
+ a.equal(f('Símbolo ambiguo en top 50'),'excluded');
+ a.equal(f('Sin par USDT spot activo en Binance'),'missing');
+});
