@@ -2,7 +2,7 @@
   "engine": "CTD-ELIGIBILITY-1.0",
   "strategy": "TL-BASE-MTF-VP-EXPERIMENTAL",
   "audited": false,
-  "generatedAt": "2026-10-20T15:44:54.316Z",
+  "generatedAt": "2026-10-20T15:48:32.206Z",
   "lastCandle": 1792483200000,
   "rankCount": 50,
   "eligibleChecked": 0,
@@ -29,7 +29,7 @@
       "symbol": "USDT",
       "name": "Tether",
       "lastCandle": null,
-      "status": "ESPERAR",
+      "status": "SIN_PAR",
       "reason": "Stablecoin / activo estable"
     },
     {
@@ -53,7 +53,7 @@
       "symbol": "USDC",
       "name": "USDC",
       "lastCandle": null,
-      "status": "ESPERAR",
+      "status": "EXCLUIDO",
       "reason": "Stablecoin / activo estable"
     },
     {
@@ -77,7 +77,7 @@
       "symbol": "FIGR_HELOC",
       "name": "Figure Heloc",
       "lastCandle": null,
-      "status": "ESPERAR",
+      "status": "SIN_PAR",
       "reason": "Sin par USDT spot activo en Binance"
     },
     {
@@ -109,7 +109,7 @@
       "symbol": "XMR",
       "name": "Monero",
       "lastCandle": null,
-      "status": "ESPERAR",
+      "status": "SIN_PAR",
       "reason": "Sin par USDT spot activo en Binance"
     },
     {
@@ -117,7 +117,7 @@
       "symbol": "USDS",
       "name": "USDS",
       "lastCandle": null,
-      "status": "ESPERAR",
+      "status": "EXCLUIDO",
       "reason": "Stablecoin / activo estable"
     },
     {
@@ -125,7 +125,7 @@
       "symbol": "WBT",
       "name": "WhiteBIT Coin",
       "lastCandle": null,
-      "status": "ESPERAR",
+      "status": "SIN_PAR",
       "reason": "Sin par USDT spot activo en Binance"
     },
     {
@@ -141,7 +141,7 @@
       "symbol": "LEO",
       "name": "LEO Token",
       "lastCandle": null,
-      "status": "ESPERAR",
+      "status": "SIN_PAR",
       "reason": "Sin par USDT spot activo en Binance"
     },
     {
@@ -157,7 +157,7 @@
       "symbol": "RAIN",
       "name": "Rain",
       "lastCandle": null,
-      "status": "ESPERAR",
+      "status": "SIN_PAR",
       "reason": "Sin par USDT spot activo en Binance"
     },
     {
@@ -189,7 +189,7 @@
       "symbol": "USDE",
       "name": "Ethena USDe",
       "lastCandle": null,
-      "status": "ESPERAR",
+      "status": "EXCLUIDO",
       "reason": "Stablecoin / activo estable"
     },
     {
@@ -205,7 +205,7 @@
       "symbol": "DAI",
       "name": "Dai",
       "lastCandle": null,
-      "status": "ESPERAR",
+      "status": "SIN_PAR",
       "reason": "Stablecoin / activo estable"
     },
     {
@@ -229,7 +229,7 @@
       "symbol": "CC",
       "name": "Canton",
       "lastCandle": null,
-      "status": "ESPERAR",
+      "status": "SIN_PAR",
       "reason": "Sin par USDT spot activo en Binance"
     },
     {
@@ -245,7 +245,7 @@
       "symbol": "USD1",
       "name": "USD1",
       "lastCandle": null,
-      "status": "ESPERAR",
+      "status": "EXCLUIDO",
       "reason": "Stablecoin / activo estable"
     },
     {
@@ -277,7 +277,7 @@
       "symbol": "USDG",
       "name": "Global Dollar",
       "lastCandle": null,
-      "status": "ESPERAR",
+      "status": "SIN_PAR",
       "reason": "Stablecoin / activo estable"
     },
     {
@@ -301,7 +301,7 @@
       "symbol": "CRO",
       "name": "Cronos",
       "lastCandle": null,
-      "status": "ESPERAR",
+      "status": "SIN_PAR",
       "reason": "Sin par USDT spot activo en Binance"
     },
     {
@@ -309,7 +309,7 @@
       "symbol": "PYUSD",
       "name": "PayPal USD",
       "lastCandle": null,
-      "status": "ESPERAR",
+      "status": "SIN_PAR",
       "reason": "Stablecoin / activo estable"
     },
     {
@@ -325,7 +325,7 @@
       "symbol": "BTW",
       "name": "Bitway",
       "lastCandle": null,
-      "status": "ESPERAR",
+      "status": "SIN_PAR",
       "reason": "Sin par USDT spot activo en Binance"
     },
     {
@@ -341,7 +341,7 @@
       "symbol": "USYC",
       "name": "Circle USYC",
       "lastCandle": null,
-      "status": "ESPERAR",
+      "status": "SIN_PAR",
       "reason": "Stablecoin / activo estable"
     },
     {
@@ -349,7 +349,7 @@
       "symbol": "OKB",
       "name": "OKB",
       "lastCandle": null,
-      "status": "ESPERAR",
+      "status": "SIN_PAR",
       "reason": "Sin par USDT spot activo en Binance"
     },
     {
@@ -357,7 +357,7 @@
       "symbol": "RLUSD",
       "name": "Ripple USD",
       "lastCandle": null,
-      "status": "ESPERAR",
+      "status": "EXCLUIDO",
       "reason": "Stablecoin / activo estable"
     },
     {
@@ -365,7 +365,7 @@
       "symbol": "USDY",
       "name": "Ondo US Dollar Yield",
       "lastCandle": null,
-      "status": "ESPERAR",
+      "status": "SIN_PAR",
       "reason": "Sin par USDT spot activo en Binance"
     },
     {
@@ -381,7 +381,7 @@
       "symbol": "BUIDL",
       "name": "BlackRock USD Institutional Digital Liquidity Fund",
       "lastCandle": null,
-      "status": "ESPERAR",
+      "status": "SIN_PAR",
       "reason": "Sin par USDT spot activo en Binance"
     },
     {
