@@ -36,6 +36,7 @@ test('stale market, chase, bad spread, risk budget and insufficient history fail
  a.equal(D.decide({...args(),quote:{...q,bid:98}}).status,'NO_OPERABLE');
  a.equal(D.decide({...args(),quote:{...q,bid:105,ask:105.2}}).status,'NO_OPERABLE');
  a.equal(D.decide({...args(),openRisk:10}).status,'NO_OPERABLE');
+ a.equal(D.decide({...args(),portfolioExposure:1000}).status,'NO_OPERABLE');
  a.equal(D.decide({...args(),bars1d:day.slice(-100)}).status,'SIN_DATOS');
  a.equal(D.decide({...args(),bars4h:four.slice(0,-1)}).status,'SIN_DATOS');
  a.equal(D.decide({...args(),profile:null}).status,'NO_OPERABLE');
