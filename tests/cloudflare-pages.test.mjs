@@ -54,7 +54,7 @@ test('Cloudflare market proxy rejects arbitrary hosts, bad symbols and mutating 
  await withFetch(async url=>{
   assert(String(url).startsWith('https://data-api.binance.vision/api/v3/klines'));
   return new Response(JSON.stringify([[1,2,3,4,5,6]]),{status:200});
- },async()=>{const resp=await market(req(ok));assert.equal(resp.status,200);assert.deepEqual(await resp.json(),[[1,2,3,4,5,6]]);});
+ },async()=>{const resp=await market(req(ok));const body=await resp.text();assert.equal(resp.status,200,body);assert.deepEqual(JSON.parse(body),[[1,2,3,4,5,6]]);});
 });
 test('Cloudflare Top50 proxy strictly validates complete ranking',async()=>{
  const rows=Array.from({length:50},(_,i)=>({
