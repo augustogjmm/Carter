@@ -1,0 +1,2 @@
+# Only Cloudflare Pages build output; it is generated in CI.
+/cloudflare-dist/

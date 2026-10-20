@@ -1,0 +1,35 @@
+name: Validate Cloudflare Pages Free compatibility
+on:
+  push:
+    branches: [main, feat/cloudflare-pages-free-hosting]
+    paths: ['functions/**','scripts/build-cloudflare.cjs','tests/cloudflare-pages.test.mjs',
+      '.github/workflows/cloudflare-validate.yml','CLOUDFLARE_FREE_DEPLOY.md','.gitignore','desk.html']
+  pull_request:
+    paths: ['functions/**','scripts/build-cloudflare.cjs','tests/cloudflare-pages.test.mjs',
+      '.github/workflows/cloudflare-validate.yml','CLOUDFLARE_FREE_DEPLOY.md','.gitignore','desk.html']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test Cloudflare APIs and static publishing rules
+        run: node --test tests/cloudflare-pages.test.mjs
+      - name: Verify the full static build without installing dependencies
+        run: |
+          node scripts/build-cloudflare.cjs
+          node --test tests/desk-chart.test.cjs tests/desk-holdings.test.cjs tests/tl-engine.test.cjs
+          test ! -e cloudflare-dist/data/paper/state.json
+          test ! -e cloudflare-dist/desk-cloud-ui.js
+          test ! -e cloudflare-dist/desk-cloud.js
+      - name: Save reproducible public build for inspection
+        uses: actions/upload-artifact@v4
+        with:
+          name: carter-cloudflare-pages-public-static
+          path: cloudflare-dist/
