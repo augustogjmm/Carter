@@ -119,3 +119,26 @@ test('portfolio exposure gates include reserved cash and reserved risk',()=>{
  a.equal(D.decide({...args(),portfolioExposure:995}).status,'NO_OPERABLE');
  a.equal(D.decide({...args(),openRisk:9.99}).status,'NO_OPERABLE');
 });
+
+test('risk monitor prioritizes current invalidation without forward-looking candles',()=>{
+ const M=require('../desk-monitor.js'),position={symbol:'BTCUSDT',quantity:1},bars4h=four;
+ const q={bid:94,asOf:now-1000};
+ const stop=M.watch({position,quote:q,bars4h,engine:fake,levels:{stop:95,target:110},now});
+ a.equal(stop.status,'REVISAR_STOP');
+ const objective=M.watch({position,quote:{...q,bid:111},bars4h,engine:fake,levels:{stop:95,target:110},now});
+ a.equal(objective.status,'REVISAR_OBJETIVO');
+ const stale=M.watch({position,quote:{...q,asOf:now-100000},bars4h,engine:fake,levels:{stop:95},now});
+ a.equal(stale.status,'SIN_COTIZACION');
+ const missing=M.watch({position,quote:{...q,bid:100},bars4h:bars4h.slice(0,-1),engine:fake,now});
+ a.equal(missing.status,'SIN_DATOS_TECNICOS');
+});
+test('risk monitor detects dual confirmed deterioration, not single indicator alone',()=>{
+ const M=require('../desk-monitor.js'),position={symbol:'BTCUSDT',quantity:1};
+ const q={bid:100,asOf:now-100};
+ const bearish={indicators(b,p){const i=fake.indicators(b,p);i.ema55.fill(101);i.momentum.fill(-1);return i;}};
+ const m=M.watch({position,quote:q,bars4h:four,engine:bearish,now});
+ a.equal(m.status,'REVISAR_DETERIORO');
+ const sideways={indicators(b,p){const i=fake.indicators(b,p);i.ema55.fill(101);return i;}};
+ a.equal(M.watch({position,quote:q,bars4h:four,engine:sideways,now}).status,'VIGILAR_TENDENCIA');
+ a.equal(M.watch({position,quote:q,bars4h:four,engine:fake,now}).status,'SEGUIMIENTO');
+});
