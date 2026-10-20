@@ -25,6 +25,7 @@ function notifyIfNew(symbol,key,msg){
  state.alertKeys.add(eventKey);message(msg);
 }
 function renderJournal(){
+ state.journal.expire();
  const os=state.journal.orders().filter(o=>['PREPARED','SUBMITTED','PARTIAL'].includes(o.status)),sel=$('orderSelect');
  sel.replaceChildren();let opt=document.createElement('option');opt.value='';opt.textContent=os.length?'Elegir orden…':'Sin órdenes preparadas';sel.append(opt);
  for(const o of os){opt=document.createElement('option');opt.value=o.id;opt.textContent=o.symbol+' · '+o.status+' · '+fmt(o.qty-o.filledQty,6)+' pendientes';sel.append(opt);}
@@ -234,7 +235,7 @@ function attach(){
   }catch(e){message('No se pudo exportar: '+e.message);}
  };
  window.addEventListener('resize',()=>{if(state.bars.length)drawChart();});
- setInterval(()=>{if(!document.hidden){refreshPositionQuotes();if(state.bars.length)load(state.symbol);showCandidates();}},60000);
+ setInterval(()=>{if(!document.hidden){renderJournal();refreshPositionQuotes();if(state.bars.length)load(state.symbol);showCandidates();}},60000);
  document.addEventListener('visibilitychange',()=>{if(!document.hidden){refreshPositionQuotes();loadRadar();load(state.symbol);}});
 }
 function init(){
