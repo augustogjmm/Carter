@@ -17,13 +17,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --test tests/desk.test.cjs tests/desk-replay.test.cjs tests/tl-engine.test.cjs
+      - run: node --test tests/desk.test.cjs tests/desk-replay.test.cjs tests/desk-visibility.test.cjs tests/tl-engine.test.cjs
       - run: |
           node --check desk-engine.js
           node --check desk-ledger.js
           node --check api/desk-quote.js
           node --check desk-replay.js
           node --check desk-monitor.js
+          node --check desk-scenario.js
+          node --check desk-paper.js
           node --check scripts/desk-audit.cjs
           if test -f desk-app.js; then node --check desk-app.js; fi
           test -f desk.html

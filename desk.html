@@ -39,6 +39,17 @@
        <div><span>PERFIL POC / VAH</span><strong id="volume">—</strong></div>
     </div>
     <p class="micro" id="method">Método: TL-BASE + filtros Carter de ejecución. El perfil OHLCV se declara estimado; no equivale a volumen por trade.</p>
+    <section class="projection" aria-label="Escenario condicionado próximo cierre">
+      <div class="section-head"><div><p class="eyebrow">PROYECCIÓN OPERATIVA · NO ES SEÑAL DE COMPRA</p><h2>Próxima condición de activación</h2></div><span id="scenarioStatus" class="chip">VERIFICANDO</span></div>
+      <p id="scenarioReason" class="support">Calculando umbrales únicamente desde velas confirmadas.</p>
+      <div id="scenarioPrices" class="ticket-grid" hidden>
+        <div><span>Cierre 4H por encima de</span><b id="scenarioTrigger">—</b></div>
+        <div><span>Invalidación de escenario</span><b id="scenarioStop">—</b></div>
+        <div><span>Resistencia / objetivo tentativo</span><b id="scenarioTarget">—</b></div>
+        <div><span>Recorrido bruto estimado</span><b id="scenarioR">—</b></div>
+      </div>
+      <p id="scenarioConditions" class="micro">No ejecutar hasta confirmación y recálculo del ticket.</p>
+    </section>
   </section>
   <section class="panel"><div class="section-head"><div><p class="eyebrow">TOP 50</p><h2>Radar de mercado</h2></div><div class="selectline"><input id="search" aria-label="Buscar en radar" placeholder="Buscar moneda"><select id="radarFilter" aria-label="Filtrar"><option value="all">Todas</option><option value="signal">Señal 4H</option><option value="watch">Vigilar</option></select></div></div>
   <div class="table-scroll"><table><thead><tr><th>#</th><th>ACTIVO</th><th>SEÑAL BASE</th><th>MOTIVO</th><th>VER</th></tr></thead><tbody id="radarRows"><tr><td colspan="5">Consultando snapshot…</td></tr></tbody></table></div><p class="micro" id="radarNote">El estado del radar no es una orden ni un análisis actualizado del spread.</p></section>
@@ -94,7 +105,13 @@
 </div>
 <section class="panel positions-panel"><div class="section-head"><div><p class="eyebrow">MIS POSICIONES · SOLO FILLS CONFIRMADOS</p><h2>Seguimiento de riesgo</h2></div><div class="selectline"><button id="enableNotifications" type="button">Activar avisos</button><span id="monitorState" class="chip">SINCRONIZACIÓN LOCAL</span></div></div><div id="positionList" class="position-grid"><p class="placeholder">No hay posiciones registradas.</p></div>
 <p class="micro">Cotización de venta por bid público, PnL estimado con comisión de salida; puede diferir del fill real. El monitoreo corre mientras esta pestaña permanezca abierta. No hay alertas móviles ni órdenes automáticas.</p></section>
+<section class="panel positions-panel" aria-label="Seguimiento automático de estrategias teóricas">
+  <div class="section-head"><div><p class="eyebrow">REGISTRO PROSPECTIVO · CÁLCULO REMOTO CADA 4 HORAS</p><h2>Simulaciones bajo seguimiento</h2></div><span id="paperStatus" class="chip">CONSULTANDO</span></div>
+  <p class="support">Carter RAW y Latino en BTC, ETH, SOL y BNB. Es una simulación persistida en GitHub, no son tus compras reales ni señales aprobadas.</p>
+  <div class="position-grid" id="paperPositions"><p class="placeholder">Leyendo ejecuciones hipotéticas…</p></div>
+  <p class="micro" id="paperDetails">Si se interrumpe la actualización de GitHub, se informa el atraso. Nunca se asume que compraste.</p>
+</section>
 <footer>© Carter · Trading Desk experimental. Un ticket preparado no es una orden enviada. <a href="/tl-audit.html">Consultar auditoría y límites del motor</a></footer>
 </div>
-<script src="/tl-engine.js"></script><script src="/tl-data.js"></script><script src="/desk-engine.js"></script><script src="/desk-ledger.js"></script><script src="/desk-monitor.js"></script><script src="/desk-app.js"></script>
+<script src="/tl-engine.js"></script><script src="/tl-data.js"></script><script src="/desk-engine.js"></script><script src="/desk-ledger.js"></script><script src="/desk-monitor.js"></script><script src="/desk-scenario.js"></script><script src="/desk-paper.js"></script><script src="/desk-app.js"></script>
 </body></html>
