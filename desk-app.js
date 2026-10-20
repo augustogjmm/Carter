@@ -237,6 +237,20 @@ async function loadDeskAudit(){
   holder($('deskAuditDetails'),'No se pudo consultar una auditoría verificada: '+e.message);
  }
 }
+async function loadDeskVariants(){
+ try{
+  const response=await fetch('/data/desk-variants/summary.json?'+Date.now(),{cache:'no-store'});
+  if(!response.ok)throw Error('Variantes sin resultados');
+  const study=await response.json();
+  if(study.protocol!=='DESK-PROFILE-RESEARCH-1'||study.records?.length!==9)throw Error('Formato de variantes inválido');
+  const container=$('deskAuditDetails'),p=document.createElement('p');
+  p.className='micro';
+  const qualified=study.records.filter(x=>x.qualifiedOnPastData).length;
+  p.textContent='Estudio de volumen: 9 variantes (120/240/360 velas × tres políticas), '+qualified+
+    ' cumplieron criterios históricos completos. Ninguna modificación fue promovida a las entradas de producción.';
+  container.append(p);
+ }catch(e){/* Main audit remains independently visible when optional research is missing. */}
+}
 async function loadRadar(){
  try{
   const r=await fetch('/data/tl-radar.json?'+Date.now(),{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);
@@ -336,7 +350,7 @@ function attach(){
 function init(){
  if(!E||!D||!G||!J||!M){set('dataHealth','ERROR MOTOR');message('Faltan módulos de cálculo');return;}
  try{state.journal=J.create(localStorage);}catch(e){set('dataHealth','SIN ALMACENAMIENTO');message('Bitácora local indisponible: '+e.message);return;}
- attach();renderJournal();loadRadar();loadDeskAudit();load('BTCUSDT');refreshPositionQuotes();
+ attach();renderJournal();loadRadar();loadDeskAudit().then(loadDeskVariants);load('BTCUSDT');refreshPositionQuotes();
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
