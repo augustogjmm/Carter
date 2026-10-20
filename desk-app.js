@@ -126,7 +126,7 @@ async function load(input){
   const bars=h4.bars;state.bars=bars;state.ind=E.indicators(bars,'4h');state.quote=q;
   state.profile=E.profile(bars.slice(-360),64);
   const result=G.decide({bars4h:bars,bars1d:d1.bars,quote:q,profile:state.profile,
-   capital:capital(),openExposure:exposure(symbol),openRisk:portfolioRisk(),engine:E});
+   capital:capital(),openExposure:exposure(symbol),portfolioExposure:state.journal.positions().reduce((sum,p)=>sum+p.basis,0),openRisk:portfolioRisk(),engine:E});
   set('assetSource',h4.source+' · 4H '+bars.length+' velas · 1D '+d1.bars.length+' velas · quote '+utc(q.asOf));
   set('sourceLabel','Última cotización '+utc(q.asOf));set('dataHealth','COTIZACIÓN OK');
   const k=bars.length-1;
