@@ -33,9 +33,9 @@ function create(store){
  function buy({orderId,quantity,price,fee=0,fillId,at=Date.now()}){
    assert(positive(quantity)&&positive(price)&&Number.isFinite(fee)&&fee>=0,"Fill de compra inválido");
    const order=data.orders.find(x=>x.id===orderId);assert(order,"Orden no encontrada");
+   if(fillId&&data.fills.some(x=>x.id===fillId))return order;
    assert(["PREPARED","SUBMITTED","PARTIAL"].includes(order.status),"Orden cerrada");
    assert(Number.isFinite(at)&&at>=order.createdAt,"Fecha de fill inválida");
-   if(fillId&&data.fills.some(x=>x.id===fillId))return order;
    const prior=data.fills.filter(x=>x.kind==="BUY"&&x.orderId===orderId).reduce((a,x)=>a+x.quantity,0);
    assert(prior+quantity<=order.qty+1e-8,"Cantidad supera ticket preparado");
    // A manual fill is an explicit user assertion, not proof that the exchange executed it.
