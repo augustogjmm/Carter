@@ -54,7 +54,8 @@ function snapshotToHistory(s,symbol,period,since,now=Date.now()){
  if(!s||s.symbol!==symbol||s.period!==period||
   !String(s.source||'').startsWith('Binance Spot')||!Array.isArray(s.bars)||
   s.lastCandle!==expected||s.bars.length<250)return null;
- const minT=Math.floor(since/ms)*ms,all=engine.validate(s.bars,period);
+ const minT=Math.floor(since/ms)*ms;
+ let all;try{all=engine.validate(s.bars,period);}catch(e){return null;}
  if(all.length<250||all.at(-1).t!==expected||all[0].t>minT)return null;
  const bars=all.filter(b=>b.t>=minT);
  if(bars.length<250||bars.some(b=>b.t+ms>now))return null;
