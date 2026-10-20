@@ -1,12 +1,7 @@
 name: Carter — Unified Top 50 scan
 # Revalidate correct stablecoin/exclusion classification, 20 Oct 2026
 on:
-  schedule:
-    - cron: '11 */4 * * *'
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths: ['.github/workflows/tl-scan.yml']
 concurrency:
   group: carter-unified-market-scan
   cancel-in-progress: false

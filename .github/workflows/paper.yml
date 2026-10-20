@@ -1,11 +1,6 @@
 name: Frozen prospective paper ledger
 on:
-  schedule:
-    - cron: '9 */4 * * *'
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths: ['research/paper_core.py','research/paper_run.py','research/paper_core_test.py','research/paper_parity_test.py','.github/workflows/paper.yml']
 concurrency:
   group: pcs-frozen-paper-ledger
   cancel-in-progress: false

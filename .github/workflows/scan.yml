@@ -1,11 +1,6 @@
 name: PCS scheduled top 50
 on:
-  schedule:
-    - cron: '7 */4 * * *'
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths: ['pcs.js', 'scanner.js', 'scripts/scan.cjs', '.github/workflows/scan.yml']
 concurrency:
   group: pcs-background-scan
   cancel-in-progress: false
