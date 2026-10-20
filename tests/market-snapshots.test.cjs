@@ -1,6 +1,6 @@
 const test=require('node:test'),assert=require('node:assert/strict'),D=require('../tl-data.js'),
  Spot=require('../desk-spot-quote.js'),E=require('../tl-engine.js');
-const H4=14400000,DAY=86400000,now=Date.UTC(2026,9,20,20),last4=now-H4;
+const H4=14400000,DAY=86400000,now=Date.now(),last4=Math.floor(now/H4)*H4-H4;
 const mkBars=(ms,n,last)=>Array.from({length:n},(_,i)=>({t:last-(n-1-i)*ms,o:100+i*.01,h:101+i*.01,
  l:99+i*.01,c:100.5+i*.01,v:1+i%3}));
 test('static closed candles cannot bypass source, recency and coverage invariants',()=>{
