@@ -267,6 +267,18 @@ function attach(){
    $('sellForm').reset();renderJournal();refreshPositionQuotes();
   }catch(err){message('No se registró venta: '+err.message);}
  };
+ $('restoreJournal').onchange=async event=>{
+  const input=event.target,file=input.files?.[0];if(!file)return;
+  try{
+   if(file.size>1500000)throw Error('Copia de seguridad demasiado grande');
+   const content=await file.text();
+   if(!window.confirm('La restauración REEMPLAZARÁ las órdenes y fills de este navegador. ¿Ya exportaste una copia de los actuales?'))return;
+   const result=state.journal.restoreJSON(content);
+   renderJournal();refreshPositionQuotes();load(state.symbol);
+   message('Restaurados '+result.orders+' tickets y '+result.fills+' fills. Esta operación no conecta al exchange.');
+  }catch(e){message('No se restauró ningún dato: '+e.message);}
+  finally{input.value='';}
+ };
  $('exportJournal').onclick=()=>{
   try{const blob=new Blob([state.journal.exportJSON()],{type:'application/json'});
    const url=URL.createObjectURL(blob),a=document.createElement('a');
