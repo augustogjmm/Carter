@@ -41,7 +41,7 @@ jobs:
           for attempt in 1 2 3 4 5; do
             git fetch origin main
             git reset --hard origin/main
-            if test -f data/desk-audit/summary.json && node -e 'const fs=require("fs"),old=JSON.parse(fs.readFileSync("data/desk-audit/summary.json")),newer=JSON.parse(fs.readFileSync(process.argv[1]));process.exit(Date.parse(old.generatedAt)>=Date.parse(newer.generatedAt)?0:1)' "$RUNNER_TEMP/desk-audit.json"; then
+            if git ls-files --error-unmatch data/desk-audit/summary.json >/dev/null 2>&1 && test -f data/desk-audit/summary.json && node -e 'const fs=require("fs"),old=JSON.parse(fs.readFileSync("data/desk-audit/summary.json")),newer=JSON.parse(fs.readFileSync(process.argv[1]));process.exit(Date.parse(old.generatedAt)>=Date.parse(newer.generatedAt)?0:1)' "$RUNNER_TEMP/desk-audit.json"; then
               echo "Newer audit already published"
               exit 0
             fi
