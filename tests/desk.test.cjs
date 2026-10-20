@@ -8,7 +8,7 @@ function bars(ms,end,n=250){
 const four=bars(H4,close);
 const day=bars(DAY,Math.floor(close/DAY)*DAY);day.forEach(b=>{b.o=110;b.h=111;b.l=109;b.c=110;});
 const profile={poc:100,val:97,vah:108,quality:'PERFIL ESTIMADO OHLCV'};
-const q={bid:100.15,ask:100.2,asOf:now,quoteVolume24h:30000000,
+const q={bid:100.15,ask:100.2,asOf:now,quoteVolume24h:30000000,depthAskUSDT:100000,depthBidUSDT:100000,
  filters:{trading:true,tickSize:.01,stepSize:.001,minQty:.001,minNotional:5,maxQty:100000}};
 const fake={indicators(bb,p){
  const n=bb.length,ary=x=>Array(n).fill(x),v=ary(true),long=ary(false),early=ary(false);
@@ -37,6 +37,7 @@ test('stale market, chase, bad spread, risk budget and insufficient history fail
  a.equal(D.decide({...args(),quote:{...q,bid:105,ask:105.2}}).status,'NO_OPERABLE');
  a.equal(D.decide({...args(),openRisk:10}).status,'NO_OPERABLE');
  a.equal(D.decide({...args(),portfolioExposure:1000}).status,'NO_OPERABLE');
+ a.equal(D.decide({...args(),quote:{...q,depthAskUSDT:20}}).status,'NO_OPERABLE');
  a.equal(D.decide({...args(),bars1d:day.slice(-100)}).status,'SIN_DATOS');
  a.equal(D.decide({...args(),bars4h:four.slice(0,-1)}).status,'SIN_DATOS');
  a.equal(D.decide({...args(),profile:null}).status,'NO_OPERABLE');
@@ -74,8 +75,10 @@ test('quote proxy normalization rejects non-USDT and computes filters',()=>{
  {filterType:'PRICE_FILTER',tickSize:'.01'},
  {filterType:'LOT_SIZE',stepSize:'.001',minQty:'.001',maxQty:'1000'},
  {filterType:'NOTIONAL',minNotional:'5'}]}]});
- const q=normalize(book,day,mk('USDT'));a.equal(q.filters.tickSize,.01);a.equal(q.filters.trading,true);
- a.throws(()=>normalize(book,day,mk('USDC')),/no válidas/);
+ const depth={asks:[['100.2','5000']],bids:[['100','5000']]};
+ const q=normalize(book,day,mk('USDT'),depth);a.equal(q.filters.tickSize,.01);a.equal(q.filters.trading,true);
+ a(q.depthAskUSDT>100000);a(q.depthBidUSDT>100000);
+ a.throws(()=>normalize(book,day,mk('USDC'),depth),/no válidas/);
 });
 
 test('journal refuses malformed persisted state instead of silently destroying it',()=>{
