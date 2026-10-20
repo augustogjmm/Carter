@@ -1,7 +1,7 @@
 /* Carter Trading Desk — real-data interface. No exchange order submission. */
 (function(){
 "use strict";
-const E=window.TLEngine,D=window.TLData,G=window.CarterDeskEngine,J=window.CarterJournal,M=window.CarterPositionMonitor,S=window.CarterScenario,P=window.CarterPaper,C=window.CarterChart,H=window.CarterHoldingLevels;
+const E=window.TLEngine,D=window.TLData,G=window.CarterDeskEngine,J=window.CarterJournal,M=window.CarterPositionMonitor,S=window.CarterScenario,P=window.CarterPaper,C=window.CarterChart,H=window.CarterHoldingLevels,Q=window.CarterBrowserSpot;
 const $=id=>document.getElementById(id),fmt=(n,p=2)=>Number.isFinite(n)?n.toLocaleString('en-US',{maximumFractionDigits:p}):'—';
 const price=n=>fmt(n,Number.isFinite(n)&&n<1?7:n<100?4:2);
 const utc=n=>Number.isFinite(n)?new Date(n).toISOString().slice(0,16).replace('T',' ')+' UTC':'—';
@@ -60,9 +60,16 @@ function renderJournal(){
  set('nPositions',positions.length);renderPositions();if(state.bars.length&&state.ind)drawChart();
 }
 async function getQuote(symbol){
- const r=await fetch('/api/desk-quote?symbol='+encodeURIComponent(symbol),{cache:'no-store'});
- const q=await r.json();if(!r.ok)throw Error(q.error||'Sin cotización');
- state.quotes.set(symbol,q);return q;
+ let last;
+ try{
+  const r=await fetch('/api/desk-quote?symbol='+encodeURIComponent(symbol),{cache:'no-store'});
+  const q=await r.json();if(!r.ok)throw Error(q.detail||q.error||'Sin cotización');
+  state.quotes.set(symbol,q);return q;
+ }catch(e){last=e;}
+ if(Q?.get)try{
+  const q=await Q.get(symbol);state.quotes.set(symbol,q);return q;
+ }catch(e){last=Error('Cloudflare sin mercado y lectura directa falló: '+e.message);}
+ throw last;
 }
 async function refreshPositionQuotes(){
  const holdings=state.journal.positions().filter(p=>p.quantity>1e-10),symbols=holdings.map(p=>p.symbol);

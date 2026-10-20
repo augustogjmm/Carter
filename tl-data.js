@@ -48,12 +48,33 @@ async function kucoin(symbol,period,since){
  let gaps=0;for(let i=1;i<rows.length;i++)if(rows[i].t-rows[i-1].t!==ms)gaps++;
  return{bars:rows,source:'KuCoin Spot (respaldo explícito)',gaps,period,from:rows[0].t,until:rows.at(-1).t};
 }
+
+function snapshotToHistory(s,symbol,period,since,now=Date.now()){
+ const ms=engine.PERIOD[period],expected=(Math.floor(now/ms)-1)*ms;
+ if(!s||s.symbol!==symbol||s.period!==period||
+  !String(s.source||'').startsWith('Binance Spot')||!Array.isArray(s.bars)||
+  s.lastCandle!==expected||s.bars.length<250)return null;
+ const minT=Math.floor(since/ms)*ms,all=engine.validate(s.bars,period);
+ if(all.length<250||all.at(-1).t!==expected||all[0].t>minT)return null;
+ const bars=all.filter(b=>b.t>=minT);
+ if(bars.length<250||bars.some(b=>b.t+ms>now))return null;
+ let gaps=0;for(let i=1;i<bars.length;i++)if(bars[i].t-bars[i-1].t!==ms)gaps++;
+ return{bars,source:'Binance Spot · snapshot público de GitHub (cierre '+new Date(expected+ms).toISOString()+')',
+  gaps,period,from:bars[0].t,until:bars.at(-1).t,snapshotGeneratedAt:s.generatedAt};
+}
+async function snapshotHistory(symbol,period,since){
+ const response=await request('/data/ohlcv/'+symbol+'-'+period+'.json',6000);
+ const result=snapshotToHistory(response,symbol,period,since);
+ if(!result)throw Error('Snapshot de velas incompleto, desactualizado o sin cobertura');
+ return result;
+}
 const cache=new Map();
 async function history(symbol,period='4h',since=START){if(!/^[A-Z0-9]{2,24}USDT$/.test(symbol)||!engine.PERIOD[period])throw Error('Par o intervalo inválido');
  const ms=engine.PERIOD[period],slot=Math.floor(Date.now()/ms),key=symbol+':'+period+':'+slot+':'+since;
  if(cache.has(key))return cache.get(key);
  const job=(async()=>{
   let error;
+  if(browser)try{return await snapshotHistory(symbol,period,since);}catch(e){error=e;}
   for(const host of BINANCE){try{
    let cursor=since,bars=[],lastOpen=Math.floor(Date.now()/ms)*ms-ms,pages=Math.ceil((lastOpen-since)/ms/1000)+2;
    if(pages>100)throw Error('Histórico fuera de capacidad');
@@ -83,5 +104,5 @@ function classify(payload,period='4h'){const b=payload.bars,ind=engine.indicator
  ema10:current.ema10,ema55:current.ema55,momentum:current.mom,squeeze:current.squeeze,
  source:payload.source,gaps:payload.gaps,positionOpen:!!bt.pos,stats:s};
 }
-return{rank,exchange,gate,history,classify,request,version:'TL-DATA-1.0'};
+return{rank,exchange,gate,history,classify,request,snapshotToHistory,version:'TL-DATA-1.1'};
 });
