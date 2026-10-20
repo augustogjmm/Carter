@@ -99,7 +99,7 @@
      return fail("NO_OPERABLE","SIZE","Cantidad inferior al mínimo del mercado o al presupuesto de riesgo",{context});
    if(f.maxQty&&qty>f.maxQty)return fail("NO_OPERABLE","MAX_QTY","Cantidad superior al máximo permitido",{context});
    if(quote.depthAskUSDT<notional*5||quote.depthBidUSDT<notional*5)return fail("NO_OPERABLE","DEPTH","Profundidad dentro de 0,35% insuficiente para cinco veces el tamaño proyectado",{context});
-   const ticket={side:"BUY",type:"LIMIT",entry,minimum:Math.max(profile.val,entry-0.25*atr),
+   const ticket={side:"BUY",type:"LIMIT",entry,minimum:Math.min(entry,Math.max(profile.val,entry-0.25*atr)),
       maxChase:roundDown(maxChase,f.tickSize),stop,target,quantity:qty,notional,
       riskUSDT:qty*riskPerUnit,riskPct:qty*riskPerUnit/capital,netR:r,
       estimatedCostsUSDT:qty*(entry+target)*(feeRate+slippageRate),
