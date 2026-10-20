@@ -24,6 +24,7 @@
      if(!finite(q.filters[field])||q.filters[field]<0||(field!=="minNotional"&&q.filters[field]===0))
        return "Restricciones de intercambio incompletas: "+field;
    if(!finite(q.quoteVolume24h)||q.quoteVolume24h<2000000)return "Liquidez 24h insuficiente o desconocida";
+   if(!finite(q.depthAskUSDT)||!finite(q.depthBidUSDT))return "Profundidad de mercado no verificable";
    const spread=(q.ask-q.bid)/q.ask;
    if(spread>.0035)return "Spread superior a 0,35%";
    return null;
@@ -97,6 +98,7 @@
    if(qty<f.minQty||notional<Math.max(f.minNotional,0)||qty<=0)
      return fail("NO_OPERABLE","SIZE","Cantidad inferior al mínimo del mercado o al presupuesto de riesgo",{context});
    if(f.maxQty&&qty>f.maxQty)return fail("NO_OPERABLE","MAX_QTY","Cantidad superior al máximo permitido",{context});
+   if(quote.depthAskUSDT<notional*5||quote.depthBidUSDT<notional*5)return fail("NO_OPERABLE","DEPTH","Profundidad dentro de 0,35% insuficiente para cinco veces el tamaño proyectado",{context});
    const ticket={side:"BUY",type:"LIMIT",entry,minimum:Math.max(profile.val,entry-0.25*atr),
       maxChase:roundDown(maxChase,f.tickSize),stop,target,quantity:qty,notional,
       riskUSDT:qty*riskPerUnit,riskPct:qty*riskPerUnit/capital,netR:r,
