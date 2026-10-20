@@ -6,7 +6,7 @@ const KEY="carter-desk-journal-v1";
 function assert(p,message){if(!p)throw Error(message);}
 const positive=x=>Number.isFinite(x)&&x>0;
 function empty(){return{schema:1,orders:[],fills:[],updatedAt:0};}
-function read(store){try{const data=JSON.parse(store.getItem(KEY)||"null");if(data?.schema===1&&Array.isArray(data.orders)&&Array.isArray(data.fills))return data;}catch(e){}return empty();}
+function read(store){const raw=store.getItem(KEY);if(raw===null||raw==="")return empty();let data;try{data=JSON.parse(raw);}catch(e){throw Error("Bitácora local dañada. No se sobrescribirá: exportá antes el almacenamiento original.");}if(data?.schema!==1||!Array.isArray(data.orders)||!Array.isArray(data.fills))throw Error("Esquema de bitácora desconocido: se bloquea la escritura");return data;}
 function create(store){
  assert(store&&typeof store.getItem==="function"&&typeof store.setItem==="function","Almacenamiento no disponible");
  let data=read(store);
@@ -69,10 +69,11 @@ function create(store){
    data.fills.push({id:fillId||"S-"+Date.now()+"-"+Math.random().toString(36).slice(2,7),
      kind:"SELL",symbol,quantity,price,fee,at});commit();
  }
+ function expire(now=Date.now()){let changed=false;for(const o of data.orders){if(o.status==="PREPARED"&&o.validUntil<=now&&o.filledQty===0){o.status="EXPIRED";changed=true;}}if(changed)commit();return changed;}
  const orders=()=>data.orders.map(o=>({...o,ticket:{...o.ticket}}));
  const fills=()=>data.fills.map(o=>({...o}));
  const exportJSON=()=>JSON.stringify(data,null,2);
- return{prepared,setSubmitted,cancel,buy,sell,orders,fills,positions,exportJSON,storage:"SOLO ESTE NAVEGADOR"};
+ return{prepared,setSubmitted,cancel,expire,buy,sell,orders,fills,positions,exportJSON,storage:"SOLO ESTE NAVEGADOR"};
 }
 return{create,empty,key:KEY};
 });
