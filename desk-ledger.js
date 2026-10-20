@@ -14,6 +14,8 @@ function create(store){
  function prepared(ticket,symbol){
    assert(ticket?.type==="LIMIT"&&positive(ticket.quantity)&&positive(ticket.entry)&&/^[A-Z0-9]+USDT$/.test(symbol),"Ticket inválido");
    assert(ticket.validFrom<=Date.now()&&ticket.expiresAt>Date.now(),"Ticket vencido o futuro");
+   const already=data.orders.find(o=>o.symbol===symbol&&o.signalAt===ticket.signalAt&&o.strategy===ticket.strategy&&!["CANCELLED","EXPIRED"].includes(o.status));
+   assert(!already,"Esta señal ya tiene una orden preparada, enviada o ejecutada: "+(already?.id||""));
    const id="CTD-"+Date.now()+"-"+Math.random().toString(36).slice(2,8);
    data.orders.push({id,symbol,qty:ticket.quantity,limit:ticket.entry,createdAt:Date.now(),
       validUntil:ticket.expiresAt,signalAt:ticket.signalAt,strategy:ticket.strategy,
@@ -72,8 +74,46 @@ function create(store){
  function expire(now=Date.now()){let changed=false;for(const o of data.orders){if(o.status==="PREPARED"&&o.validUntil<=now&&o.filledQty===0){o.status="EXPIRED";changed=true;}}if(changed)commit();return changed;}
  const orders=()=>data.orders.map(o=>({...o,ticket:{...o.ticket}}));
  const fills=()=>data.fills.map(o=>({...o}));
+ function pending(){
+  return data.orders.filter(o=>["PREPARED","SUBMITTED","PARTIAL"].includes(o.status))
+    .map(o=>({symbol:o.symbol,orderId:o.id,remaining:Math.max(0,o.qty-o.filledQty),
+      risk:Math.max(0,o.qty-o.filledQty)*Number(o.ticket?.riskUSDT||0)/o.qty,
+      notional:Math.max(0,o.qty-o.filledQty)*o.limit*1.001}))
+    .filter(x=>x.remaining>0);
+ }
+ function restoreJSON(source){
+  assert(typeof source==="string"&&source.length>0&&source.length<=1500000,"El archivo debe ser JSON válido de menos de 1,5 MB");
+  let parsed;try{parsed=JSON.parse(source);}catch(e){throw Error("No se pudo interpretar el JSON de la bitácora");}
+  assert(parsed?.schema===1&&Array.isArray(parsed.orders)&&Array.isArray(parsed.fills),"Esquema de bitácora incompatible");
+  assert(parsed.orders.length<=5000&&parsed.fills.length<=20000,"El archivo supera los límites de seguridad");
+  const orderIds=new Set(),fillIds=new Set();
+  for(const o of parsed.orders){
+   assert(typeof o.id==="string"&&!orderIds.has(o.id)&&/^[A-Z0-9]+USDT$/.test(o.symbol)&&positive(o.qty)&&positive(o.limit)&&o.ticket&&Number.isFinite(o.createdAt)&&Number.isFinite(o.validUntil),"Orden restaurada inválida");
+   orderIds.add(o.id);
+  }
+  const owned=new Map();
+  for(const f of [...parsed.fills].sort((a,b)=>a.at-b.at)){
+   assert(typeof f.id==="string"&&!fillIds.has(f.id)&&/^[A-Z0-9]+USDT$/.test(f.symbol)&&positive(f.quantity)&&positive(f.price)&&Number.isFinite(f.fee)&&f.fee>=0&&Number.isFinite(f.at),"Fill restaurado inválido");
+   fillIds.add(f.id);
+   if(f.kind==="BUY"){
+    const o=parsed.orders.find(x=>x.id===f.orderId);
+    assert(o&&o.symbol===f.symbol&&f.at>=o.createdAt,"Fill sin orden de origen");
+    owned.set(f.symbol,(owned.get(f.symbol)||0)+f.quantity);
+   }else if(f.kind==="SELL"){
+    assert(f.quantity<=(owned.get(f.symbol)||0)+1e-8,"Ventas restauradas superiores a compras");
+    owned.set(f.symbol,Math.max(0,(owned.get(f.symbol)||0)-f.quantity));
+   }else throw Error("Tipo de fill desconocido");
+  }
+  for(const o of parsed.orders){
+   const actual=parsed.fills.filter(f=>f.kind==="BUY"&&f.orderId===o.id).reduce((s,f)=>s+f.quantity,0);
+   assert(actual<=o.qty+1e-8&&Math.abs(actual-o.filledQty)<1e-8,"Inconsistencia entre órdenes y fills");
+  }
+  const prior=data;data=parsed;
+  try{commit();}catch(e){data=prior;throw e;}
+  return{orders:data.orders.length,fills:data.fills.length};
+ }
  const exportJSON=()=>JSON.stringify(data,null,2);
- return{prepared,setSubmitted,cancel,expire,buy,sell,orders,fills,positions,exportJSON,storage:"SOLO ESTE NAVEGADOR"};
+ return{prepared,setSubmitted,cancel,expire,buy,sell,orders,fills,positions,pending,restoreJSON,exportJSON,storage:"SOLO ESTE NAVEGADOR"};
 }
 return{create,empty,key:KEY};
 });
