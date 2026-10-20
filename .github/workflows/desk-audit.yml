@@ -1,0 +1,56 @@
+name: Carter Desk — Independent market replay
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/desk-audit.yml']
+permissions:
+  contents: write
+concurrency:
+  group: carter-desk-audit
+  cancel-in-progress: false
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate deterministic replay and monitoring
+        run: node --test tests/desk.test.cjs tests/desk-replay.test.cjs tests/tl-engine.test.cjs
+      - name: Run unchanged 2020-2022, 2023-2024 and 2025-present windows
+        run: node scripts/desk-audit.cjs
+      - name: Validate report has BTC/ETH and no false approval
+        run: |
+          node -e "const fs=require('fs');const s=JSON.parse(fs.readFileSync('data/desk-audit/summary.json'));if(s.records?.length!==2||s.status==='APROBADA')process.exit(1);console.log('Desk audit:',s.status, s.records.map(x=>x.symbol));"
+      - name: Upload raw independent audit artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: desk-2026-audit
+          path: data/desk-audit/summary.json
+      - name: Publish audit data safely
+        run: |
+          set -eu
+          git config user.name 'Carter Auditor'
+          git config user.email '44848888+augustogjmm@users.noreply.github.com'
+          cp data/desk-audit/summary.json "$RUNNER_TEMP/desk-audit.json"
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            if test -f data/desk-audit/summary.json && node -e 'const fs=require("fs"),old=JSON.parse(fs.readFileSync("data/desk-audit/summary.json")),newer=JSON.parse(fs.readFileSync(process.argv[1]));process.exit(Date.parse(old.generatedAt)>=Date.parse(newer.generatedAt)?0:1)' "$RUNNER_TEMP/desk-audit.json"; then
+              echo "Newer audit already published"
+              exit 0
+            fi
+            mkdir -p data/desk-audit
+            cp "$RUNNER_TEMP/desk-audit.json" data/desk-audit/summary.json
+            git add data/desk-audit/summary.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'research: publish fixed-window market-only Carter Desk audit'
+            if git push origin HEAD:main; then exit 0; fi
+            sleep 2
+          done
+          exit 1
