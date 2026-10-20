@@ -38,7 +38,7 @@
    if(profile&&finite(profile.vah)&&profile.vah>entry)highs.push(profile.vah);
    return highs.length?Math.min(...highs):null;
  }
- function decide({bars4h,bars1d,quote,profile,capital=1000,openExposure=0,openRisk=0,now=Date.now(),engine}={}){
+ function decide({bars4h,bars1d,quote,profile,capital=1000,openExposure=0,portfolioExposure=0,openRisk=0,now=Date.now(),engine}={}){
    if(!engine||typeof engine.indicators!=="function")return fail("SIN_DATOS","ENGINE","Motor de indicadores ausente");
    if(!Array.isArray(bars4h)||bars4h.length<210)return fail("SIN_DATOS","BARS_4H","Histórico 4H insuficiente");
    const b=bars4h.at(-1),closeAt=b.t+H4;
@@ -62,7 +62,7 @@
    if(!dailyBull)return fail("ESPERAR","DAILY_TREND","Tendencia diaria no favorece operaciones LONG",{context});
    if(!ind.long[k])return fail(ind.parts?.[k]?.early?"VIGILAR":"ESPERAR","NO_SIGNAL",
       "No existe señal TL-BASE nueva en la última vela 4H",{context});
-   if(!finite(capital)||capital<=0||!finite(openExposure)||!finite(openRisk)||openRisk<0)
+   if(!finite(capital)||capital<=0||!finite(openExposure)||openExposure<0||!finite(portfolioExposure)||portfolioExposure<0||!finite(openRisk)||openRisk<0)
      return fail("NO_OPERABLE","CAPITAL","Capital o riesgo de cartera inválido",{context});
    const qFail=quoteGate(quote,now);
    if(qFail)return fail("NO_OPERABLE","QUOTE",qFail,{context});
@@ -91,7 +91,7 @@
    const rewardPerUnit=(target-entry)-entry*(feeRate+slippageRate)-target*(feeRate+slippageRate);
    const r=rewardPerUnit/riskPerUnit;
    if(!(r>=1.5))return fail("NO_OPERABLE","LOW_R","Recorrido neto a resistencia insuficiente (<1,5R)",{context,r});
-   const riskLimit=Math.max(0,capital*.01-openRisk),exposureLimit=Math.max(0,capital*.20-openExposure);
+   const riskLimit=Math.max(0,capital*.01-openRisk),exposureLimit=Math.max(0,Math.min(capital*.20-openExposure,capital-portfolioExposure));
    const qty=roundDown(Math.min(riskLimit/riskPerUnit,exposureLimit/(entry*(1+feeRate))),f.stepSize);
    const notional=qty*entry;
    if(qty<f.minQty||notional<Math.max(f.minNotional,0)||qty<=0)
