@@ -2,7 +2,7 @@
   "protocol": "CARTER-DESK-REPLAY-1",
   "engine": "TL-BASE-MTF-VP-EXPERIMENTAL",
   "status": "NO_APROBADA_PARA_EJECUCION_REAL",
-  "generatedAt": "2026-10-20T16:37:25.127Z",
+  "generatedAt": "2026-10-20T16:39:22.228Z",
   "source": "Binance Spot 4H + 1D closed candles; public OHLCV only",
   "params": {
     "capital": 1000,
@@ -41,6 +41,12 @@
           "signals": 25,
           "eligible": 0,
           "denied": 25,
+          "vetoCounts": {
+            "DIARIO_INCOMPLETO": 1,
+            "FUERA_ZONA_VOLUMEN": 14,
+            "RELACION_R_INSUFICIENTE": 3,
+            "TENDENCIA_DIARIA": 7
+          },
           "winRate": null,
           "pf": null,
           "returnPct": 0,
@@ -66,6 +72,11 @@
           "signals": 29,
           "eligible": 1,
           "denied": 28,
+          "vetoCounts": {
+            "FUERA_ZONA_VOLUMEN": 22,
+            "RELACION_R_INSUFICIENTE": 5,
+            "TENDENCIA_DIARIA": 1
+          },
           "winRate": 0,
           "pf": 0,
           "returnPct": -0.004137634033904325,
@@ -103,6 +114,11 @@
           "signals": 14,
           "eligible": 0,
           "denied": 14,
+          "vetoCounts": {
+            "FUERA_ZONA_VOLUMEN": 12,
+            "RELACION_R_INSUFICIENTE": 1,
+            "TENDENCIA_DIARIA": 1
+          },
           "winRate": null,
           "pf": null,
           "returnPct": 0,
@@ -129,6 +145,11 @@
         "signals": 14,
         "eligible": 0,
         "denied": 14,
+        "vetoCounts": {
+          "FUERA_ZONA_VOLUMEN": 12,
+          "RELACION_R_INSUFICIENTE": 1,
+          "TENDENCIA_DIARIA": 1
+        },
         "winRate": null,
         "pf": null,
         "returnPct": 0,
@@ -175,6 +196,14 @@
           "signals": 31,
           "eligible": 0,
           "denied": 31,
+          "vetoCounts": {
+            "NO_CONFIRMADA_4H": 2,
+            "DIARIO_INCOMPLETO": 5,
+            "FUERA_ZONA_VOLUMEN": 13,
+            "RELACION_R_INSUFICIENTE": 5,
+            "STOP_DEMASIADO_LEJOS": 1,
+            "TENDENCIA_DIARIA": 5
+          },
           "winRate": null,
           "pf": null,
           "returnPct": 0,
@@ -200,6 +229,11 @@
           "signals": 18,
           "eligible": 0,
           "denied": 18,
+          "vetoCounts": {
+            "FUERA_ZONA_VOLUMEN": 10,
+            "RELACION_R_INSUFICIENTE": 6,
+            "TENDENCIA_DIARIA": 2
+          },
           "winRate": null,
           "pf": null,
           "returnPct": 0,
@@ -225,6 +259,11 @@
           "signals": 12,
           "eligible": 0,
           "denied": 12,
+          "vetoCounts": {
+            "TENDENCIA_DIARIA": 4,
+            "FUERA_ZONA_VOLUMEN": 6,
+            "RELACION_R_INSUFICIENTE": 2
+          },
           "winRate": null,
           "pf": null,
           "returnPct": 0,
@@ -251,6 +290,11 @@
         "signals": 12,
         "eligible": 0,
         "denied": 12,
+        "vetoCounts": {
+          "TENDENCIA_DIARIA": 4,
+          "FUERA_ZONA_VOLUMEN": 6,
+          "RELACION_R_INSUFICIENTE": 2
+        },
         "winRate": null,
         "pf": null,
         "returnPct": 0,
