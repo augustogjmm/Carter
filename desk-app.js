@@ -20,7 +20,7 @@ function portfolioRisk(){const current=state.journal.positions();
  return sum+(o.ticket?.riskUSDT||0)*Math.min(1,o.filledQty/o.qty);
  },0);}
 function notifyIfNew(symbol,key,msg){
- const eventKey=symbol+':'+key+':'+Math.floor(Date.now()/60000);
+ const eventKey=symbol+':'+key;
  if(state.alertKeys.has(eventKey))return;
  state.alertKeys.add(eventKey);message(msg);
 }
@@ -51,6 +51,7 @@ function renderPositions(){
   const stops=op.map(x=>x.ticket?.stop).filter(Number.isFinite),targets=op.map(x=>x.ticket?.target).filter(Number.isFinite);
   const stop=stops.length?Math.max(...stops):null,target=targets.length?Math.min(...targets):null;
   const warning=fresh&&stop&&q.bid<=stop?'INVALIDACIÓN / REVISAR':fresh&&target&&q.bid>=target?'OBJETIVO / REVISAR':'';
+  if(!warning){for(const key of state.alertKeys)if(key.startsWith(p.symbol+':'))state.alertKeys.delete(key);}
   if(warning)notifyIfNew(p.symbol,warning,'ATENCIÓN '+p.symbol+': '+warning+'; comprobar mercado y ejecución');
   const box=document.createElement('article');box.className='position';
   const head=document.createElement('div');head.className='head';const title=document.createElement('strong');title.textContent=p.symbol;
