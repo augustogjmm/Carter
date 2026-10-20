@@ -26,7 +26,7 @@ function normalize(book,day,info,depth,symbol,now=Date.now()){
     (!x.permissionSets?.length||x.permissionSets.some(v=>v.includes('SPOT'))),
    tickSize,stepSize,minQty,minNotional,maxQty,status:x.status,baseAsset:x.baseAsset,quoteAsset:x.quoteAsset},
   source:'Binance Spot REST · lectura directa desde navegador; NO son órdenes'};
- if(!(bid>0&&ask>=bid)||![q.quoteVolume24h,q.depthAskUSDT,q.depthBidUSDT,tickSize,stepSize,minQty,minNotional,maxQty].every(Number.isFinite)||
+ if(!(bid>0&&ask>=bid&&q.depthAskUSDT>0&&q.depthBidUSDT>0)||![q.quoteVolume24h,q.depthAskUSDT,q.depthBidUSDT,tickSize,stepSize,minQty,minNotional,maxQty].every(Number.isFinite)||
     !(tickSize>0&&stepSize>0&&minQty>0&&minNotional>0))
   throw Error('Mercado sin filtros o libro de órdenes verificable');
  return q;
