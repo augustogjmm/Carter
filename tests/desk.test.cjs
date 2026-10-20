@@ -94,3 +94,28 @@ test('unfilled prepared order expires and cannot later be confirmed',()=>{
  a.equal(j.orders()[0].status,'EXPIRED');
  a.throws(()=>j.buy({orderId:id,quantity:1,price:10,fee:0}),/cerrada/);
 });
+
+test('pending orders reserve budget, duplicate signals cannot silently over-allocate',()=>{
+ let raw=null,store={getItem:()=>raw,setItem:(k,v)=>{raw=v;}},j=J.create(store);
+ const t=Date.now(),ticket={type:'LIMIT',quantity:2,entry:100,notional:200,riskUSDT:9,
+  validFrom:t-100,expiresAt:t+60000,signalAt:t-4000,strategy:'TEST',stop:95};
+ const id=j.prepared(ticket,'BTCUSDT');
+ a.equal(j.pending().length,1);
+ a(Math.abs(j.pending()[0].risk-9)<1e-10);
+ a(j.pending()[0].notional>200);
+ a.throws(()=>j.prepared(ticket,'BTCUSDT'),/ya tiene una orden/);
+ j.buy({orderId:id,quantity:1,price:100,fee:.1});
+ a.equal(j.pending()[0].remaining,1);
+ j.cancel(id);
+ a.equal(j.pending().length,0);
+ const backup=j.exportJSON(),k=J.create({getItem:()=>null,setItem:()=>{}});
+ const restored=k.restoreJSON(backup);
+ a.equal(restored.fills,1);
+ a.equal(k.positions()[0].quantity,1);
+ a.throws(()=>k.restoreJSON('{not JSON'),/interpretar/);
+ a.equal(k.positions()[0].quantity,1);
+});
+test('portfolio exposure gates include reserved cash and reserved risk',()=>{
+ a.equal(D.decide({...args(),portfolioExposure:995}).status,'NO_OPERABLE');
+ a.equal(D.decide({...args(),openRisk:9.99}).status,'NO_OPERABLE');
+});
