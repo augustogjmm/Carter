@@ -222,9 +222,12 @@ async function loadDeskAudit(){
    const p=document.createElement('p');p.className='support';
    const test=record.windows?.TEST,verdict=record.verdict;
    p.textContent=record.symbol+': '+(test?
-    test.trades+' operaciones OOS · PF '+fmt(test.pf,3)+' · retorno '+fmt(test.returnPct*100,2)+'% · DD '+fmt(test.maxDrawdown*100,2)+'% · '+verdict?.verdict:
+    test.signals+' señales 4H · '+test.eligible+' entradas elegibles · '+test.trades+' cierres · PF '+fmt(test.pf,3)+' · retorno '+fmt(test.returnPct*100,2)+'% · '+verdict?.verdict:
     'SIN EVIDENCIA: '+String(record.error||record.status));
    container.append(p);
+   if(test?.vetoCounts){const line=document.createElement('p');line.className='micro';
+    line.textContent='Filtros que impidieron operar: '+Object.entries(test.vetoCounts).sort((a,b)=>b[1]-a[1]).map(([name,n])=>name.replaceAll('_',' ')+' ×'+n).join(' · ');
+    container.append(line);}
   }
   const p=document.createElement('p');p.className='micro';
   p.textContent='Datos '+utc(Date.parse(report.generatedAt))+' · La reconstrucción carece de profundidad histórica y ejecución real.';
