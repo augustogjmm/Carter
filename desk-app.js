@@ -1,12 +1,12 @@
 /* Carter Trading Desk — real-data interface. No exchange order submission. */
 (function(){
 "use strict";
-const E=window.TLEngine,D=window.TLData,G=window.CarterDeskEngine,J=window.CarterJournal,M=window.CarterPositionMonitor,S=window.CarterScenario,P=window.CarterPaper;
+const E=window.TLEngine,D=window.TLData,G=window.CarterDeskEngine,J=window.CarterJournal,M=window.CarterPositionMonitor,S=window.CarterScenario,P=window.CarterPaper,C=window.CarterChart;
 const $=id=>document.getElementById(id),fmt=(n,p=2)=>Number.isFinite(n)?n.toLocaleString('en-US',{maximumFractionDigits:p}):'—';
 const price=n=>fmt(n,Number.isFinite(n)&&n<1?7:n<100?4:2);
 const utc=n=>Number.isFinite(n)?new Date(n).toISOString().slice(0,16).replace('T',' ')+' UTC':'—';
 const DAY=86400000,H4=14400000;
-const state={symbol:'BTCUSDT',bars:[],daily:[],ind:null,profile:null,decision:null,quote:null,rows:[],candidates:[],seq:0,quotes:new Map(),monitors:new Map(),journal:null,lastPaperAt:0,alertKeys:new Set()};
+const state={symbol:'BTCUSDT',bars:[],daily:[],ind:null,profile:null,decision:null,quote:null,rows:[],candidates:[],seq:0,quotes:new Map(),monitors:new Map(),journal:null,lastPaperAt:0,alertKeys:new Set(),scenario:null,chartModel:null,zoom:96};
 const set=(id,v)=>{const el=$(id);if(el)el.textContent=String(v);};
 function message(msg){set('message',msg);}
 function holder(el,content){el.replaceChildren();if(content){const p=document.createElement('p');p.className='placeholder';p.textContent=content;el.append(p);}}
@@ -57,7 +57,7 @@ function renderJournal(){
  for(const o of os){opt=document.createElement('option');opt.value=o.id;opt.textContent=o.symbol+' · '+o.status+' · '+fmt(o.qty-o.filledQty,6)+' pendientes';sel.append(opt);}
  const positions=state.journal.positions().filter(x=>x.quantity>1e-10),sell=$('sellSymbol');sell.replaceChildren();opt=document.createElement('option');opt.value='';opt.textContent=positions.length?'Elegir posición…':'Sin posiciones';sell.append(opt);
  for(const p of positions){opt=document.createElement('option');opt.value=p.symbol;opt.textContent=p.symbol+' · '+fmt(p.quantity,8);sell.append(opt);}
- set('nPositions',positions.length);renderPositions();
+ set('nPositions',positions.length);renderPositions();if(state.bars.length&&state.ind)drawChart();
 }
 async function getQuote(symbol){
  const r=await fetch('/api/desk-quote?symbol='+encodeURIComponent(symbol),{cache:'no-store'});
@@ -153,33 +153,78 @@ function renderPositions(){
   const pnl=document.createElement('div');pnl.className='pnl '+(unreal>=0?'profit':'loss');pnl.textContent=Number.isFinite(unreal)?(unreal>=0?'+':'')+fmt(unreal)+' USDT':'PnL sin cotización';box.append(pnl);container.append(box);
  }
 }
+function recordedHolding(symbol){
+ const p=state.journal?.positions().find(x=>x.symbol===symbol&&x.quantity>0);
+ if(!p)return null;
+ const orders=state.journal.orders().filter(x=>x.symbol===symbol&&x.filledQty>0);
+ const stops=orders.map(x=>x.ticket?.stop).filter(Number.isFinite),targets=orders.map(x=>x.ticket?.target).filter(Number.isFinite);
+ return{...p,stop:stops.length?Math.max(...stops):null,target:targets.length?Math.min(...targets):null};
+}
+function renderOperatingPlan(model){
+ const ticket=state.decision?.status==='CANDIDATO'?state.decision.ticket:null,
+  candidate=state.scenario?.status==='ESCENARIO_CONDICIONAL'?state.scenario:null,
+  holding=recordedHolding(state.symbol),hasPlan=!!(ticket||candidate||holding);
+ set('setupName','TL-BASE · 4H (EMA / momentum / ADX)');
+ set('setupVerdict',holding?'EN POSICIÓN · MANUAL':ticket?'TICKET EXPERIMENTAL':candidate?'ESCENARIO · NO COMPRAR':'NO OPERAR');
+ const why=holding?'Se gestiona una tenencia registrada manualmente; Carter no conoce las órdenes reales del exchange.':
+  ticket?'Disparador TL-BASE confirmado; ticket hipotético sujeto a recotización y riesgo. Rentabilidad no demostrada.':
+  candidate?'No existe orden habilitada. El nivel de gatillo requiere un NUEVO cierre confirmado 4H y reevaluación completa.':
+  state.decision?.reason||'No hay análisis disponible para este activo.';
+ set('setupSummary',why);
+ const levels=holding?{entry:holding.avgPrice,stop:holding.stop,target:holding.target,r:null}:
+  ticket?{entry:ticket.entry,stop:ticket.stop,target:ticket.target,r:ticket.netR}:
+  candidate?{entry:candidate.trigger,stop:candidate.stop,target:candidate.target,r:candidate.netR}:{};
+ set('opEntry',price(levels.entry));set('opStop',price(levels.stop));set('opTarget',price(levels.target));
+ set('opReward',Number.isFinite(levels.r)?fmt(levels.r,2)+' R'+(ticket?' neto':' bruto'):'NO CALCULABLE');
+ set('opEntryNote',holding?'Costo medio confirmado por usuario':ticket?'Entrada límite teórica · no enviada':
+  candidate?'Superar este nivel AL CIERRE de próxima 4H':'Sin entrada validada');
+ set('opStopNote',holding?'Nivel de referencia registrado':ticket?'Stop técnico proyectado':
+  candidate?'Solo condicional, sin orden':'No determinado');
+ set('opTargetNote',holding?'Objetivo de referencia registrado':ticket?'Resistencia medible, no garantizada':
+  candidate?'Resistencia tentativa, no TP habilitado':'Sin salida técnica validada');
+ set('opRewardNote',ticket?'Supuestos de comisiones y deslizamiento':
+  holding?'Consultar seguimiento de PnL':'Un R bruto no incorpora ejecución ni comisiones');
+ const box=$('setupChecks');box.replaceChildren();
+ const s=model?.setup,k=state.bars.length-1,part=state.ind?.parts?.[k],
+       adx=state.ind?.adx?.[k],prev=state.ind?.adx?.[k-1],
+       daily=state.decision?.context?.dailyBull;
+ const rows=[
+  ['1D · contexto comprador',typeof daily==='boolean'?daily:null],
+  ['4H · EMA10 por encima EMA55',part?.valid?!!part.trend:null],
+  ['4H · giro de momentum negativo',part?.valid?!!part.turn:null],
+  ['ADX · caída desde al menos 23',part?.valid?!!part.weakness:null],
+  ['Squeeze · '+(state.ind?.squeeze?.[k]||'—')+' (informativo)',null],
+  ['Volumen · POC / VAH / VAL visibles',model?.profile?.bins?.length>0?true:null],
+  ['Señal nueva TL-BASE',state.ind?.valid?.[k]===true?!!state.ind?.long?.[k]:null],
+  ['Ejecución · liquidez y riesgo',ticket?true:state.decision?.status==='SIN_DATOS'?null:false]
+ ];
+ for(const [name,value] of rows){
+  const line=document.createElement('span');line.className='setup-check '+(value===true?'pass':value===false?'fail':'unknown');
+  line.textContent=name;box.append(line);
+ }
+ set('setupMethod',holding?'Gestión de posición: las líneas de costo y salida provienen solo de tus registros manuales.':
+ ticket?'ENTRADA SOLO COMO HIPÓTESIS NO VALIDADA · el ticket y los niveles vencen con su señal.':
+ candidate?'GATILLO CONDICIONAL: una vela futura debe cerrar por encima; el sistema NO autoriza comprar al tocar la línea.':
+ 'NO OPERAR: sin disparador confirmado y/o filtros satisfechos. No se dibujan órdenes inexistentes.');
+ if(!hasPlan){for(const id of ['opEntry','opStop','opTarget'])set(id,'—');}
+}
 function drawChart(){
- const cv=$('deskChart');if(!cv||!state.bars.length)return;
- const ratio=Math.min(2,window.devicePixelRatio||1),w=cv.clientWidth||600,h=cv.clientHeight||315;
- cv.width=Math.round(w*ratio);cv.height=Math.round(h*ratio);
- const g=cv.getContext('2d');g.scale(ratio,ratio);g.fillStyle='#091725';g.fillRect(0,0,w,h);
- const bars=state.bars.slice(-95),ind=state.ind,start=state.bars.length-bars.length;
- const right=72,left=16,top=26,bottom=25,chartW=Math.max(20,w-left-right),chartH=h-top-bottom;
- const hi=Math.max(...bars.map(x=>x.h)),lo=Math.min(...bars.map(x=>x.l)),range=hi-lo||1;
- const y=v=>top+(hi+range*.08-v)/(range*1.16)*chartH,x=i=>left+(i+.5)*chartW/bars.length;
- g.lineWidth=1;g.strokeStyle='#1f344b';g.font='10px system-ui';g.fillStyle='#859db7';
- for(let i=0;i<5;i++){const value=lo+range*i/4;g.beginPath();g.moveTo(left,y(value));g.lineTo(w-right,y(value));g.stroke();g.fillText(price(value),w-right+5,y(value)+3);}
- const candleW=Math.max(1.5,chartW/bars.length*.6);
- bars.forEach((b,i)=>{const color=b.c>=b.o?'#4bd4b3':'#f17e90';g.strokeStyle=color;g.fillStyle=color;g.beginPath();g.moveTo(x(i),y(b.h));g.lineTo(x(i),y(b.l));g.stroke();
- g.fillRect(x(i)-candleW/2,Math.min(y(b.o),y(b.c)),candleW,Math.max(1,Math.abs(y(b.c)-y(b.o))));});
- for(const [array,color] of [[ind.ema10,'#61d6ed'],[ind.ema55,'#e9bc75']]){g.beginPath();g.strokeStyle=color;g.lineWidth=1.5;
- bars.forEach((b,i)=>{const v=array[start+i];if(!Number.isFinite(v))return;i?g.lineTo(x(i),y(v)):g.moveTo(x(i),y(v));});g.stroke();}
- if(state.profile){
- for(const [value,color,label] of [[state.profile.poc,'#4bd4b3','POC'],[state.profile.vah,'#bd9d77','VAH'],[state.profile.val,'#bd9d77','VAL']]){
- if(value<lo-range*.08||value>hi+range*.08)continue;
- g.strokeStyle=color;g.setLineDash([4,4]);g.beginPath();g.moveTo(left,y(value));g.lineTo(w-right,y(value));g.stroke();g.setLineDash([]);g.fillStyle=color;g.fillText(label,left+5,y(value)-4);
- }}
- if(state.decision?.ticket){
- const t=state.decision.ticket;
- for(const [v,color,label] of [[t.entry,'#75e2c1','ENTRADA'],[t.stop,'#ef8496','STOP'],[t.target,'#f0bd79','OBJETIVO']]){
- if(v<lo-range*.08||v>hi+range*.08)continue;g.strokeStyle=color;g.setLineDash([6,5]);g.beginPath();g.moveTo(left,y(v));g.lineTo(w-right,y(v));g.stroke();g.setLineDash([]);g.fillStyle=color;g.fillText(label,left+8,y(v)-5);
- }}
- g.fillStyle='#98b0c9';g.fillText('4H · Binance Spot · EMA10 / EMA55 · perfil OHLCV estimado',left+3,14);
+ if(!state.bars.length||!state.ind||!C)return;
+ try{
+  const model=C.build({bars:state.bars,ind:state.ind,engine:E,decision:state.decision,
+   scenario:state.scenario,quote:state.quote,position:recordedHolding(state.symbol),lookback:state.zoom});
+  state.chartModel=model;
+  if(!C.render($('deskChart'),model))throw Error('Canvas no disponible en este navegador');
+  renderOperatingPlan(model);
+  set('chartLabel',model.lookback+' velas 4H cerradas · perfil visible ESTIMADO '+model.profile.bins.length+' niveles');
+  set('chartFootnote','VP visible = distribución aproximada del volumen OHLCV en el rango de '+model.lookback+
+   ' velas; no es volumen ejecutado por precio. POC '+price(model.profile.poc)+
+   ' · VAH '+price(model.profile.vah)+' · VAL '+price(model.profile.val)+
+   '. VP de filtro operativo distinto: 360 velas 4H. S sobre una vela = señal técnica histórica, NO una compra.');
+ }catch(e){
+  state.chartModel=null;renderOperatingPlan(null);
+  set('chartLabel','SIN GRÁFICO VERIFICABLE · '+String(e.message||e));
+ }
 }
 function showDecision(r){
  state.decision=r;const banner=$('signalBanner');banner.className='signal-banner';
@@ -199,7 +244,8 @@ async function load(input){
  const symbol=String(input||'').toUpperCase().trim();
  if(!validSymbol(symbol)){message('Símbolo USDT inválido');return;}
  state.symbol=symbol;set('assetTitle',symbol);$('symbolInput').value=symbol;
- const seq=++state.seq;state.bars=[];state.daily=[];state.ind=null;state.profile=null;state.decision=null;state.quote=null;
+ const seq=++state.seq;state.bars=[];state.daily=[];state.ind=null;state.profile=null;state.decision=null;state.quote=null;state.scenario=null;state.chartModel=null;
+ renderOperatingPlan(null);
  set('decision','CARGANDO…');set('decisionWhy','Descargando velas 4H y 1D independientes, luego cotización y reglas del exchange');
  set('assetSource','Binance spot · esperando validación');set('dailyTrend','—');set('momentum','—');set('adx','—');set('volume','—');
  renderScenario({status:'VERIFICANDO',reason:'Recuperando últimos cierres confirmados'});
@@ -222,12 +268,13 @@ async function load(input){
   set('dailyTrend',result.context?.dailyBull?'ALCISTA CONFIRMADA':result.context?'NO ALCISTA':'NO VERIFICADA');
   set('momentum',fmt(state.ind.momentum[k],4));set('adx',fmt(state.ind.adx[k],1));
   set('volume',state.profile?'POC '+price(state.profile.poc)+' · VAH '+price(state.profile.vah):'NO DISPONIBLE');
-  showDecision(result);renderScenario(S.project({bars4h:bars,bars1d:d1.bars,engine:E,profile:state.profile,quote:q}));drawChart();
+  showDecision(result);state.scenario=S.project({bars4h:bars,bars1d:d1.bars,engine:E,profile:state.profile,quote:q});renderScenario(state.scenario);drawChart();
  }catch(e){
   if(seq!==state.seq)return;
   set('dataHealth','SIN DATOS');set('assetSource','Falló validación: '+String(e.message||e));
   showDecision({status:'SIN_DATOS',reason:'No se habilita entrada: '+String(e.message||e)});
   renderScenario({status:'SIN_DATOS',reason:'Sin proyección fiable: '+String(e.message||e)});
+  state.scenario=null;renderOperatingPlan(null);
   message('Error verificable en '+symbol+': '+String(e.message||e));
  }
 }
@@ -331,6 +378,18 @@ function ticketText(){
  ].join('\n');
 }
 function attach(){
+ document.querySelectorAll('[data-zoom]').forEach(button=>{
+  button.addEventListener('click',()=>{
+   const value=Number(button.getAttribute('data-zoom'));
+   if(![48,96,168].includes(value))return;
+   state.zoom=value;
+   document.querySelectorAll('[data-zoom]').forEach(b=>{
+    const active=Number(b.getAttribute('data-zoom'))===value;
+    b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));
+   });
+   if(state.bars.length)drawChart();
+  });
+ });
  $('enableNotifications').onclick=async()=>{if(!('Notification' in window)){message('Este navegador no admite notificaciones');return;}try{const permission=await Notification.requestPermission();message(permission==='granted'?'Avisos habilitados mientras esta página esté abierta.':'Permiso no otorgado.');}catch(e){message('Avisos: '+e.message);}};
  const clock=()=>set('deskClock',utc(Date.now()));clock();setInterval(clock,30000);
  $('analyze').onclick=()=>load($('symbolInput').value);$('symbolInput').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();load(e.target.value);}};
@@ -397,7 +456,7 @@ function attach(){
  document.addEventListener('visibilitychange',()=>{if(!document.hidden){refreshPositionQuotes();loadRadar();load(state.symbol);loadPaper();}});
 }
 function init(){
- if(!E||!D||!G||!J||!M||!S||!P){set('dataHealth','ERROR MOTOR');message('Faltan módulos de cálculo');return;}
+ if(!E||!D||!G||!J||!M||!S||!P||!C){set('dataHealth','ERROR MOTOR');message('Faltan módulos de cálculo');return;}
  try{state.journal=J.create(localStorage);}catch(e){set('dataHealth','SIN ALMACENAMIENTO');message('Bitácora local indisponible: '+e.message);return;}
  attach();renderJournal();loadRadar();loadDeskAudit().then(loadDeskVariants);load('BTCUSDT');refreshPositionQuotes();loadPaper();
  try{window.CarterCloudUI?.mount({journal:state.journal,onRestore:()=>{renderJournal();refreshPositionQuotes();load(state.symbol);}});}

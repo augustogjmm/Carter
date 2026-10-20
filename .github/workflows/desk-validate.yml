@@ -2,9 +2,9 @@ name: Carter Desk — CI
 on:
   push:
     branches: [main]
-    paths: ['desk-*.js','desk.html','desk.css','api/desk-quote.js','tests/desk*.cjs','tests/vercel-ignore.test.cjs','scripts/desk-audit.cjs','scripts/vercel-ignore.cjs','vercel.json','.github/workflows/desk-validate.yml']
+    paths: ['desk-*.js','desk.html','desk.css','api/desk-quote.js','tests/desk*.cjs','tests/vercel-ignore.test.cjs','scripts/desk-audit.cjs','scripts/vercel-ignore.cjs','vercel.json','tests/desk-chart.test.cjs','.github/workflows/desk-validate.yml']
   pull_request:
-    paths: ['desk-*.js','desk.html','desk.css','api/desk-quote.js','tests/desk*.cjs','tests/vercel-ignore.test.cjs','scripts/desk-audit.cjs','scripts/vercel-ignore.cjs','vercel.json','.github/workflows/desk-validate.yml']
+    paths: ['desk-*.js','desk.html','desk.css','api/desk-quote.js','tests/desk*.cjs','tests/vercel-ignore.test.cjs','scripts/desk-audit.cjs','scripts/vercel-ignore.cjs','vercel.json','tests/desk-chart.test.cjs','.github/workflows/desk-validate.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -17,7 +17,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --test tests/desk.test.cjs tests/desk-replay.test.cjs tests/desk-visibility.test.cjs tests/desk-dom.test.cjs tests/desk-cloud.test.cjs tests/vercel-ignore.test.cjs tests/tl-engine.test.cjs
+      - run: node --test tests/desk.test.cjs tests/desk-replay.test.cjs tests/desk-visibility.test.cjs tests/desk-dom.test.cjs tests/desk-cloud.test.cjs tests/desk-chart.test.cjs tests/vercel-ignore.test.cjs tests/tl-engine.test.cjs
       - run: |
           node --check desk-engine.js
           node --check desk-ledger.js
@@ -26,6 +26,7 @@ jobs:
           node --check desk-monitor.js
           node --check desk-scenario.js
           node --check desk-paper.js
+          node --check desk-chart.js
           node --check desk-cloud.js
           node --check desk-cloud-ui.js
           node --check scripts/desk-audit.cjs
