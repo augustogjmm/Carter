@@ -26,3 +26,14 @@ test('browser fallback quote requires live Binance order book and lot rules',()=
  assert.throws(()=>Spot.normalize(book,day,info,{asks:[],bids:[]},symbol,now),/verificable/);
  assert.throws(()=>Spot.normalize({...book,bidPrice:'105'},day,info,depth,symbol,now),/verificable/);
 });
+
+test('cloudflare charts keep OHLCV independent from current exchange execution',()=>{
+ const fs=require('node:fs');
+ const app=fs.readFileSync(require.resolve('../desk-app.js'),'utf8');
+ const script=fs.readFileSync(require.resolve('../scripts/market-snapshots.cjs'),'utf8');
+ assert.match(app,/Promise\.allSettled\(\[/);
+ assert.match(app,/qResponse\.status==='fulfilled'\?qResponse\.value:null/);
+ assert.match(app,/NO OPERAR: datos de velas confirmados pero sin bid\/ask/);
+ assert.match(app,/renderScenario\(state\.scenario\);drawChart\(\)/);
+ assert.match(script,/\['1d',960\]/);
+});
