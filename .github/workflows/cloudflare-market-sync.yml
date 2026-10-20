@@ -1,4 +1,5 @@
 name: Carter — One 4H market publication (Cloudflare Free)
+# Rebuild full 960-day 1D snapshot coverage to make Cloudflare chart independent of Binance 451
 on:
   schedule:
     - cron: '19 */4 * * *'
