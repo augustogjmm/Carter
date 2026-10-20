@@ -27,7 +27,7 @@ async function main(){
  let checked=0;
  for(let i=0;i<items.length;i++){
   const row=snap.items[i],out=items[i];
-  if(row.status!=='signal'||!row.signal){out.status=row.status==='watch'?'VIGILAR':row.status==='error'?'SIN_DATOS':'ESPERAR';continue;}
+  if(row.status!=='signal'||!row.signal){out.status=({watch:'VIGILAR',error:'SIN_DATOS',excluded:'EXCLUIDO',missing:'SIN_PAR',position:'POSICION_SIMULADA',bear:'DETERIORO'}[row.status]||'ESPERAR');continue;}
   try{
    const symbol=row.symbol+'USDT';
    const [h4,daily,q]=await Promise.all([
