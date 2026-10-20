@@ -9,7 +9,7 @@ const json=(status,data,ttl='no-store')=>new Response(JSON.stringify(data),{
  status,headers:{'Content-Type':'application/json; charset=utf-8','Cache-Control':ttl,
  'X-Content-Type-Options':'nosniff'}
 });
-async function request(url,timeout=10000){
+async function fetchJson(url,timeout=10000){
  const ac=new AbortController(),timer=setTimeout(()=>ac.abort(),timeout);
  try{
   const r=await fetch(url,{headers:{accept:'application/json'},signal:ac.signal});
@@ -27,7 +27,7 @@ export async function onRequest({request}){
   query.get('type')!=='4hour'||!/^\d{10}$/.test(query.get('startAt')||'')||
   !/^\d{10}$/.test(query.get('endAt')||''))return json(400,{error:'Consulta KuCoin inválida'});
   try{
-   const result=await request('https://api.kucoin.com/api/v1/market/candles?'+query,9500);
+   const result=await fetchJson('https://api.kucoin.com/api/v1/market/candles?'+query,9500);
    if(result?.code!=='200000'||!Array.isArray(result.data))throw Error('KuCoin no devolvió velas');
    return json(200,result,'public, s-maxage=30');
   }catch(e){return json(503,{error:'KuCoin no disponible: '+e.message});}
@@ -46,7 +46,7 @@ export async function onRequest({request}){
  let latest;
  for(const host of hosts){
   try{
-   const result=await request(host+path+'?'+query,9500);
+   const result=await fetchJson(host+path+'?'+query,9500);
    if(path.endsWith('klines')&&!Array.isArray(result))throw Error('OHLCV incompleto');
    if(path.endsWith('exchangeInfo')&&!Array.isArray(result?.symbols))throw Error('Catálogo incompleto');
    if(path.startsWith('/v5/')&&result?.retCode!==0)throw Error('Bybit no disponible');
