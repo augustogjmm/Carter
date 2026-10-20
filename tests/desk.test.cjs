@@ -24,7 +24,7 @@ test('daily last closed known_at <= 4h signal close',()=>{
 test('technically executable ticket includes all economics and source label',()=>{
  const r=D.decide(args());a.equal(r.status,'CANDIDATO',r.reason);
  a.equal(r.code,'TECHNICALLY_EXECUTABLE');
- a(r.ticket.entry>=q.ask);a(r.ticket.stop<r.ticket.entry);
+ a(r.ticket.entry>=q.ask);a(r.ticket.minimum<=r.ticket.entry);a(r.ticket.stop<r.ticket.entry);
  a(r.ticket.target>r.ticket.entry);
  a(r.ticket.netR>=1.5);a(r.ticket.riskPct<=.01+1e-10);
  a(r.ticket.notional<=200.001);
