@@ -85,10 +85,14 @@ function renderScenario(value){
  set('scenarioStatus',value.status);
  set('scenarioReason',value.reason);
  const exists=value.status==='ESCENARIO_CONDICIONAL'&&Number.isFinite(value.trigger);
- $('scenarioPrices').hidden=!exists;
- if(!exists){set('scenarioConditions',value.reason+' · No habilita compra.');return;}
+ if(!exists){
+  $('scenarioPrices').hidden=true;
+  for(const id of ['scenarioTrigger','scenarioStop','scenarioTarget','scenarioR'])set(id,'—');
+  set('scenarioConditions',value.reason+' · No habilita compra.');return;
+ }
  set('scenarioTrigger',price(value.trigger));set('scenarioStop',price(value.stop));
  set('scenarioTarget',price(value.target));set('scenarioR',Number.isFinite(value.netR)?fmt(value.netR,2)+' R bruto':'SIN NIVEL');
+ $('scenarioPrices').hidden=false;
  set('scenarioConditions',value.conditions.join(' · ')+'. '+value.triggerRule+
    (value.riskWarning?' ADVERTENCIA: '+value.riskWarning:''));
 }
