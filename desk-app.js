@@ -209,6 +209,31 @@ function showCandidates(){
  if(!list.length)holder(watch,'Sin setups en vigilancia según el último escaneo');
  for(const x of list){const row=document.createElement('div');row.className='watch-item';const label=document.createElement('b');label.textContent=x.symbol;row.append(label,btn(x.status==='signal'?'Validar ↗':'Revisar ↗',x.symbol+'USDT'));watch.append(row);}
 }
+async function loadDeskAudit(){
+ try{
+  const response=await fetch('/data/desk-audit/summary.json?'+Date.now(),{cache:'no-store'});
+  if(!response.ok)throw Error('Informe histórico no publicado');
+  const report=await response.json();
+  if(report.protocol!=='CARTER-DESK-REPLAY-1'||!Array.isArray(report.records)||report.records.length!==2)
+   throw Error('Formato del informe no verificable');
+  set('deskAuditStatus',report.status==='AUDITORIA_INCOMPLETA_DATOS'?'SIN DATOS':'NO APROBADA');
+  const container=$('deskAuditDetails');container.replaceChildren();
+  for(const record of report.records){
+   const p=document.createElement('p');p.className='support';
+   const test=record.windows?.TEST,verdict=record.verdict;
+   p.textContent=record.symbol+': '+(test?
+    test.trades+' operaciones OOS · PF '+fmt(test.pf,3)+' · retorno '+fmt(test.returnPct*100,2)+'% · DD '+fmt(test.maxDrawdown*100,2)+'% · '+verdict?.verdict:
+    'SIN EVIDENCIA: '+String(record.error||record.status));
+   container.append(p);
+  }
+  const p=document.createElement('p');p.className='micro';
+  p.textContent='Datos '+utc(Date.parse(report.generatedAt))+' · La reconstrucción carece de profundidad histórica y ejecución real.';
+  container.append(p);
+ }catch(e){
+  set('deskAuditStatus','SIN EVIDENCIA');
+  holder($('deskAuditDetails'),'No se pudo consultar una auditoría verificada: '+e.message);
+ }
+}
 async function loadRadar(){
  try{
   const r=await fetch('/data/tl-radar.json?'+Date.now(),{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);
@@ -308,7 +333,7 @@ function attach(){
 function init(){
  if(!E||!D||!G||!J||!M){set('dataHealth','ERROR MOTOR');message('Faltan módulos de cálculo');return;}
  try{state.journal=J.create(localStorage);}catch(e){set('dataHealth','SIN ALMACENAMIENTO');message('Bitácora local indisponible: '+e.message);return;}
- attach();renderJournal();loadRadar();load('BTCUSDT');refreshPositionQuotes();
+ attach();renderJournal();loadRadar();loadDeskAudit();load('BTCUSDT');refreshPositionQuotes();
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
