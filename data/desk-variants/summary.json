@@ -1,0 +1,705 @@
+{
+  "protocol": "DESK-PROFILE-RESEARCH-1",
+  "generatedAt": "2026-10-20T16:49:18.413Z",
+  "model": "TL-BASE-MTF-VP-CARTER",
+  "status": "NINGUNA_VARIANTE_CUMPLE_CONTROLES",
+  "knownTestDisclosure": "Los resultados 2025–2026 de la estrategia base ya fueron observados antes de este experimento. NO constituyen OOS ciega para elegir variantes.",
+  "guardrails": [
+    "Solo usa 2020–2022 entrenamiento y 2023–2024 validación para esta matriz",
+    "No cambia el radar ni los tickets en producción",
+    "No compara fillability L2: datos históricos solo OHLCV",
+    "Una variante que da más operaciones no equivale a ventaja económica comprobada"
+  ],
+  "windows": {
+    "TRAIN": {
+      "from": 1577836800000,
+      "to": 1672531200000
+    },
+    "VALIDATION": {
+      "from": 1672531200000,
+      "to": 1735689600000
+    }
+  },
+  "records": [
+    {
+      "id": "120B-strict",
+      "profileBars": 120,
+      "volumePolicy": "strict",
+      "results": {
+        "BTCUSDT": {
+          "TRAIN": {
+            "trades": 0,
+            "signals": 25,
+            "eligible": 0,
+            "denied": 25,
+            "pf": null,
+            "returnPct": 0,
+            "maxDrawdown": 0,
+            "causal": true,
+            "vetoCounts": {
+              "DIARIO_INCOMPLETO": 1,
+              "RELACION_R_INSUFICIENTE": 10,
+              "FUERA_ZONA_VOLUMEN": 7,
+              "TENDENCIA_DIARIA": 7
+            }
+          },
+          "VALIDATION": {
+            "trades": 1,
+            "signals": 29,
+            "eligible": 1,
+            "denied": 28,
+            "pf": 0,
+            "returnPct": -0.004137634033904325,
+            "maxDrawdown": 0.0071214631707587185,
+            "causal": true,
+            "vetoCounts": {
+              "RELACION_R_INSUFICIENTE": 19,
+              "FUERA_ZONA_VOLUMEN": 7,
+              "TENDENCIA_DIARIA": 1,
+              "STOP_DEMASIADO_LEJOS": 1
+            }
+          }
+        },
+        "ETHUSDT": {
+          "TRAIN": {
+            "trades": 0,
+            "signals": 31,
+            "eligible": 0,
+            "denied": 31,
+            "pf": null,
+            "returnPct": 0,
+            "maxDrawdown": 0,
+            "causal": true,
+            "vetoCounts": {
+              "DIARIO_INCOMPLETO": 7,
+              "RELACION_R_INSUFICIENTE": 11,
+              "FUERA_ZONA_VOLUMEN": 6,
+              "STOP_DEMASIADO_LEJOS": 2,
+              "TENDENCIA_DIARIA": 5
+            }
+          },
+          "VALIDATION": {
+            "trades": 0,
+            "signals": 18,
+            "eligible": 0,
+            "denied": 18,
+            "pf": null,
+            "returnPct": 0,
+            "maxDrawdown": 0,
+            "causal": true,
+            "vetoCounts": {
+              "RELACION_R_INSUFICIENTE": 13,
+              "FUERA_ZONA_VOLUMEN": 3,
+              "TENDENCIA_DIARIA": 2
+            }
+          }
+        }
+      },
+      "qualifiedOnPastData": false
+    },
+    {
+      "id": "120B-buffer",
+      "profileBars": 120,
+      "volumePolicy": "buffer",
+      "results": {
+        "BTCUSDT": {
+          "TRAIN": {
+            "trades": 0,
+            "signals": 25,
+            "eligible": 0,
+            "denied": 25,
+            "pf": null,
+            "returnPct": 0,
+            "maxDrawdown": 0,
+            "causal": true,
+            "vetoCounts": {
+              "DIARIO_INCOMPLETO": 1,
+              "RELACION_R_INSUFICIENTE": 14,
+              "FUERA_ZONA_VOLUMEN": 2,
+              "STOP_DEMASIADO_LEJOS": 1,
+              "TENDENCIA_DIARIA": 7
+            }
+          },
+          "VALIDATION": {
+            "trades": 1,
+            "signals": 29,
+            "eligible": 1,
+            "denied": 28,
+            "pf": 0,
+            "returnPct": -0.004137634033904325,
+            "maxDrawdown": 0.0071214631707587185,
+            "causal": true,
+            "vetoCounts": {
+              "RELACION_R_INSUFICIENTE": 23,
+              "FUERA_ZONA_VOLUMEN": 3,
+              "TENDENCIA_DIARIA": 1,
+              "STOP_DEMASIADO_LEJOS": 1
+            }
+          }
+        },
+        "ETHUSDT": {
+          "TRAIN": {
+            "trades": 0,
+            "signals": 31,
+            "eligible": 0,
+            "denied": 31,
+            "pf": null,
+            "returnPct": 0,
+            "maxDrawdown": 0,
+            "causal": true,
+            "vetoCounts": {
+              "DIARIO_INCOMPLETO": 7,
+              "RELACION_R_INSUFICIENTE": 14,
+              "STOP_DEMASIADO_LEJOS": 3,
+              "FUERA_ZONA_VOLUMEN": 2,
+              "TENDENCIA_DIARIA": 5
+            }
+          },
+          "VALIDATION": {
+            "trades": 0,
+            "signals": 18,
+            "eligible": 0,
+            "denied": 18,
+            "pf": null,
+            "returnPct": 0,
+            "maxDrawdown": 0,
+            "causal": true,
+            "vetoCounts": {
+              "RELACION_R_INSUFICIENTE": 13,
+              "FUERA_ZONA_VOLUMEN": 2,
+              "TENDENCIA_DIARIA": 2,
+              "STOP_DEMASIADO_LEJOS": 1
+            }
+          }
+        }
+      },
+      "qualifiedOnPastData": false
+    },
+    {
+      "id": "120B-observe",
+      "profileBars": 120,
+      "volumePolicy": "observe",
+      "results": {
+        "BTCUSDT": {
+          "TRAIN": {
+            "trades": 0,
+            "signals": 25,
+            "eligible": 0,
+            "denied": 25,
+            "pf": null,
+            "returnPct": 0,
+            "maxDrawdown": 0,
+            "causal": true,
+            "vetoCounts": {
+              "DIARIO_INCOMPLETO": 1,
+              "RELACION_R_INSUFICIENTE": 16,
+              "STOP_DEMASIADO_LEJOS": 1,
+              "TENDENCIA_DIARIA": 7
+            }
+          },
+          "VALIDATION": {
+            "trades": 1,
+            "signals": 29,
+            "eligible": 1,
+            "denied": 28,
+            "pf": 0,
+            "returnPct": -0.004137634033904325,
+            "maxDrawdown": 0.0071214631707587185,
+            "causal": true,
+            "vetoCounts": {
+              "RELACION_R_INSUFICIENTE": 26,
+              "TENDENCIA_DIARIA": 1,
+              "STOP_DEMASIADO_LEJOS": 1
+            }
+          }
+        },
+        "ETHUSDT": {
+          "TRAIN": {
+            "trades": 0,
+            "signals": 31,
+            "eligible": 0,
+            "denied": 31,
+            "pf": null,
+            "returnPct": 0,
+            "maxDrawdown": 0,
+            "causal": true,
+            "vetoCounts": {
+              "DIARIO_INCOMPLETO": 7,
+              "RELACION_R_INSUFICIENTE": 16,
+              "STOP_DEMASIADO_LEJOS": 3,
+              "TENDENCIA_DIARIA": 5
+            }
+          },
+          "VALIDATION": {
+            "trades": 0,
+            "signals": 18,
+            "eligible": 0,
+            "denied": 18,
+            "pf": null,
+            "returnPct": 0,
+            "maxDrawdown": 0,
+            "causal": true,
+            "vetoCounts": {
+              "RELACION_R_INSUFICIENTE": 15,
+              "TENDENCIA_DIARIA": 2,
+              "STOP_DEMASIADO_LEJOS": 1
+            }
+          }
+        }
+      },
+      "qualifiedOnPastData": false
+    },
+    {
+      "id": "240B-strict",
+      "profileBars": 240,
+      "volumePolicy": "strict",
+      "results": {
+        "BTCUSDT": {
+          "TRAIN": {
+            "trades": 0,
+            "signals": 25,
+            "eligible": 0,
+            "denied": 25,
+            "pf": null,
+            "returnPct": 0,
+            "maxDrawdown": 0,
+            "causal": true,
+            "vetoCounts": {
+              "DIARIO_INCOMPLETO": 1,
+              "RELACION_R_INSUFICIENTE": 3,
+              "FUERA_ZONA_VOLUMEN": 14,
+              "TENDENCIA_DIARIA": 7
+            }
+          },
+          "VALIDATION": {
+            "trades": 0,
+            "signals": 29,
+            "eligible": 0,
+            "denied": 29,
+            "pf": null,
+            "returnPct": 0,
+            "maxDrawdown": 0,
+            "causal": true,
+            "vetoCounts": {
+              "FUERA_ZONA_VOLUMEN": 19,
+              "RELACION_R_INSUFICIENTE": 9,
+              "TENDENCIA_DIARIA": 1
+            }
+          }
+        },
+        "ETHUSDT": {
+          "TRAIN": {
+            "trades": 0,
+            "signals": 31,
+            "eligible": 0,
+            "denied": 31,
+            "pf": null,
+            "returnPct": 0,
+            "maxDrawdown": 0,
+            "causal": true,
+            "vetoCounts": {
+              "DIARIO_INCOMPLETO": 7,
+              "FUERA_ZONA_VOLUMEN": 16,
+              "STOP_DEMASIADO_LEJOS": 1,
+              "TENDENCIA_DIARIA": 5,
+              "RELACION_R_INSUFICIENTE": 2
+            }
+          },
+          "VALIDATION": {
+            "trades": 0,
+            "signals": 18,
+            "eligible": 0,
+            "denied": 18,
+            "pf": null,
+            "returnPct": 0,
+            "maxDrawdown": 0,
+            "causal": true,
+            "vetoCounts": {
+              "FUERA_ZONA_VOLUMEN": 8,
+              "RELACION_R_INSUFICIENTE": 8,
+              "TENDENCIA_DIARIA": 2
+            }
+          }
+        }
+      },
+      "qualifiedOnPastData": false
+    },
+    {
+      "id": "240B-buffer",
+      "profileBars": 240,
+      "volumePolicy": "buffer",
+      "results": {
+        "BTCUSDT": {
+          "TRAIN": {
+            "trades": 0,
+            "signals": 25,
+            "eligible": 0,
+            "denied": 25,
+            "pf": null,
+            "returnPct": 0,
+            "maxDrawdown": 0,
+            "causal": true,
+            "vetoCounts": {
+              "DIARIO_INCOMPLETO": 1,
+              "RELACION_R_INSUFICIENTE": 9,
+              "FUERA_ZONA_VOLUMEN": 8,
+              "TENDENCIA_DIARIA": 7
+            }
+          },
+          "VALIDATION": {
+            "trades": 1,
+            "signals": 29,
+            "eligible": 1,
+            "denied": 28,
+            "pf": 0,
+            "returnPct": -0.004137634033904325,
+            "maxDrawdown": 0.0071214631707587185,
+            "causal": true,
+            "vetoCounts": {
+              "FUERA_ZONA_VOLUMEN": 15,
+              "RELACION_R_INSUFICIENTE": 12,
+              "TENDENCIA_DIARIA": 1
+            }
+          }
+        },
+        "ETHUSDT": {
+          "TRAIN": {
+            "trades": 0,
+            "signals": 31,
+            "eligible": 0,
+            "denied": 31,
+            "pf": null,
+            "returnPct": 0,
+            "maxDrawdown": 0,
+            "causal": true,
+            "vetoCounts": {
+              "DIARIO_INCOMPLETO": 7,
+              "FUERA_ZONA_VOLUMEN": 8,
+              "RELACION_R_INSUFICIENTE": 9,
+              "STOP_DEMASIADO_LEJOS": 2,
+              "TENDENCIA_DIARIA": 5
+            }
+          },
+          "VALIDATION": {
+            "trades": 0,
+            "signals": 18,
+            "eligible": 0,
+            "denied": 18,
+            "pf": null,
+            "returnPct": 0,
+            "maxDrawdown": 0,
+            "causal": true,
+            "vetoCounts": {
+              "FUERA_ZONA_VOLUMEN": 7,
+              "RELACION_R_INSUFICIENTE": 9,
+              "TENDENCIA_DIARIA": 2
+            }
+          }
+        }
+      },
+      "qualifiedOnPastData": false
+    },
+    {
+      "id": "240B-observe",
+      "profileBars": 240,
+      "volumePolicy": "observe",
+      "results": {
+        "BTCUSDT": {
+          "TRAIN": {
+            "trades": 0,
+            "signals": 25,
+            "eligible": 0,
+            "denied": 25,
+            "pf": null,
+            "returnPct": 0,
+            "maxDrawdown": 0,
+            "causal": true,
+            "vetoCounts": {
+              "DIARIO_INCOMPLETO": 1,
+              "RELACION_R_INSUFICIENTE": 16,
+              "STOP_DEMASIADO_LEJOS": 1,
+              "TENDENCIA_DIARIA": 7
+            }
+          },
+          "VALIDATION": {
+            "trades": 1,
+            "signals": 29,
+            "eligible": 1,
+            "denied": 28,
+            "pf": 0,
+            "returnPct": -0.004137634033904325,
+            "maxDrawdown": 0.0071214631707587185,
+            "causal": true,
+            "vetoCounts": {
+              "RELACION_R_INSUFICIENTE": 26,
+              "TENDENCIA_DIARIA": 1,
+              "STOP_DEMASIADO_LEJOS": 1
+            }
+          }
+        },
+        "ETHUSDT": {
+          "TRAIN": {
+            "trades": 0,
+            "signals": 31,
+            "eligible": 0,
+            "denied": 31,
+            "pf": null,
+            "returnPct": 0,
+            "maxDrawdown": 0,
+            "causal": true,
+            "vetoCounts": {
+              "DIARIO_INCOMPLETO": 7,
+              "RELACION_R_INSUFICIENTE": 16,
+              "STOP_DEMASIADO_LEJOS": 3,
+              "TENDENCIA_DIARIA": 5
+            }
+          },
+          "VALIDATION": {
+            "trades": 0,
+            "signals": 18,
+            "eligible": 0,
+            "denied": 18,
+            "pf": null,
+            "returnPct": 0,
+            "maxDrawdown": 0,
+            "causal": true,
+            "vetoCounts": {
+              "RELACION_R_INSUFICIENTE": 15,
+              "TENDENCIA_DIARIA": 2,
+              "STOP_DEMASIADO_LEJOS": 1
+            }
+          }
+        }
+      },
+      "qualifiedOnPastData": false
+    },
+    {
+      "id": "360B-strict",
+      "profileBars": 360,
+      "volumePolicy": "strict",
+      "results": {
+        "BTCUSDT": {
+          "TRAIN": {
+            "trades": 0,
+            "signals": 25,
+            "eligible": 0,
+            "denied": 25,
+            "pf": null,
+            "returnPct": 0,
+            "maxDrawdown": 0,
+            "causal": true,
+            "vetoCounts": {
+              "DIARIO_INCOMPLETO": 1,
+              "FUERA_ZONA_VOLUMEN": 14,
+              "RELACION_R_INSUFICIENTE": 3,
+              "TENDENCIA_DIARIA": 7
+            }
+          },
+          "VALIDATION": {
+            "trades": 1,
+            "signals": 29,
+            "eligible": 1,
+            "denied": 28,
+            "pf": 0,
+            "returnPct": -0.004137634033904325,
+            "maxDrawdown": 0.0071214631707587185,
+            "causal": true,
+            "vetoCounts": {
+              "FUERA_ZONA_VOLUMEN": 22,
+              "RELACION_R_INSUFICIENTE": 5,
+              "TENDENCIA_DIARIA": 1
+            }
+          }
+        },
+        "ETHUSDT": {
+          "TRAIN": {
+            "trades": 0,
+            "signals": 31,
+            "eligible": 0,
+            "denied": 31,
+            "pf": null,
+            "returnPct": 0,
+            "maxDrawdown": 0,
+            "causal": true,
+            "vetoCounts": {
+              "NO_CONFIRMADA_4H": 2,
+              "DIARIO_INCOMPLETO": 5,
+              "FUERA_ZONA_VOLUMEN": 13,
+              "RELACION_R_INSUFICIENTE": 5,
+              "STOP_DEMASIADO_LEJOS": 1,
+              "TENDENCIA_DIARIA": 5
+            }
+          },
+          "VALIDATION": {
+            "trades": 0,
+            "signals": 18,
+            "eligible": 0,
+            "denied": 18,
+            "pf": null,
+            "returnPct": 0,
+            "maxDrawdown": 0,
+            "causal": true,
+            "vetoCounts": {
+              "FUERA_ZONA_VOLUMEN": 10,
+              "RELACION_R_INSUFICIENTE": 6,
+              "TENDENCIA_DIARIA": 2
+            }
+          }
+        }
+      },
+      "qualifiedOnPastData": false
+    },
+    {
+      "id": "360B-buffer",
+      "profileBars": 360,
+      "volumePolicy": "buffer",
+      "results": {
+        "BTCUSDT": {
+          "TRAIN": {
+            "trades": 0,
+            "signals": 25,
+            "eligible": 0,
+            "denied": 25,
+            "pf": null,
+            "returnPct": 0,
+            "maxDrawdown": 0,
+            "causal": true,
+            "vetoCounts": {
+              "DIARIO_INCOMPLETO": 1,
+              "FUERA_ZONA_VOLUMEN": 13,
+              "RELACION_R_INSUFICIENTE": 4,
+              "TENDENCIA_DIARIA": 7
+            }
+          },
+          "VALIDATION": {
+            "trades": 1,
+            "signals": 29,
+            "eligible": 1,
+            "denied": 28,
+            "pf": 0,
+            "returnPct": -0.004137634033904325,
+            "maxDrawdown": 0.0071214631707587185,
+            "causal": true,
+            "vetoCounts": {
+              "FUERA_ZONA_VOLUMEN": 13,
+              "RELACION_R_INSUFICIENTE": 14,
+              "TENDENCIA_DIARIA": 1
+            }
+          }
+        },
+        "ETHUSDT": {
+          "TRAIN": {
+            "trades": 0,
+            "signals": 31,
+            "eligible": 0,
+            "denied": 31,
+            "pf": null,
+            "returnPct": 0,
+            "maxDrawdown": 0,
+            "causal": true,
+            "vetoCounts": {
+              "NO_CONFIRMADA_4H": 2,
+              "DIARIO_INCOMPLETO": 5,
+              "FUERA_ZONA_VOLUMEN": 9,
+              "RELACION_R_INSUFICIENTE": 8,
+              "STOP_DEMASIADO_LEJOS": 2,
+              "TENDENCIA_DIARIA": 5
+            }
+          },
+          "VALIDATION": {
+            "trades": 0,
+            "signals": 18,
+            "eligible": 0,
+            "denied": 18,
+            "pf": null,
+            "returnPct": 0,
+            "maxDrawdown": 0,
+            "causal": true,
+            "vetoCounts": {
+              "FUERA_ZONA_VOLUMEN": 7,
+              "RELACION_R_INSUFICIENTE": 9,
+              "TENDENCIA_DIARIA": 2
+            }
+          }
+        }
+      },
+      "qualifiedOnPastData": false
+    },
+    {
+      "id": "360B-observe",
+      "profileBars": 360,
+      "volumePolicy": "observe",
+      "results": {
+        "BTCUSDT": {
+          "TRAIN": {
+            "trades": 0,
+            "signals": 25,
+            "eligible": 0,
+            "denied": 25,
+            "pf": null,
+            "returnPct": 0,
+            "maxDrawdown": 0,
+            "causal": true,
+            "vetoCounts": {
+              "DIARIO_INCOMPLETO": 1,
+              "RELACION_R_INSUFICIENTE": 16,
+              "STOP_DEMASIADO_LEJOS": 1,
+              "TENDENCIA_DIARIA": 7
+            }
+          },
+          "VALIDATION": {
+            "trades": 1,
+            "signals": 29,
+            "eligible": 1,
+            "denied": 28,
+            "pf": 0,
+            "returnPct": -0.004137634033904325,
+            "maxDrawdown": 0.0071214631707587185,
+            "causal": true,
+            "vetoCounts": {
+              "RELACION_R_INSUFICIENTE": 26,
+              "TENDENCIA_DIARIA": 1,
+              "STOP_DEMASIADO_LEJOS": 1
+            }
+          }
+        },
+        "ETHUSDT": {
+          "TRAIN": {
+            "trades": 0,
+            "signals": 31,
+            "eligible": 0,
+            "denied": 31,
+            "pf": null,
+            "returnPct": 0,
+            "maxDrawdown": 0,
+            "causal": true,
+            "vetoCounts": {
+              "NO_CONFIRMADA_4H": 2,
+              "DIARIO_INCOMPLETO": 5,
+              "RELACION_R_INSUFICIENTE": 16,
+              "STOP_DEMASIADO_LEJOS": 3,
+              "TENDENCIA_DIARIA": 5
+            }
+          },
+          "VALIDATION": {
+            "trades": 0,
+            "signals": 18,
+            "eligible": 0,
+            "denied": 18,
+            "pf": null,
+            "returnPct": 0,
+            "maxDrawdown": 0,
+            "causal": true,
+            "vetoCounts": {
+              "RELACION_R_INSUFICIENTE": 15,
+              "TENDENCIA_DIARIA": 2,
+              "STOP_DEMASIADO_LEJOS": 1
+            }
+          }
+        }
+      },
+      "qualifiedOnPastData": false
+    }
+  ],
+  "failures": []
+}
