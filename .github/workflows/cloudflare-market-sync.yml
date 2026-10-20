@@ -1,0 +1,104 @@
+name: Carter — One 4H market publication (Cloudflare Free)
+on:
+  schedule:
+    - cron: '19 */4 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/cloudflare-market-sync.yml']
+concurrency:
+  group: carter-4h-single-publisher
+  cancel-in-progress: false
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Verify the existing rule engines before market requests
+        run: node --test tests/tl-engine.test.cjs tests/desk.test.cjs
+      - name: Verify prospective paper engine and its parity
+        run: |
+          pip install numpy==2.3.5 pandas==2.3.3 requests==2.32.5
+          python research/paper_core_test.py
+          python research/paper_parity_test.py
+      - name: Build PCS ranked Top50
+        run: node scripts/scan.cjs
+      - name: Build Trading Latino ranked Top50
+        run: node scripts/tl-scan.cjs
+      - name: Build Desk eligibility from this SAME 4H closed candle
+        run: node scripts/desk-scan.cjs
+      - name: Update frozen paper portfolio with market history
+        run: python -u research/paper_run.py
+      - name: Validate complete, matching and causal snapshots
+        run: |
+          node - <<'NODE'
+          const fs=require('fs'),get=p=>JSON.parse(fs.readFileSync(p,'utf8'));
+          const pcs=get('data/radar.json'),tl=get('data/tl-radar.json'),desk=get('data/desk-opportunities.json'),
+           paper=get('data/paper/summary.json'),state=get('data/paper/state.json');
+          const period=14400000,expected=Math.floor(Date.now()/period)*period-period;
+          if([pcs,tl,desk].some(x=>x.items?.length!==50||x.lastCandle!==expected))
+            throw Error('Radar incompleto, divergente o atrasado');
+          if(desk.engine===undefined||desk.rankCount!==50||tl.analyzed<1||
+            paper.mode!=='PAPER_ONLY'||!Array.isArray(paper.accounts)||!Array.isArray(paper.events))
+            throw Error('Snapshot de motor o ledger sin los campos requeridos');
+          console.log('PCS + TL + Desk + paper consistent for last candle',new Date(expected).toISOString());
+          NODE
+      - name: Publish all three radars and paper as ONE atomic Git commit
+        run: |
+          set -eu
+          git config user.name 'Carter Unified Scanner'
+          git config user.email '44848888+augustogjmm@users.noreply.github.com'
+          mkdir -p "$RUNNER_TEMP/carter-4h"
+          for path in data/radar.json data/tl-radar.json data/desk-opportunities.json data/paper/summary.json data/paper/state.json; do
+            cp "$path" "$RUNNER_TEMP/carter-4h/$(basename "$path" | sed 's/^summary.json$/paper-summary.json/;s/^state.json$/paper-state.json/')"
+          done
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            if node -e '
+              const fs=require("fs"),dir=process.argv[1],p=["data/radar.json","data/tl-radar.json","data/desk-opportunities.json"];
+              const f=x=>JSON.parse(fs.readFileSync(x,"utf8"));
+              const incoming=p.map(x=>f(dir+"/"+x.split("/").at(-1)));
+              let newer=false;
+              for(let i=0;i<p.length;i++){
+                if(!fs.existsSync(p[i]))continue;
+                const c=f(p[i]),n=incoming[i];
+                if(c.lastCandle>n.lastCandle)newer=true;
+                if(c.lastCandle===n.lastCandle&&Date.parse(c.generatedAt)>Date.parse(n.generatedAt))newer=true;
+              }
+              process.exit(newer?0:1);
+              ' "$RUNNER_TEMP/carter-4h"; then
+              echo "Existing market snapshots are newer: not overwriting"
+              exit 0
+            fi
+            mkdir -p data/paper
+            cp "$RUNNER_TEMP/carter-4h/radar.json" data/radar.json
+            cp "$RUNNER_TEMP/carter-4h/tl-radar.json" data/tl-radar.json
+            cp "$RUNNER_TEMP/carter-4h/desk-opportunities.json" data/desk-opportunities.json
+            cp "$RUNNER_TEMP/carter-4h/paper-summary.json" data/paper/summary.json
+            cp "$RUNNER_TEMP/carter-4h/paper-state.json" data/paper/state.json
+            git add data/radar.json data/tl-radar.json data/desk-opportunities.json data/paper/summary.json data/paper/state.json
+            if git diff --cached --quiet; then
+              echo "No new closed candle"; exit 0
+            fi
+            git commit -m 'data: synchronize Carter PCS TL Desk and paper 4H in one snapshot'
+            if git push origin HEAD:main; then
+              echo 'Published all five artifacts in one deployment-triggering commit'
+              exit 0
+            fi
+            echo "Concurrent repository update; retry $attempt"
+            sleep 2
+          done
+          echo "Unable to safely publish coherent market state" >&2
+          exit 1

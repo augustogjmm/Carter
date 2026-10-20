@@ -3,10 +3,10 @@ on:
   push:
     branches: [main, feat/cloudflare-pages-free-hosting]
     paths: ['functions/**','scripts/build-cloudflare.cjs','tests/cloudflare-pages.test.mjs',
-      '.github/workflows/cloudflare-validate.yml','CLOUDFLARE_FREE_DEPLOY.md','.gitignore','desk.html']
+      '.github/workflows/cloudflare-validate.yml','CLOUDFLARE_FREE_DEPLOY.md','.gitignore','desk.html','.github/workflows/cloudflare-market-sync.yml','.github/workflows/scan.yml','.github/workflows/paper.yml','.github/workflows/tl-scan.yml','tests/cloudflare-market-sync.test.cjs']
   pull_request:
     paths: ['functions/**','scripts/build-cloudflare.cjs','tests/cloudflare-pages.test.mjs',
-      '.github/workflows/cloudflare-validate.yml','CLOUDFLARE_FREE_DEPLOY.md','.gitignore','desk.html']
+      '.github/workflows/cloudflare-validate.yml','CLOUDFLARE_FREE_DEPLOY.md','.gitignore','desk.html','.github/workflows/cloudflare-market-sync.yml','.github/workflows/scan.yml','.github/workflows/paper.yml','.github/workflows/tl-scan.yml','tests/cloudflare-market-sync.test.cjs']
   workflow_dispatch:
 permissions:
   contents: read
@@ -20,7 +20,7 @@ jobs:
         with:
           node-version: '22'
       - name: Test Cloudflare APIs and static publishing rules
-        run: node --test tests/cloudflare-pages.test.mjs
+        run: node --test tests/cloudflare-pages.test.mjs tests/cloudflare-market-sync.test.cjs
       - name: Verify the full static build without installing dependencies
         run: |
           node scripts/build-cloudflare.cjs
