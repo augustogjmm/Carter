@@ -101,6 +101,26 @@
    </div>
    <div class="toast" id="message" role="status" aria-live="polite"></div>
   </section>
+  <section class="panel">
+   <div class="section-head"><div><p class="eyebrow">COPIA PRIVADA · OPT-IN</p><h2>Bitácora entre dispositivos</h2></div><span id="cloudState" class="chip">SIN SESIÓN</span></div>
+   <p class="support">La información permanece local hasta que decidas conectarte y pulsar «Guardar copia». Base de datos con acceso por usuario y control de revisiones. Sin conexión al exchange ni monitoreo remoto de tus posiciones.</p>
+   <div id="cloudLogin" class="stack">
+      <label class="support" for="cloudEmail">Correo para iniciar sesión</label>
+      <input type="email" id="cloudEmail" autocomplete="email" placeholder="tu@correo.com">
+      <button type="button" id="cloudEmailSend">Enviar acceso por correo</button>
+      <label class="support" for="cloudToken">Código recibido (si tu correo incluye uno)</label>
+      <input id="cloudToken" inputmode="numeric" autocomplete="one-time-code" placeholder="Código de acceso">
+      <button type="button" id="cloudVerify">Verificar código</button>
+      <button type="button" id="cloudRefresh">Comprobar sesión</button>
+   </div>
+   <div id="cloudOperations" hidden class="stack">
+      <div class="support">Sesión: <strong id="cloudUser">—</strong></div>
+      <button type="button" id="cloudSave" class="primary">Guardar copia privada</button>
+      <button type="button" id="cloudLoad">Restaurar copia privada</button>
+      <button type="button" id="cloudLogout">Cerrar sesión de la nube</button>
+   </div>
+   <p class="micro" id="cloudInfo" role="status" aria-live="polite">No se envió información personal. Iniciar sesión y guardar son acciones separadas.</p>
+  </section>
  </aside>
 </div>
 <section class="panel positions-panel"><div class="section-head"><div><p class="eyebrow">MIS POSICIONES · SOLO FILLS CONFIRMADOS</p><h2>Seguimiento de riesgo</h2></div><div class="selectline"><button id="enableNotifications" type="button">Activar avisos</button><span id="monitorState" class="chip">SINCRONIZACIÓN LOCAL</span></div></div><div id="positionList" class="position-grid"><p class="placeholder">No hay posiciones registradas.</p></div>
@@ -113,5 +133,5 @@
 </section>
 <footer>© Carter · Trading Desk experimental. Un ticket preparado no es una orden enviada. <a href="/tl-audit.html">Consultar auditoría y límites del motor</a></footer>
 </div>
-<script src="/tl-engine.js"></script><script src="/tl-data.js"></script><script src="/desk-engine.js"></script><script src="/desk-ledger.js"></script><script src="/desk-monitor.js"></script><script src="/desk-scenario.js"></script><script src="/desk-paper.js"></script><script src="/desk-app.js"></script>
+<script src="/tl-engine.js"></script><script src="/tl-data.js"></script><script src="/desk-engine.js"></script><script src="/desk-ledger.js"></script><script src="/desk-monitor.js"></script><script src="/desk-scenario.js"></script><script src="/desk-paper.js"></script><script src="/desk-cloud.js"></script><script src="/desk-cloud-ui.js"></script><script src="/desk-app.js"></script>
 </body></html>

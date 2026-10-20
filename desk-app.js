@@ -400,6 +400,8 @@ function init(){
  if(!E||!D||!G||!J||!M||!S||!P){set('dataHealth','ERROR MOTOR');message('Faltan módulos de cálculo');return;}
  try{state.journal=J.create(localStorage);}catch(e){set('dataHealth','SIN ALMACENAMIENTO');message('Bitácora local indisponible: '+e.message);return;}
  attach();renderJournal();loadRadar();loadDeskAudit().then(loadDeskVariants);load('BTCUSDT');refreshPositionQuotes();loadPaper();
+ try{window.CarterCloudUI?.mount({journal:state.journal,onRestore:()=>{renderJournal();refreshPositionQuotes();load(state.symbol);}});}
+ catch(e){message('Nube opcional deshabilitada: '+e.message);}
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();

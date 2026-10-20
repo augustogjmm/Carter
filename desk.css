@@ -28,3 +28,7 @@
 
 /* A DIL-independent safety invariant: hidden levels must never leak between symbols. */
 [hidden]{display:none!important}
+
+#cloudLogin,#cloudOperations{border-top:1px solid #24374b;padding-top:12px;margin-top:11px}
+#cloudLogin label,#cloudOperations label{display:block;margin-bottom:2px}
+#cloudInfo{min-height:18px;overflow-wrap:anywhere}
