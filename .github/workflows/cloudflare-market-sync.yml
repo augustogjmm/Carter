@@ -40,18 +40,21 @@ jobs:
         run: node scripts/desk-scan.cjs
       - name: Update frozen paper portfolio with market history
         run: python -u research/paper_run.py
+      - name: Persist Binance Spot OHLCV 4H and 1D as public read-only snapshots
+        run: node scripts/market-snapshots.cjs
       - name: Validate complete, matching and causal snapshots
         run: |
           node - <<'NODE'
           const fs=require('fs'),get=p=>JSON.parse(fs.readFileSync(p,'utf8'));
           const pcs=get('data/radar.json'),tl=get('data/tl-radar.json'),desk=get('data/desk-opportunities.json'),
-           paper=get('data/paper/summary.json'),state=get('data/paper/state.json');
+           paper=get('data/paper/summary.json'),state=get('data/paper/state.json'),ohlcv=get('data/ohlcv/manifest.json');
           const period=14400000,expected=Math.floor(Date.now()/period)*period-period;
           if([pcs,tl,desk].some(x=>x.items?.length!==50||x.lastCandle!==expected))
             throw Error('Radar incompleto, divergente o atrasado');
           if(desk.engine===undefined||desk.rankCount!==50||tl.analyzed<1||
             paper.mode!=='PAPER_ONLY'||!Array.isArray(paper.accounts)||!Array.isArray(paper.events))
             throw Error('Snapshot de motor o ledger sin los campos requeridos');
+          if(ohlcv.lastCandle!==expected||!ohlcv.symbols.includes('BTCUSDT')||!ohlcv.symbols.includes('ETHUSDT'))throw Error('OHLCV crítico desactualizado');
           console.log('PCS + TL + Desk + paper consistent for last candle',new Date(expected).toISOString());
           NODE
       - name: Publish all three radars and paper as ONE atomic Git commit
@@ -63,6 +66,7 @@ jobs:
           for path in data/radar.json data/tl-radar.json data/desk-opportunities.json data/paper/summary.json data/paper/state.json; do
             cp "$path" "$RUNNER_TEMP/carter-4h/$(basename "$path" | sed 's/^summary.json$/paper-summary.json/;s/^state.json$/paper-state.json/')"
           done
+          cp -R data/ohlcv "$RUNNER_TEMP/carter-4h/ohlcv"
           for attempt in 1 2 3 4 5; do
             git fetch origin main
             git reset --hard origin/main
@@ -88,7 +92,9 @@ jobs:
             cp "$RUNNER_TEMP/carter-4h/desk-opportunities.json" data/desk-opportunities.json
             cp "$RUNNER_TEMP/carter-4h/paper-summary.json" data/paper/summary.json
             cp "$RUNNER_TEMP/carter-4h/paper-state.json" data/paper/state.json
-            git add data/radar.json data/tl-radar.json data/desk-opportunities.json data/paper/summary.json data/paper/state.json
+            mkdir -p data/ohlcv
+            cp -R "$RUNNER_TEMP/carter-4h/ohlcv/." data/ohlcv/
+            git add data/radar.json data/tl-radar.json data/desk-opportunities.json data/paper/summary.json data/paper/state.json data/ohlcv/
             if git diff --cached --quiet; then
               echo "No new closed candle"; exit 0
             fi
