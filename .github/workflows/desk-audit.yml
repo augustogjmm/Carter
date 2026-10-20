@@ -1,4 +1,5 @@
 name: Carter Desk — Independent market replay
+# Revision: report deterministic veto counts (no threshold tuning)
 on:
   workflow_dispatch:
   push:
