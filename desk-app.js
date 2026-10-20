@@ -1,12 +1,12 @@
 /* Carter Trading Desk — real-data interface. No exchange order submission. */
 (function(){
 "use strict";
-const E=window.TLEngine,D=window.TLData,G=window.CarterDeskEngine,J=window.CarterJournal,M=window.CarterPositionMonitor;
+const E=window.TLEngine,D=window.TLData,G=window.CarterDeskEngine,J=window.CarterJournal,M=window.CarterPositionMonitor,S=window.CarterScenario,P=window.CarterPaper;
 const $=id=>document.getElementById(id),fmt=(n,p=2)=>Number.isFinite(n)?n.toLocaleString('en-US',{maximumFractionDigits:p}):'—';
 const price=n=>fmt(n,Number.isFinite(n)&&n<1?7:n<100?4:2);
 const utc=n=>Number.isFinite(n)?new Date(n).toISOString().slice(0,16).replace('T',' ')+' UTC':'—';
 const DAY=86400000,H4=14400000;
-const state={symbol:'BTCUSDT',bars:[],daily:[],ind:null,profile:null,decision:null,quote:null,rows:[],candidates:[],seq:0,quotes:new Map(),monitors:new Map(),journal:null,alertKeys:new Set()};
+const state={symbol:'BTCUSDT',bars:[],daily:[],ind:null,profile:null,decision:null,quote:null,rows:[],candidates:[],seq:0,quotes:new Map(),monitors:new Map(),journal:null,lastPaperAt:0,alertKeys:new Set()};
 const set=(id,v)=>{const el=$(id);if(el)el.textContent=String(v);};
 function message(msg){set('message',msg);}
 function holder(el,content){el.replaceChildren();if(content){const p=document.createElement('p');p.className='placeholder';p.textContent=content;el.append(p);}}
@@ -80,6 +80,48 @@ async function refreshPositionQuotes(){
   }
  }
  await Promise.allSettled(Array.from({length:Math.min(3,symbols.length)},worker));renderPositions();
+}
+function renderScenario(value){
+ set('scenarioStatus',value.status);
+ set('scenarioReason',value.reason);
+ const exists=value.status==='ESCENARIO_CONDICIONAL'&&Number.isFinite(value.trigger);
+ $('scenarioPrices').hidden=!exists;
+ if(!exists){set('scenarioConditions',value.reason+' · No habilita compra.');return;}
+ set('scenarioTrigger',price(value.trigger));set('scenarioStop',price(value.stop));
+ set('scenarioTarget',price(value.target));set('scenarioR',Number.isFinite(value.netR)?fmt(value.netR,2)+' R bruto':'SIN NIVEL');
+ set('scenarioConditions',value.conditions.join(' · ')+'. '+value.triggerRule+
+   (value.riskWarning?' ADVERTENCIA: '+value.riskWarning:''));
+}
+async function loadPaper(){
+ try{
+  const response=await fetch('/data/paper/summary.json?'+Date.now(),{cache:'no-store'});
+  if(!response.ok)throw Error('Archivo prospectivo no disponible');
+  const summary=P.inspect(await response.json());
+  state.lastPaperAt=Date.now();
+  set('paperStatus',summary.status);
+  set('paperDetails','Último procesamiento remoto: '+utc(summary.generatedAt)+
+    ' · '+summary.accounts.length+' cuentas modelo · '+summary.active+' simulaciones abiertas. El seguimiento es teórico y puede quedar atrasado.');
+  const out=$('paperPositions');out.replaceChildren();
+  const showing=summary.accounts.filter(a=>a.open);
+  if(!showing.length){holder(out,'No hay posiciones teóricas abiertas en CARTER_RAW o LATINO. Esto no implica falta de datos.');}
+  for(const p of showing){
+   const box=document.createElement('article');box.className='position';
+   const head=document.createElement('div');head.className='head';
+   const title=document.createElement('strong');title.textContent=p.symbol+' · '+p.model;
+   const tag=document.createElement('span');tag.className='chip '+(summary.stale?'warn':'');tag.textContent=summary.stale?'ATRASADO':'SIMULADA';
+   head.append(title,tag);box.append(head);
+   for(const line of ['Entrada simulada '+price(p.entry)+' · cantidad '+fmt(p.quantity,6),
+     'Stop simulado '+price(p.stop)+' · TP1 '+price(p.tp1),
+     'Marca '+price(p.markPrice)+' · patrimonio simulado '+fmt(p.equity)+' USDT']){
+     const e=document.createElement('p');e.textContent=line;box.append(e);
+   }
+   out.append(box);
+  }
+  const events=summary.events.slice(0,3);
+  if(events.length){const e=document.createElement('p');e.className='micro';
+   e.textContent='Últimos eventos teóricos: '+events.map(v=>v.symbol+' '+v.model+' '+v.kind+' '+utc(v.time)+(v.reconstructed?' (reconstruido)':'')).join(' · ');
+   out.append(e);}
+ }catch(error){set('paperStatus','SIN DATOS');holder($('paperPositions'),'No hay un registro prospectivo verificable: '+error.message);}
 }
 function renderPositions(){
  const all=state.journal.positions().filter(x=>x.quantity>1e-10),container=$('positionList');container.replaceChildren();
@@ -156,6 +198,7 @@ async function load(input){
  const seq=++state.seq;state.bars=[];state.daily=[];state.ind=null;state.profile=null;state.decision=null;state.quote=null;
  set('decision','CARGANDO…');set('decisionWhy','Descargando velas 4H y 1D independientes, luego cotización y reglas del exchange');
  set('assetSource','Binance spot · esperando validación');set('dailyTrend','—');set('momentum','—');set('adx','—');set('volume','—');
+ renderScenario({status:'VERIFICANDO',reason:'Recuperando últimos cierres confirmados'});
  set('ticketStatus','BLOQUEADO');$('ticketBody').hidden=true;$('ticketEmpty').hidden=false;set('ticketEmpty','No hay ticket hasta completar los controles');
  const cv=$('deskChart'),g=cv.getContext('2d');g.clearRect(0,0,cv.width,cv.height);
  try{
@@ -175,11 +218,12 @@ async function load(input){
   set('dailyTrend',result.context?.dailyBull?'ALCISTA CONFIRMADA':result.context?'NO ALCISTA':'NO VERIFICADA');
   set('momentum',fmt(state.ind.momentum[k],4));set('adx',fmt(state.ind.adx[k],1));
   set('volume',state.profile?'POC '+price(state.profile.poc)+' · VAH '+price(state.profile.vah):'NO DISPONIBLE');
-  showDecision(result);drawChart();
+  showDecision(result);renderScenario(S.project({bars4h:bars,bars1d:d1.bars,engine:E,profile:state.profile,quote:q}));drawChart();
  }catch(e){
   if(seq!==state.seq)return;
   set('dataHealth','SIN DATOS');set('assetSource','Falló validación: '+String(e.message||e));
   showDecision({status:'SIN_DATOS',reason:'No se habilita entrada: '+String(e.message||e)});
+  renderScenario({status:'SIN_DATOS',reason:'Sin proyección fiable: '+String(e.message||e)});
   message('Error verificable en '+symbol+': '+String(e.message||e));
  }
 }
@@ -344,13 +388,14 @@ function attach(){
   }catch(e){message('No se pudo exportar: '+e.message);}
  };
  window.addEventListener('resize',()=>{if(state.bars.length)drawChart();});
- setInterval(()=>{if(!document.hidden){renderJournal();refreshPositionQuotes();if(state.bars.length)load(state.symbol);showCandidates();}},60000);
- document.addEventListener('visibilitychange',()=>{if(!document.hidden){refreshPositionQuotes();loadRadar();load(state.symbol);}});
+ setInterval(()=>{if(!document.hidden){renderJournal();refreshPositionQuotes();if(state.bars.length)load(state.symbol);showCandidates();
+   if(Date.now()-state.lastPaperAt>15*60000)loadPaper();}},60000);
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden){refreshPositionQuotes();loadRadar();load(state.symbol);loadPaper();}});
 }
 function init(){
- if(!E||!D||!G||!J||!M){set('dataHealth','ERROR MOTOR');message('Faltan módulos de cálculo');return;}
+ if(!E||!D||!G||!J||!M||!S||!P){set('dataHealth','ERROR MOTOR');message('Faltan módulos de cálculo');return;}
  try{state.journal=J.create(localStorage);}catch(e){set('dataHealth','SIN ALMACENAMIENTO');message('Bitácora local indisponible: '+e.message);return;}
- attach();renderJournal();loadRadar();loadDeskAudit().then(loadDeskVariants);load('BTCUSDT');refreshPositionQuotes();
+ attach();renderJournal();loadRadar();loadDeskAudit().then(loadDeskVariants);load('BTCUSDT');refreshPositionQuotes();loadPaper();
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();

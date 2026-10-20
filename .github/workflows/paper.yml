@@ -5,30 +5,54 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ['research/paper_core.py', 'research/paper_run.py', 'research/paper_core_test.py', 'research/paper_parity_test.py', '.github/workflows/paper.yml']
+    paths: ['research/paper_core.py','research/paper_run.py','research/paper_core_test.py','research/paper_parity_test.py','.github/workflows/paper.yml']
 concurrency:
   group: pcs-frozen-paper-ledger
   cancel-in-progress: false
+permissions:
+  contents: write
 jobs:
   paper:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-    permissions:
-      contents: write
+    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: '3.12'
       - run: pip install numpy==2.3.5 pandas==2.3.3 requests==2.32.5
       - run: python research/paper_core_test.py
       - run: python research/paper_parity_test.py
       - run: python -u research/paper_run.py
-      - name: Save paper state without resetting prior observations
+      - name: Publish paper state without overwriting newer observations
         run: |
-          git config user.name 'augustogjmm'
+          set -eu
+          git config user.name 'Carter Paper Ledger'
           git config user.email '44848888+augustogjmm@users.noreply.github.com'
-          git add data/paper
-          git commit -m 'data: record prospective paper observations with frozen rules'
-          git pull --rebase origin main
-          git push origin HEAD:main
+          cp data/paper/summary.json "$RUNNER_TEMP/paper-summary.json"
+          cp data/paper/state.json "$RUNNER_TEMP/paper-state.json"
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            if git ls-files --error-unmatch data/paper/summary.json >/dev/null 2>&1 && \
+                node -e 'const fs=require("fs");const o=JSON.parse(fs.readFileSync("data/paper/summary.json"));const n=JSON.parse(fs.readFileSync(process.argv[1]));process.exit(Date.parse(o.generatedAt)>=Date.parse(n.generatedAt)?0:1)' "$RUNNER_TEMP/paper-summary.json"; then
+              echo "An equal or newer paper snapshot already exists; preserving historical state"
+              exit 0
+            fi
+            mkdir -p data/paper
+            cp "$RUNNER_TEMP/paper-summary.json" data/paper/summary.json
+            cp "$RUNNER_TEMP/paper-state.json" data/paper/state.json
+            git add data/paper/summary.json data/paper/state.json
+            if git diff --cached --quiet; then
+              echo "No new paper events"
+              exit 0
+            fi
+            git commit -m 'data: preserve prospective paper ledger observations'
+            if git push origin HEAD:main; then exit 0; fi
+            echo "Concurrent repository update, retry $attempt"
+            sleep 2
+          done
+          echo "Could not safely persist paper state" >&2
+          exit 1
