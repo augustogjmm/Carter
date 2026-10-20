@@ -1,3 +1,19 @@
+# Carter — Mesa Operativa Premium (20/10/2026)
+
+**Acceso directo:** https://carter-rust.vercel.app/desk.html
+
+La mesa es un módulo adicional; no sustituye ni modifica los motores congelados Carter y PCS. Cripto spot long-only: contexto **1D cerrado** y señal experimental TL-BASE en **4H cerrada**. El motor independiente decide la viabilidad **en el momento de consulta** mediante cotización bid/ask y reglas spot Binance, datos completos, ventana temporal, perfil de volumen **estimado OHLCV**, stop de estructura, resistencia medible, mínimo 1,5R neto estimado y límites de riesgo. Si una sola restricción falla, no se genera ticket.
+
+**Advertencia de evidencia:** la regla automatizada es una hipótesis propia de Carter, no una especificación oficial completa de Jaime. La rentabilidad futura no está demostrada, no existe auditoría externa concluyente de este motor y el ticket se muestra como CANDIDATO / EXPERIMENTAL, no como recomendación certificada. No se transmiten órdenes al exchange.
+
+**Motor y UI:** desk-engine.js (decisiones causales), api/desk-quote.js (precios, spread, volumen 24h, filtros spot en vivo), desk.html, desk.css, desk-app.js (radar público Top50, contexto, gráfico, ticket y administración manual). La fuente de verdad de las 50 posiciones del ranking continúa siendo data/tl-radar.json; un proceso aparte scripts/desk-scan.cjs publica data/desk-opportunities.json después del cierre 4H cuando el snapshot previo es vigente. La consola reválida precio/orden al abrir cada candidato; no reutiliza quotes del escaneo como órdenes actuales.
+
+**Bitácora:** desk-ledger.js almacena localmente, en ese navegador, tickets preparados y fills **confirmados manualmente**. Preparar/enviar no crea una posición; un fill explícito sí. Admite compras parciales, ventas parciales, costos y PnL realizado. El seguimiento con bids públicos se actualiza con la página abierta; ofrece exportación JSON. **No existe aún persistencia cifrada multi-dispositivo, conciliación bancaria/exchange read-only, monitoreo privado del usuario con la página cerrada ni push móvil.** Esas capacidades requieren backend autenticado y verificación adicional; no deben presentarse como terminadas.
+
+**Verificación automatizada:** node --test tests/desk.test.cjs tests/tl-engine.test.cjs; GitHub Actions desk-validate.yml y desk-scan.yml. El despliegue Vercel automático presenta la UI, pero código desplegado no demuestra estrategia rentable ni un servicio de órdenes.
+
+---
+
 # PCS 4H · Producto integrado
 
 Entrada principal: https://carter-rust.vercel.app/pcs.html. Carter anterior se conserva en index.html.
