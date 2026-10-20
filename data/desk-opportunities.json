@@ -2,7 +2,7 @@
   "engine": "CTD-ELIGIBILITY-1.0",
   "strategy": "TL-BASE-MTF-VP-EXPERIMENTAL",
   "audited": false,
-  "generatedAt": "2026-10-20T16:27:06.428Z",
+  "generatedAt": "2026-10-20T16:46:32.719Z",
   "lastCandle": 1792497600000,
   "rankCount": 50,
   "eligibleChecked": 0,
@@ -29,7 +29,7 @@
       "symbol": "USDT",
       "name": "Tether",
       "lastCandle": null,
-      "status": "SIN_PAR",
+      "status": "EXCLUIDO",
       "reason": "Stablecoin / activo estable"
     },
     {
@@ -138,19 +138,19 @@
     },
     {
       "rank": 17,
-      "symbol": "LEO",
-      "name": "LEO Token",
-      "lastCandle": null,
-      "status": "SIN_PAR",
-      "reason": "Sin par USDT spot activo en Binance"
-    },
-    {
-      "rank": 18,
       "symbol": "ADA",
       "name": "Cardano",
       "lastCandle": 1792497600000,
       "status": "ESPERAR",
       "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 SÍ"
+    },
+    {
+      "rank": 18,
+      "symbol": "LEO",
+      "name": "LEO Token",
+      "lastCandle": null,
+      "status": "SIN_PAR",
+      "reason": "Sin par USDT spot activo en Binance"
     },
     {
       "rank": 19,
@@ -213,7 +213,7 @@
       "symbol": "DAI",
       "name": "Dai",
       "lastCandle": null,
-      "status": "SIN_PAR",
+      "status": "EXCLUIDO",
       "reason": "Stablecoin / activo estable"
     },
     {
@@ -277,7 +277,7 @@
       "symbol": "USDG",
       "name": "Global Dollar",
       "lastCandle": null,
-      "status": "SIN_PAR",
+      "status": "EXCLUIDO",
       "reason": "Stablecoin / activo estable"
     },
     {
@@ -306,19 +306,19 @@
     },
     {
       "rank": 38,
-      "symbol": "PYUSD",
-      "name": "PayPal USD",
-      "lastCandle": null,
-      "status": "SIN_PAR",
-      "reason": "Stablecoin / activo estable"
-    },
-    {
-      "rank": 39,
       "symbol": "QNT",
       "name": "Quant",
       "lastCandle": 1792497600000,
       "status": "ESPERAR",
       "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 SÍ"
+    },
+    {
+      "rank": 39,
+      "symbol": "PYUSD",
+      "name": "PayPal USD",
+      "lastCandle": null,
+      "status": "EXCLUIDO",
+      "reason": "Stablecoin / activo estable"
     },
     {
       "rank": 40,
@@ -357,7 +357,7 @@
       "symbol": "USYC",
       "name": "Circle USYC",
       "lastCandle": null,
-      "status": "SIN_PAR",
+      "status": "EXCLUIDO",
       "reason": "Stablecoin / activo estable"
     },
     {
