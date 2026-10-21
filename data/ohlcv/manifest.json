@@ -1,6 +1,6 @@
 {
   "protocol": "CARTER-OHLCV-STATIC-1",
-  "generatedAt": "2026-10-21T20:15:31.870Z",
+  "generatedAt": "2026-10-21T23:28:00.547Z",
   "lastCandle": 1792598400000,
   "source": "Binance Spot read-only via GitHub Actions; NO quote L2",
   "files": [
