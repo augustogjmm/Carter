@@ -1,7 +1,7 @@
 {
   "protocol": "CARTER-OHLCV-STATIC-1",
-  "generatedAt": "2026-10-23T05:03:59.750Z",
-  "lastCandle": 1792713600000,
+  "generatedAt": "2026-10-23T13:36:14.097Z",
+  "lastCandle": 1792742400000,
   "source": "Binance Spot read-only via GitHub Actions; NO quote L2",
   "files": [
     "data/ohlcv/AAVEUSDT-1d.json",
@@ -32,6 +32,8 @@
     "data/ohlcv/NEARUSDT-4h.json",
     "data/ohlcv/ONDOUSDT-1d.json",
     "data/ohlcv/ONDOUSDT-4h.json",
+    "data/ohlcv/PEPEUSDT-1d.json",
+    "data/ohlcv/PEPEUSDT-4h.json",
     "data/ohlcv/PUMPUSDT-1d.json",
     "data/ohlcv/PUMPUSDT-4h.json",
     "data/ohlcv/QNTUSDT-1d.json",
@@ -48,8 +50,6 @@
     "data/ohlcv/TRXUSDT-4h.json",
     "data/ohlcv/UNIUSDT-1d.json",
     "data/ohlcv/UNIUSDT-4h.json",
-    "data/ohlcv/WLDUSDT-1d.json",
-    "data/ohlcv/WLDUSDT-4h.json",
     "data/ohlcv/XLMUSDT-1d.json",
     "data/ohlcv/XLMUSDT-4h.json",
     "data/ohlcv/XRPUSDT-1d.json",
@@ -72,6 +72,7 @@
     "LTCUSDT",
     "NEARUSDT",
     "ONDOUSDT",
+    "PEPEUSDT",
     "PUMPUSDT",
     "QNTUSDT",
     "SHIBUSDT",
@@ -80,7 +81,6 @@
     "TAOUSDT",
     "TRXUSDT",
     "UNIUSDT",
-    "WLDUSDT",
     "XLMUSDT",
     "XRPUSDT",
     "ZECUSDT"
