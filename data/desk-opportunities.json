@@ -2,7 +2,7 @@
   "engine": "CTD-ELIGIBILITY-1.0",
   "strategy": "TL-BASE-MTF-VP-EXPERIMENTAL",
   "audited": false,
-  "generatedAt": "2026-10-31T20:05:20.454Z",
+  "generatedAt": "2026-10-31T23:29:17.084Z",
   "lastCandle": 1793462400000,
   "rankCount": 50,
   "eligibleChecked": 0,
@@ -185,20 +185,20 @@
       "reason": "Stablecoin / activo estable"
     },
     {
-      "rank": 23,
-      "symbol": "RAIN",
-      "name": "Rain",
-      "lastCandle": null,
-      "status": "SIN_PAR",
-      "reason": "Sin par USDT spot activo en Binance"
-    },
-    {
       "rank": 24,
       "symbol": "USDE",
       "name": "Ethena USDe",
       "lastCandle": null,
       "status": "EXCLUIDO",
       "reason": "Stablecoin / activo estable"
+    },
+    {
+      "rank": 23,
+      "symbol": "RAIN",
+      "name": "Rain",
+      "lastCandle": null,
+      "status": "SIN_PAR",
+      "reason": "Sin par USDT spot activo en Binance"
     },
     {
       "rank": 25,
@@ -274,19 +274,19 @@
     },
     {
       "rank": 34,
-      "symbol": "QNT",
-      "name": "Quant",
-      "lastCandle": 1793462400000,
-      "status": "ESPERAR",
-      "reason": "EMA10>EMA55 SÍ · Giro MOM NO · ADX decreciente desde ≥23 NO"
-    },
-    {
-      "rank": 35,
       "symbol": "USDG",
       "name": "Global Dollar",
       "lastCandle": null,
       "status": "EXCLUIDO",
       "reason": "Stablecoin / activo estable"
+    },
+    {
+      "rank": 35,
+      "symbol": "QNT",
+      "name": "Quant",
+      "lastCandle": 1793462400000,
+      "status": "ESPERAR",
+      "reason": "EMA10>EMA55 SÍ · Giro MOM NO · ADX decreciente desde ≥23 NO"
     },
     {
       "rank": 36,
@@ -370,19 +370,19 @@
     },
     {
       "rank": 46,
-      "symbol": "AAVE",
-      "name": "Aave",
-      "lastCandle": 1793462400000,
-      "status": "ESPERAR",
-      "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 NO"
-    },
-    {
-      "rank": 47,
       "symbol": "M",
       "name": "MemeCore",
       "lastCandle": null,
       "status": "SIN_PAR",
       "reason": "Sin par USDT spot activo en Binance"
+    },
+    {
+      "rank": 47,
+      "symbol": "AAVE",
+      "name": "Aave",
+      "lastCandle": 1793462400000,
+      "status": "ESPERAR",
+      "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 NO"
     },
     {
       "rank": 48,
