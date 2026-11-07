@@ -1,7 +1,7 @@
 {
   "protocol": "CARTER-OHLCV-STATIC-1",
-  "generatedAt": "2026-11-07T06:13:31.659Z",
-  "lastCandle": 1794009600000,
+  "generatedAt": "2026-11-07T14:57:44.401Z",
+  "lastCandle": 1794038400000,
   "source": "Binance Spot read-only via GitHub Actions; NO quote L2",
   "files": [
     "data/ohlcv/AAVEUSDT-1d.json",
