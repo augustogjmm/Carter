@@ -1,7 +1,7 @@
 {
   "protocol": "CARTER-OHLCV-STATIC-1",
-  "generatedAt": "2026-11-07T14:57:44.401Z",
-  "lastCandle": 1794038400000,
+  "generatedAt": "2026-11-07T20:19:42.515Z",
+  "lastCandle": 1794067200000,
   "source": "Binance Spot read-only via GitHub Actions; NO quote L2",
   "files": [
     "data/ohlcv/AAVEUSDT-1d.json",
@@ -30,8 +30,6 @@
     "data/ohlcv/LTCUSDT-4h.json",
     "data/ohlcv/NEARUSDT-1d.json",
     "data/ohlcv/NEARUSDT-4h.json",
-    "data/ohlcv/PAXGUSDT-1d.json",
-    "data/ohlcv/PAXGUSDT-4h.json",
     "data/ohlcv/PEPEUSDT-1d.json",
     "data/ohlcv/PEPEUSDT-4h.json",
     "data/ohlcv/QNTUSDT-1d.json",
@@ -69,7 +67,6 @@
     "LINKUSDT",
     "LTCUSDT",
     "NEARUSDT",
-    "PAXGUSDT",
     "PEPEUSDT",
     "QNTUSDT",
     "SHIBUSDT",
