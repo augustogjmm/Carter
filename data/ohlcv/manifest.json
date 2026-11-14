@@ -1,7 +1,7 @@
 {
   "protocol": "CARTER-OHLCV-STATIC-1",
-  "generatedAt": "2026-11-14T15:12:31.343Z",
-  "lastCandle": 1794643200000,
+  "generatedAt": "2026-11-14T20:48:32.990Z",
+  "lastCandle": 1794672000000,
   "source": "Binance Spot read-only via GitHub Actions; NO quote L2",
   "files": [
     "data/ohlcv/ADAUSDT-1d.json",
@@ -16,8 +16,6 @@
     "data/ohlcv/BTCUSDT-4h.json",
     "data/ohlcv/DOGEUSDT-1d.json",
     "data/ohlcv/DOGEUSDT-4h.json",
-    "data/ohlcv/ENAUSDT-1d.json",
-    "data/ohlcv/ENAUSDT-4h.json",
     "data/ohlcv/ETHUSDT-1d.json",
     "data/ohlcv/ETHUSDT-4h.json",
     "data/ohlcv/HBARUSDT-1d.json",
@@ -60,7 +58,6 @@
     "BNBUSDT",
     "BTCUSDT",
     "DOGEUSDT",
-    "ENAUSDT",
     "ETHUSDT",
     "HBARUSDT",
     "LINKUSDT",
@@ -85,12 +82,12 @@
       "reason": "Descarga HYPEUSDT 1d: HTTP 451 · api1.binance.com"
     },
     {
-      "symbol": "GRAMUSDT",
-      "reason": "Descarga GRAMUSDT 1d: HTTP 451 · api1.binance.com"
-    },
-    {
       "symbol": "XAUTUSDT",
       "reason": "Descarga XAUTUSDT 1d: HTTP 451 · api1.binance.com"
+    },
+    {
+      "symbol": "GRAMUSDT",
+      "reason": "Descarga GRAMUSDT 1d: HTTP 451 · api1.binance.com"
     }
   ]
 }
