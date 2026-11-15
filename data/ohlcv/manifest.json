@@ -1,7 +1,7 @@
 {
   "protocol": "CARTER-OHLCV-STATIC-1",
-  "generatedAt": "2026-11-15T06:49:12.991Z",
-  "lastCandle": 1794700800000,
+  "generatedAt": "2026-11-15T15:43:50.473Z",
+  "lastCandle": 1794729600000,
   "source": "Binance Spot read-only via GitHub Actions; NO quote L2",
   "files": [
     "data/ohlcv/AAVEUSDT-1d.json",
@@ -85,12 +85,12 @@
       "reason": "Descarga HYPEUSDT 1d: HTTP 451 · api1.binance.com"
     },
     {
-      "symbol": "XAUTUSDT",
-      "reason": "Descarga XAUTUSDT 1d: HTTP 451 · api1.binance.com"
-    },
-    {
       "symbol": "GRAMUSDT",
       "reason": "Descarga GRAMUSDT 1d: HTTP 451 · api1.binance.com"
+    },
+    {
+      "symbol": "XAUTUSDT",
+      "reason": "Descarga XAUTUSDT 1d: HTTP 451 · api1.binance.com"
     }
   ]
 }
