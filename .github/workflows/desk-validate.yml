@@ -14,7 +14,7 @@ jobs:
     timeout-minutes: 12
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: '22'
       - run: node --test tests/desk.test.cjs tests/desk-replay.test.cjs tests/desk-visibility.test.cjs tests/desk-dom.test.cjs tests/desk-cloud.test.cjs tests/desk-chart.test.cjs tests/desk-holdings.test.cjs tests/vercel-ignore.test.cjs tests/tl-engine.test.cjs
