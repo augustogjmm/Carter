@@ -1,2 +1,19 @@
 # Only Cloudflare Pages build output; it is generated in CI.
 /cloudflare-dist/
+
+# Local configuration and sensitive credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.p12
+*.pfx
+*.key
+# Local artifacts (keep tracked research data under data/)
+node_modules/
+.vercel/
+.wrangler/
+.npm-cache/
+.cache/
+*.log
+.DS_Store
