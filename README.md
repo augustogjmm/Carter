@@ -1,3 +1,20 @@
+# Carter — Product Engineering & Validation
+
+> **Caso de ingeniería de producto personal:** análisis de datos de mercado, flujos programados, reglas de control, simulación y evaluación reproducible. Los resultados experimentales no certifican rentabilidad, precisión predictiva ni condiciones para operar con dinero real.
+
+**[Portfolio ejecutivo](https://github.com/augustogjmm/Radar/blob/main/PORTFOLIO.md)** · **[Aplicación](https://carter-rust.vercel.app/desk.html)**
+
+### Qué demuestra técnicamente
+
+- **Automatización:** workflows de GitHub Actions para pruebas, escaneo y publicación de información.
+- **Arquitectura y continuidad:** separación de interfaz, motores y fuentes externas; control de actualizaciones y limitaciones conocidas.
+- **Disciplina de validación:** protocolos reproducibles, comparación fuera de muestra y criterios que bloquean cambios sin evidencia suficiente.
+- **Gestión de riesgo:** distinción entre señales experimentales, tickets preparados, operaciones simuladas y fills confirmados manualmente.
+
+El alcance real de cada capacidad y sus limitaciones están documentados en las secciones técnicas siguientes.
+
+---
+
 # Carter — Mesa Operativa Premium (20/10/2026)
 
 **Acceso directo:** https://carter-rust.vercel.app/desk.html
