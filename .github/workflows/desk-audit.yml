@@ -29,7 +29,7 @@ jobs:
         run: |
           node -e "const fs=require('fs');const s=JSON.parse(fs.readFileSync('data/desk-audit/summary.json'));if(s.records?.length!==2||s.status==='APROBADA')process.exit(1);console.log('Desk audit:',s.status, s.records.map(x=>x.symbol));"
       - name: Upload raw independent audit artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: desk-2026-audit
           path: data/desk-audit/summary.json
