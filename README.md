@@ -15,6 +15,8 @@ El alcance real de cada capacidad y sus limitaciones están documentados en las 
 
 ---
 
+**[Arquitectura y decisiones técnicas](docs/ARCHITECTURE_OVERVIEW.md)**
+
 # Carter — Mesa Operativa Premium (20/10/2026)
 
 **Acceso directo:** https://carter-rust.vercel.app/desk.html
