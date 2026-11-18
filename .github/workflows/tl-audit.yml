@@ -18,7 +18,7 @@ jobs:
         run: node scripts/tl-audit.cjs
       - name: Preserve audit evidence as artifact
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: trading-latino-independent-audit
           path: data/tl-audit/summary.json

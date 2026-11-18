@@ -27,7 +27,7 @@ jobs:
       - name: Confirm all nine variants and no production promotion
         run: |
           node -e "const fs=require('fs'),r=JSON.parse(fs.readFileSync('data/desk-variants/summary.json'));if(r.records.length!==9||r.records.some(x=>!x.results.BTCUSDT||!x.results.ETHUSDT)||!r.knownTestDisclosure)process.exit(1);console.log(r.status);"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: desk-fixed-volume-variants
           path: data/desk-variants/summary.json

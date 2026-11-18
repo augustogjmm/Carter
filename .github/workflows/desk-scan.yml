@@ -20,7 +20,7 @@ jobs:
       - name: Evaluate Top 50 snapshot without modifying main
         run: node scripts/desk-scan.cjs
       - name: Save diagnostic output without changing production
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: carter-desk-diagnostic
           path: data/desk-opportunities.json
