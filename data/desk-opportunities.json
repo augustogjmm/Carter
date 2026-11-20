@@ -2,8 +2,8 @@
   "engine": "CTD-ELIGIBILITY-1.0",
   "strategy": "TL-BASE-MTF-VP-EXPERIMENTAL",
   "audited": false,
-  "generatedAt": "2026-11-19T23:06:59.399Z",
-  "lastCandle": 1795104000000,
+  "generatedAt": "2026-11-20T07:30:29.233Z",
+  "lastCandle": 1795132800000,
   "rankCount": 50,
   "eligibleChecked": 0,
   "candidates": 0,
@@ -12,7 +12,7 @@
       "rank": 1,
       "symbol": "BTC",
       "name": "Bitcoin",
-      "lastCandle": 1795104000000,
+      "lastCandle": 1795132800000,
       "status": "ESPERAR",
       "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 NO"
     },
@@ -20,7 +20,7 @@
       "rank": 2,
       "symbol": "ETH",
       "name": "Ethereum",
-      "lastCandle": 1795104000000,
+      "lastCandle": 1795132800000,
       "status": "ESPERAR",
       "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 NO"
     },
@@ -36,9 +36,9 @@
       "rank": 4,
       "symbol": "BNB",
       "name": "BNB",
-      "lastCandle": 1795104000000,
+      "lastCandle": 1795132800000,
       "status": "ESPERAR",
-      "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 SÍ"
+      "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 NO"
     },
     {
       "rank": 5,
@@ -52,15 +52,15 @@
       "rank": 6,
       "symbol": "XRP",
       "name": "XRP",
-      "lastCandle": 1795104000000,
+      "lastCandle": 1795132800000,
       "status": "ESPERAR",
-      "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 SÍ"
+      "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 NO"
     },
     {
       "rank": 7,
       "symbol": "SOL",
       "name": "Solana",
-      "lastCandle": 1795104000000,
+      "lastCandle": 1795132800000,
       "status": "ESPERAR",
       "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 NO"
     },
@@ -68,7 +68,7 @@
       "rank": 8,
       "symbol": "TRX",
       "name": "TRON",
-      "lastCandle": 1795104000000,
+      "lastCandle": 1795132800000,
       "status": "ESPERAR",
       "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 SÍ"
     },
@@ -84,7 +84,7 @@
       "rank": 10,
       "symbol": "HYPE",
       "name": "Hyperliquid",
-      "lastCandle": 1795104000000,
+      "lastCandle": 1795132800000,
       "status": "ESPERAR",
       "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 NO"
     },
@@ -92,7 +92,7 @@
       "rank": 11,
       "symbol": "ZEC",
       "name": "Zcash",
-      "lastCandle": 1795104000000,
+      "lastCandle": 1795132800000,
       "status": "ESPERAR",
       "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 NO"
     },
@@ -108,9 +108,9 @@
       "rank": 13,
       "symbol": "DOGE",
       "name": "Dogecoin",
-      "lastCandle": 1795104000000,
+      "lastCandle": 1795132800000,
       "status": "ESPERAR",
-      "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 SÍ"
+      "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 NO"
     },
     {
       "rank": 14,
@@ -132,7 +132,7 @@
       "rank": 16,
       "symbol": "LINK",
       "name": "Chainlink",
-      "lastCandle": 1795104000000,
+      "lastCandle": 1795132800000,
       "status": "ESPERAR",
       "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 NO"
     },
@@ -148,9 +148,9 @@
       "rank": 18,
       "symbol": "ADA",
       "name": "Cardano",
-      "lastCandle": 1795104000000,
+      "lastCandle": 1795132800000,
       "status": "ESPERAR",
-      "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 SÍ"
+      "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 NO"
     },
     {
       "rank": 19,
@@ -164,7 +164,7 @@
       "rank": 20,
       "symbol": "XLM",
       "name": "Stellar",
-      "lastCandle": 1795104000000,
+      "lastCandle": 1795132800000,
       "status": "ESPERAR",
       "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 NO"
     },
@@ -178,25 +178,25 @@
     },
     {
       "rank": 22,
-      "symbol": "NEAR",
-      "name": "NEAR Protocol",
-      "lastCandle": 1795104000000,
+      "symbol": "BCH",
+      "name": "Bitcoin Cash",
+      "lastCandle": 1795132800000,
       "status": "ESPERAR",
       "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 NO"
     },
     {
       "rank": 23,
-      "symbol": "BCH",
-      "name": "Bitcoin Cash",
-      "lastCandle": 1795104000000,
+      "symbol": "NEAR",
+      "name": "NEAR Protocol",
+      "lastCandle": 1795132800000,
       "status": "ESPERAR",
-      "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 SÍ"
+      "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 NO"
     },
     {
       "rank": 24,
       "symbol": "LTC",
       "name": "Litecoin",
-      "lastCandle": 1795104000000,
+      "lastCandle": 1795132800000,
       "status": "ESPERAR",
       "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 NO"
     },
@@ -212,12 +212,28 @@
       "rank": 26,
       "symbol": "AVAX",
       "name": "Avalanche",
-      "lastCandle": 1795104000000,
+      "lastCandle": 1795132800000,
       "status": "ESPERAR",
       "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 NO"
     },
     {
       "rank": 27,
+      "symbol": "UNI",
+      "name": "Uniswap",
+      "lastCandle": 1795132800000,
+      "status": "ESPERAR",
+      "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 NO"
+    },
+    {
+      "rank": 28,
+      "symbol": "GRAM",
+      "name": "Gram (prev. Toncoin)",
+      "lastCandle": 1795132800000,
+      "status": "ESPERAR",
+      "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 NO"
+    },
+    {
+      "rank": 29,
       "symbol": "RAIN",
       "name": "Rain",
       "lastCandle": null,
@@ -225,44 +241,28 @@
       "reason": "Sin par USDT spot activo en Binance"
     },
     {
-      "rank": 28,
-      "symbol": "UNI",
-      "name": "Uniswap",
-      "lastCandle": 1795104000000,
-      "status": "ESPERAR",
-      "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 NO"
-    },
-    {
-      "rank": 29,
-      "symbol": "XAUT",
-      "name": "Tether Gold",
-      "lastCandle": 1795104000000,
-      "status": "ESPERAR",
-      "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 NO"
-    },
-    {
       "rank": 30,
-      "symbol": "SUI",
-      "name": "Sui",
-      "lastCandle": 1795104000000,
-      "status": "ESPERAR",
-      "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 NO"
-    },
-    {
-      "rank": 31,
-      "symbol": "GRAM",
-      "name": "Gram (prev. Toncoin)",
-      "lastCandle": 1795104000000,
-      "status": "ESPERAR",
-      "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 NO"
-    },
-    {
-      "rank": 32,
       "symbol": "USD1",
       "name": "USD1",
       "lastCandle": null,
       "status": "EXCLUIDO",
       "reason": "Stablecoin / activo estable"
+    },
+    {
+      "rank": 31,
+      "symbol": "SUI",
+      "name": "Sui",
+      "lastCandle": 1795132800000,
+      "status": "ESPERAR",
+      "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 NO"
+    },
+    {
+      "rank": 32,
+      "symbol": "XAUT",
+      "name": "Tether Gold",
+      "lastCandle": 1795132800000,
+      "status": "ESPERAR",
+      "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 NO"
     },
     {
       "rank": 33,
@@ -282,19 +282,19 @@
     },
     {
       "rank": 35,
-      "symbol": "HBAR",
-      "name": "Hedera",
-      "lastCandle": 1795104000000,
-      "status": "ESPERAR",
-      "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 NO"
-    },
-    {
-      "rank": 36,
       "symbol": "PYUSD",
       "name": "PayPal USD",
       "lastCandle": null,
       "status": "EXCLUIDO",
       "reason": "Stablecoin / activo estable"
+    },
+    {
+      "rank": 36,
+      "symbol": "HBAR",
+      "name": "Hedera",
+      "lastCandle": 1795132800000,
+      "status": "ESPERAR",
+      "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 NO"
     },
     {
       "rank": 37,
@@ -306,35 +306,35 @@
     },
     {
       "rank": 38,
-      "symbol": "TAO",
-      "name": "Bittensor",
-      "lastCandle": 1795104000000,
-      "status": "ESPERAR",
-      "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 NO"
-    },
-    {
-      "rank": 39,
       "symbol": "SHIB",
       "name": "Shiba Inu",
-      "lastCandle": 1795104000000,
-      "status": "DETERIORO",
+      "lastCandle": 1795132800000,
+      "status": "ESPERAR",
       "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 SÍ"
     },
     {
-      "rank": 40,
-      "symbol": "QNT",
-      "name": "Quant",
-      "lastCandle": 1795104000000,
+      "rank": 39,
+      "symbol": "TAO",
+      "name": "Bittensor",
+      "lastCandle": 1795132800000,
       "status": "ESPERAR",
       "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 NO"
     },
     {
-      "rank": 41,
+      "rank": 40,
       "symbol": "CRO",
       "name": "Cronos",
       "lastCandle": null,
       "status": "SIN_PAR",
       "reason": "Sin par USDT spot activo en Binance"
+    },
+    {
+      "rank": 41,
+      "symbol": "QNT",
+      "name": "Quant",
+      "lastCandle": 1795132800000,
+      "status": "ESPERAR",
+      "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 NO"
     },
     {
       "rank": 42,
@@ -362,19 +362,19 @@
     },
     {
       "rank": 45,
-      "symbol": "OKB",
-      "name": "OKB",
-      "lastCandle": null,
-      "status": "SIN_PAR",
-      "reason": "Sin par USDT spot activo en Binance"
-    },
-    {
-      "rank": 46,
       "symbol": "USDF",
       "name": "Falcon USD",
       "lastCandle": null,
       "status": "EXCLUIDO",
       "reason": "Stablecoin / activo estable"
+    },
+    {
+      "rank": 46,
+      "symbol": "OKB",
+      "name": "OKB",
+      "lastCandle": null,
+      "status": "SIN_PAR",
+      "reason": "Sin par USDT spot activo en Binance"
     },
     {
       "rank": 47,
@@ -388,7 +388,7 @@
       "rank": 48,
       "symbol": "AAVE",
       "name": "Aave",
-      "lastCandle": 1795104000000,
+      "lastCandle": 1795132800000,
       "status": "ESPERAR",
       "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 NO"
     },
@@ -396,7 +396,7 @@
       "rank": 49,
       "symbol": "PAXG",
       "name": "PAX Gold",
-      "lastCandle": 1795104000000,
+      "lastCandle": 1795132800000,
       "status": "ESPERAR",
       "reason": "EMA10>EMA55 NO · Giro MOM NO · ADX decreciente desde ≥23 NO"
     },
