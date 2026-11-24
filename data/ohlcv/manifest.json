@@ -1,11 +1,9 @@
 {
   "protocol": "CARTER-OHLCV-STATIC-1",
-  "generatedAt": "2026-11-23T14:55:56.201Z",
-  "lastCandle": 1795420800000,
+  "generatedAt": "2026-11-24T02:58:06.315Z",
+  "lastCandle": 1795464000000,
   "source": "Binance Spot read-only via GitHub Actions; NO quote L2",
   "files": [
-    "data/ohlcv/AAVEUSDT-1d.json",
-    "data/ohlcv/AAVEUSDT-4h.json",
     "data/ohlcv/ADAUSDT-1d.json",
     "data/ohlcv/ADAUSDT-4h.json",
     "data/ohlcv/AVAXUSDT-1d.json",
@@ -52,7 +50,6 @@
     "data/ohlcv/ZECUSDT-4h.json"
   ],
   "symbols": [
-    "AAVEUSDT",
     "ADAUSDT",
     "AVAXUSDT",
     "BCHUSDT",
@@ -82,12 +79,12 @@
       "reason": "Descarga HYPEUSDT 1d: HTTP 451 · api1.binance.com"
     },
     {
-      "symbol": "GRAMUSDT",
-      "reason": "Descarga GRAMUSDT 1d: HTTP 451 · api1.binance.com"
-    },
-    {
       "symbol": "XAUTUSDT",
       "reason": "Descarga XAUTUSDT 1d: HTTP 451 · api1.binance.com"
+    },
+    {
+      "symbol": "GRAMUSDT",
+      "reason": "Descarga GRAMUSDT 1d: HTTP 451 · api1.binance.com"
     }
   ]
 }
